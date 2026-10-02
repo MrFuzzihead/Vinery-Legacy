@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.mixin;
+package com.mrfuzzihead.vinery.mixins.early;
 
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;

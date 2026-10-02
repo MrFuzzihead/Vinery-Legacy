@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.mixin;
+package com.mrfuzzihead.vinery.mixins.early;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
@@ -11,7 +11,7 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import com.mrfuzzihead.vinery.core.item.WinemakerChestItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerBootsItem;
 import com.mrfuzzihead.vinery.core.registry.ArmorRegistryClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -22,11 +22,11 @@ import org.spongepowered.asm.mixin.Shadow;
 import java.util.function.Consumer;
 
 @SuppressWarnings("all")
-@Mixin(WinemakerChestItem.class)
-public abstract class ChestplateItemMixin extends ArmorItem {
+@Mixin(WinemakerBootsItem.class)
+public abstract class BootsItemMixin extends ArmorItem {
     @Shadow
     @Final
-    private ResourceLocation chestplateTexture;
+    private ResourceLocation bootsTexture;
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
@@ -34,7 +34,7 @@ public abstract class ChestplateItemMixin extends ArmorItem {
                 new IClientItemExtensions() {
                     @Override
                     public @NotNull Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                        return ArmorRegistryClient.getChestplateModel(itemStack.getItem(), original.body, original.leftArm, original.rightArm, original.leftLeg, original.rightLeg);
+                        return ArmorRegistryClient.getBootsModel(itemStack.getItem(), original.rightLeg, original.leftLeg);
                     }
                 }
         );
@@ -42,10 +42,10 @@ public abstract class ChestplateItemMixin extends ArmorItem {
 
     @Override
     public @Nullable ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-        return chestplateTexture;
+        return bootsTexture;
     }
 
-    private ChestplateItemMixin(Holder<ArmorMaterial> armorMaterial, Type armorType, Properties itemProperties) {
+    private BootsItemMixin(Holder<ArmorMaterial> armorMaterial, Type armorType, Properties itemProperties) {
         super(armorMaterial, armorType, itemProperties);
     }
 }

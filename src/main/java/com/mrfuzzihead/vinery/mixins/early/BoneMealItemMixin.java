@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.mixin;
+package com.mrfuzzihead.vinery.mixins.early;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;

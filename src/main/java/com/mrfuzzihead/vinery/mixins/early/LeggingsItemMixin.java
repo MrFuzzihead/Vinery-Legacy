@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.mixin;
+package com.mrfuzzihead.vinery.mixins.early;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
@@ -11,23 +11,22 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import com.mrfuzzihead.vinery.core.item.WinemakerHelmetItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerLegsItem;
 import com.mrfuzzihead.vinery.core.registry.ArmorRegistryClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.Inject;
 
 import java.util.function.Consumer;
 
 @SuppressWarnings("all")
-@Mixin(WinemakerHelmetItem.class)
-public abstract class HelmetItemMixin extends ArmorItem {
+@Mixin(WinemakerLegsItem.class)
+public abstract class LeggingsItemMixin extends ArmorItem {
     @Shadow
     @Final
-    private ResourceLocation hatTexture;
+    private ResourceLocation leggingsTexture;
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
@@ -35,7 +34,7 @@ public abstract class HelmetItemMixin extends ArmorItem {
                 new IClientItemExtensions() {
                     @Override
                     public @NotNull Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                        return ArmorRegistryClient.getHatModel(itemStack.getItem(), original.getHead());
+                        return ArmorRegistryClient.getLeggingsModel(itemStack.getItem(), original.rightLeg, original.leftLeg);
                     }
                 }
         );
@@ -43,10 +42,10 @@ public abstract class HelmetItemMixin extends ArmorItem {
 
     @Override
     public @Nullable ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-        return hatTexture;
+        return leggingsTexture;
     }
 
-    private HelmetItemMixin(Holder<ArmorMaterial> armorMaterial, Type armorType, Properties itemProperties) {
+    private LeggingsItemMixin(Holder<ArmorMaterial> armorMaterial, Type armorType, Properties itemProperties) {
         super(armorMaterial, armorType, itemProperties);
     }
 }

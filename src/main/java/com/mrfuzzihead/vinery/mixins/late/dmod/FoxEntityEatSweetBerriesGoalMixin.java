@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.mixin;
+package com.mrfuzzihead.vinery.mixins.late.dmod;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.sounds.SoundEvents;
