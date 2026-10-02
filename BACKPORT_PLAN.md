@@ -402,8 +402,8 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 
 | Phase                    | Content                                                                                                                                                                | Rough effort                 |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
-| **0. Repo hygiene**      | Fix `net.satisfy` → `com.mrfuzzihead` package/import migration (102 files), real `mcmod.info`, `pack_format: 1`, delete `.OLD` files, set `usesMixins`/`mixinsPackage` | 1 day                        |
-| **1. Skeleton compiles** | `@Mod` class, registry shim, all 204 registry entries mapped, drops work, lang file                                                                                    | 2–3 days                     |
+| **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
+| **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
 | **2. Core content**      | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |

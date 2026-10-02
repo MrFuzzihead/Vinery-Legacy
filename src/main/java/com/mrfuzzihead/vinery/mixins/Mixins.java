@@ -2,6 +2,7 @@ package com.mrfuzzihead.vinery.mixins;
 
 import javax.annotation.Nonnull;
 
+import com.gtnewhorizon.gtnhmixins.builders.IBaseTransformer.Phase;
 import com.gtnewhorizon.gtnhmixins.builders.IMixins;
 import com.gtnewhorizon.gtnhmixins.builders.MixinBuilder;
 
@@ -21,77 +22,83 @@ import com.gtnewhorizon.gtnhmixins.builders.MixinBuilder;
  * third-party mod classes, gated with {@link MixinBuilder#addRequiredMod}.
  * </ul>
  *
+ * <h2>Why the checklist below is not live yet</h2>
+ *
+ * Two hard rules govern this file, both learned by hitting them:
+ *
+ * <ol>
+ * <li>A listed name that does not resolve to a compiled class is a {@code ClassNotFoundException}
+ * during mod construction — it kills the game before the main menu.
+ * <li>A builder with <b>no</b> mixins is rejected outright by {@code MixinBuilder.validateBuilder}
+ * ("No mixin class registered for IMixins"), so placeholder entries are not possible either.
+ * </ol>
+ *
+ * So a group appears here only once every one of its mixins is ported and compiled. The 1.21
+ * originals are parked in {@code src/port-holding/java/com/mrfuzzihead/vinery/mixins/}. To enable a
+ * group: port its classes to 1.7.10, move them into
+ * {@code src/main/java/com/mrfuzzihead/vinery/mixins/early|late/}, and add the matching constant.
+ *
  * <p>
- * Mixins marked "planned removal" are on the 1.7.10 port's hit list: the behavior they patch
- * has a native Forge equivalent and the class gets deleted once that port lands. See
- * BACKPORT_PLAN.md section 6.
+ * BACKPORT_PLAN.md section 6 tracks what each unported mixin is expected to become — several will
+ * not be mixins at all on 1.7.10 and are marked as removals.
  */
 // spotless:off
 public enum Mixins implements IMixins {
 
-    // ------------------------------------------------------------------------------------------
-    // Early: Minecraft / Forge / Vinery classes
-    // ------------------------------------------------------------------------------------------
+    // ---- Porting checklist (add a constant per group once its mixins are compiled) --------------
+    //
+    // EARLY / common — vanilla block behaviour
+    //     MINECRAFT_BLOCKS(
+    //         new MixinBuilder("Vanilla block behaviour patches")
+    //             .addCommonMixins("BlockMixin", "PlantBlockMixin", "SpreadingSnowyDirtBlockMixin")),
+    //   all three are removals: BlockMixin becomes canConnectFenceTo/canConnectRedstone overrides,
+    //   PlantBlockMixin moves into our own BlockBush subclass, SpreadingSnowyDirtBlockMixin is dropped.
+    //
+    // EARLY / common — vanilla item use
+    //     MINECRAFT_ITEMS(
+    //         new MixinBuilder("Vanilla item use patches")
+    //             .addCommonMixins("BoneMealItemMixin")),
+    //   ShovelItemMixin is a removal: Et Futurum's BlockDirtPath plus our own ItemSpade replaces it.
+    //
+    // EARLY / common — entity behaviour
+    //     MINECRAFT_ENTITIES(
+    //         new MixinBuilder("Vanilla entity behaviour patches")
+    //             .addCommonMixins("LivingEntityMixin")),
+    //   ExperienceOrbMixin is a removal: becomes a PlayerPickupXpEvent handler.
+    //
+    // EARLY / common — winemaker spawning
+    //     MINECRAFT_WORLDGEN(
+    //         new MixinBuilder("Winemaker spawning patch")
+    //             .addCommonMixins("WanderingTraderManagerMixin")),
+    //   a removal: no wandering trader exists in 1.7.10, so this becomes our own spawn routine.
+    //
+    // EARLY / client — player behaviour
+    //     MINECRAFT_CLIENT_PLAYER(
+    //         new MixinBuilder("Client player behaviour patches")
+    //             .addClientMixins("ClientPlayerEntityMixin")),
+    //   retargeted at EntityPlayerSP.
+    //
+    // EARLY / client — winemaker armour models
+    //     VINERY_ARMOUR_CLIENT(
+    //         new MixinBuilder("Winemaker armour model patches")
+    //             .addClientMixins(
+    //                 "BootsItemMixin", "ChestplateItemMixin", "HelmetItemMixin", "LeggingsItemMixin")),
+    //   these target Vinery's own item classes but touch client-only rendering APIs, so they stay
+    //   client mixins; the 1.7.10 equivalent is ItemArmor#getArmorTexture + RenderBiped layers.
+    //
+    // LATE / common — D-Mod foxes foraging grape bushes
+    //     DMOD_FOX_BERRIES(
+    //         Phase.LATE,
+    //         new MixinBuilder("Lets D-Mod foxes forage Vinery grape bushes")
+    //             .addCommonMixins("dmod.FoxEntityEatSweetBerriesGoalMixin")
+    //             .addRequiredMod(TargetMods.DMOD)),
+    //   possibly unnecessary: D-Mod exposes Compat.registerBerryBushHandler for exactly this.
 
-    /** Vanilla block behaviour (connection suppression, plant placement). */
-    MINECRAFT_BLOCKS(
-        Phase.EARLY,
-        new MixinBuilder("Vanilla block behaviour patches")
-            .addCommonMixins(
-                "BlockMixin", // planned removal: becomes BlockFence#canConnectFenceTo / Block#canConnectRedstone overrides
-                "PlantBlockMixin", // planned removal: 1.7.10 has BlockBush, handled in our own block class
-                "SpreadingSnowyDirtBlockMixin")), // planned removal: no snowy dirt in 1.7.10
-
-    /** Vanilla item use / tool behavior. */
-    MINECRAFT_ITEMS(
-        Phase.EARLY,
-        new MixinBuilder("Vanilla item use patches")
-            .addCommonMixins(
-                "BoneMealItemMixin",
-                "ShovelItemMixin")), // planned removal: Et Futurum BlockDirtPath + our own ItemSpade
-
-    /** Entity behavior: wine effects and XP orbs. */
-    MINECRAFT_ENTITIES(
-        Phase.EARLY,
-        new MixinBuilder("Vanilla entity behaviour patches")
-            .addCommonMixins(
-                "LivingEntityMixin",
-                "ExperienceOrbMixin")), // planned removal: becomes a PlayerPickupXpEvent handler
-
-    /** Winemaker spawning. */
-    MINECRAFT_WORLDGEN(
-        Phase.EARLY,
-        new MixinBuilder("Winemaker spawning patch")
-            .addCommonMixins(
-                "WanderingTraderManagerMixin")), // planned removal: becomes our own spawn routine
-
-    /** Client-only player behavior (double jump, etc.). */
-    MINECRAFT_CLIENT_PLAYER(
-        Phase.EARLY,
-        new MixinBuilder("Client player behaviour patches")
-            .addClientMixins(
-                "ClientPlayerEntityMixin")),
-
-    /** Winemaker armor models. Targets our own item classes but uses client-only rendering APIs. */
-    VINERY_ARMOUR_CLIENT(
-        Phase.EARLY,
-        new MixinBuilder("Winemaker armour model patches")
-            .addClientMixins(
-                "BootsItemMixin",
-                "ChestplateItemMixin",
-                "HelmetItemMixin",
-                "LeggingsItemMixin")),
-
-    // ------------------------------------------------------------------------------------------
-    // Late: third-party mod classes (applied only when the target mod is present)
-    // ------------------------------------------------------------------------------------------
-
-    /** D-Mod foxes eating Vinery grape bushes. */
-    DMOD_FOX_BERRIES(
-        Phase.LATE,
-        new MixinBuilder("Lets D-Mod foxes forage Vinery grape bushes")
-            .addCommonMixins("dmod.FoxEntityEatSweetBerriesGoalMixin")
-            .addRequiredMod(TargetMods.DMOD));
+    /**
+     * No mixins are ported yet. The enum must still declare at least its scaffolding, and an empty
+     * enum body is valid, so this stays until the first group above lands.
+     */
+    ;
     // spotless:on
 
     private final MixinBuilder builder;

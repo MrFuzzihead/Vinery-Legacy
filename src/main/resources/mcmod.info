@@ -13,7 +13,7 @@
 		"logoFile": "pack.png",
 		"screenshots": [],
 		"parent": "",
-		"requiredMods": ["UniMixins"],
+		"requiredMods": ["unimixins"],
 		"dependencies": [],
 		"dependants": [],
 		"useDependencyInformation": true
