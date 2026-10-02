@@ -1,8 +1,0 @@
-{
-  "replace": false,
-  "values": [
-    "vinery:wine_bottle",
-    "#vinery:red_wine",
-    "#vinery:white_wine"
-  ]
-}
