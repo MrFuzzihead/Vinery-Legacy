@@ -1,8 +1,7 @@
 package com.mrfuzzihead.vinery.core.event;
 
-import dev.architectury.event.EventResult;
-import dev.architectury.event.events.common.PlayerEvent;
-import it.unimi.dsi.fastutil.ints.IntList;
+import java.util.Random;
+
 import net.minecraft.core.component.DataComponents;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
@@ -16,15 +15,21 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.Items;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.phys.EntityHitResult;
-import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
+
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Random;
+import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
+
+import dev.architectury.event.EventResult;
+import dev.architectury.event.events.common.PlayerEvent;
+import it.unimi.dsi.fastutil.ints.IntList;
 
 public class EventHandler {
+
     private static final Random random = new Random();
 
-    public static EventResult onAttack(Player player, Level level, Entity target, InteractionHand hand, @Nullable EntityHitResult result) {
+    public static EventResult onAttack(Player player, Level level, Entity target, InteractionHand hand,
+        @Nullable EntityHitResult result) {
         if (player.hasEffect(MobEffectRegistry.getHolder(MobEffectRegistry.PARTY_EFFECT))) {
             if (target instanceof LivingEntity entity) {
                 int color = random.nextInt(0xFFFFFF);
@@ -34,7 +39,7 @@ public class EventHandler {
                 ListTag explosions = new ListTag();
                 CompoundTag explosion = new CompoundTag();
 
-                explosion.putIntArray("Colors", new int[]{color});
+                explosion.putIntArray("Colors", new int[] { color });
                 explosion.putByte("Type", (byte) 0);
                 explosions.add(explosion);
 
@@ -42,15 +47,19 @@ public class EventHandler {
                 fireworksTag.put("Explosions", explosions);
                 fireworksTag.putByte("Flight", (byte) 0);
 
-                fireworkStack.set(DataComponents.FIREWORKS, new net.minecraft.world.item.component.Fireworks(0, explosions.stream()
-                        .map(tag -> new net.minecraft.world.item.component.FireworkExplosion(
-                                net.minecraft.world.item.component.FireworkExplosion.Shape.SMALL_BALL,
-                                IntList.of(color),
-                                IntList.of(),
-                                false,
-                                false
-                        ))
-                        .toList()));
+                fireworkStack.set(
+                    DataComponents.FIREWORKS,
+                    new net.minecraft.world.item.component.Fireworks(
+                        0,
+                        explosions.stream()
+                            .map(
+                                tag -> new net.minecraft.world.item.component.FireworkExplosion(
+                                    net.minecraft.world.item.component.FireworkExplosion.Shape.SMALL_BALL,
+                                    IntList.of(color),
+                                    IntList.of(),
+                                    false,
+                                    false))
+                            .toList()));
 
                 FireworkRocketEntity fireworkRocket = new FireworkRocketEntity(level, fireworkStack, entity);
                 fireworkRocket.setAirSupply(0);
@@ -66,7 +75,6 @@ public class EventHandler {
 
         return EventResult.pass();
     }
-
 
     public static void init() {
         PlayerEvent.ATTACK_ENTITY.register(EventHandler::onAttack);

@@ -17,41 +17,69 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 @SuppressWarnings("deprecation")
 public class LineConnectingBlock extends Block {
+
     public static final DirectionProperty FACING;
     public static final EnumProperty<GeneralUtil.LineConnectingType> TYPE;
 
     public LineConnectingBlock(BlockBehaviour.Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any()
+        this.registerDefaultState(
+            this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(TYPE, GeneralUtil.LineConnectingType.NONE));
     }
 
-    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull InteractionResult use(BlockState state, Level world, BlockPos pos, Player player,
+        InteractionHand hand, BlockHitResult hit) {
         return InteractionResult.PASS;
     }
 
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
-        Direction facing = context.getHorizontalDirection().getOpposite();
-        BlockState blockState = this.defaultBlockState().setValue(FACING, facing);
+        Direction facing = context.getHorizontalDirection()
+            .getOpposite();
+        BlockState blockState = this.defaultBlockState()
+            .setValue(FACING, facing);
         Level world = context.getLevel();
         BlockPos clickedPos = context.getClickedPos();
 
         return switch (facing) {
-            case EAST -> blockState.setValue(TYPE, this.getType(blockState, world.getBlockState(clickedPos.south()), world.getBlockState(clickedPos.north())));
-            case SOUTH -> blockState.setValue(TYPE, this.getType(blockState, world.getBlockState(clickedPos.west()), world.getBlockState(clickedPos.east())));
-            case WEST -> blockState.setValue(TYPE, this.getType(blockState, world.getBlockState(clickedPos.north()), world.getBlockState(clickedPos.south())));
-            default -> blockState.setValue(TYPE, this.getType(blockState, world.getBlockState(clickedPos.east()), world.getBlockState(clickedPos.west())));
+            case EAST -> blockState.setValue(
+                TYPE,
+                this.getType(
+                    blockState,
+                    world.getBlockState(clickedPos.south()),
+                    world.getBlockState(clickedPos.north())));
+            case SOUTH -> blockState.setValue(
+                TYPE,
+                this.getType(
+                    blockState,
+                    world.getBlockState(clickedPos.west()),
+                    world.getBlockState(clickedPos.east())));
+            case WEST -> blockState.setValue(
+                TYPE,
+                this.getType(
+                    blockState,
+                    world.getBlockState(clickedPos.north()),
+                    world.getBlockState(clickedPos.south())));
+            default -> blockState.setValue(
+                TYPE,
+                this.getType(
+                    blockState,
+                    world.getBlockState(clickedPos.east()),
+                    world.getBlockState(clickedPos.west())));
         };
     }
 
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos, boolean notify) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block sourceBlock, BlockPos sourcePos,
+        boolean notify) {
         if (!world.isClientSide) {
             Direction facing = state.getValue(FACING);
             GeneralUtil.LineConnectingType type = switch (facing) {
@@ -71,7 +99,8 @@ public class LineConnectingBlock extends Block {
 
     public GeneralUtil.LineConnectingType getType(BlockState state, BlockState left, BlockState right) {
         boolean shapeLeftSame = left.getBlock() == state.getBlock() && left.getValue(FACING) == state.getValue(FACING);
-        boolean shapeRightSame = right.getBlock() == state.getBlock() && right.getValue(FACING) == state.getValue(FACING);
+        boolean shapeRightSame = right.getBlock() == state.getBlock()
+            && right.getValue(FACING) == state.getValue(FACING);
 
         if (shapeLeftSame && shapeRightSame) {
             return GeneralUtil.LineConnectingType.MIDDLE;

@@ -10,7 +10,6 @@ import net.minecraft.tags.FluidTags;
 import net.minecraft.tags.ItemTags;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -28,31 +27,39 @@ import net.minecraft.world.level.block.state.properties.SlabType;
 import net.minecraft.world.level.lighting.LightEngine;
 import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.phys.BlockHitResult;
-import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+
 public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableBlock {
+
     public static final BooleanProperty SNOWY = BlockStateProperties.SNOWY;
     public static final Block GRASS_BLOCK = Blocks.GRASS_BLOCK;
 
-    public static Block getDirtSlabBlock(){
+    public static Block getDirtSlabBlock() {
         return ObjectRegistry.DIRT_SLAB.get();
     }
 
-    public static Block getGrassSlabBlock(){
+    public static Block getGrassSlabBlock() {
         return ObjectRegistry.GRASS_SLAB.get();
     }
 
     public SpreadableGrassSlabBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.defaultBlockState().setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, false).setValue(SNOWY, false));
+        this.registerDefaultState(
+            this.defaultBlockState()
+                .setValue(TYPE, SlabType.BOTTOM)
+                .setValue(WATERLOGGED, false)
+                .setValue(SNOWY, false));
     }
 
     public static boolean canSurviveNew(BlockState state, LevelReader world, BlockPos pos) {
         BlockPos blockPos = pos.above();
         BlockState blockState = world.getBlockState(blockPos);
 
-        if (state.getBlock().equals(getDirtSlabBlock()) && state.getValue(SlabBlock.TYPE) == SlabType.BOTTOM) {
+        if (state.getBlock()
+            .equals(getDirtSlabBlock()) && state.getValue(SlabBlock.TYPE) == SlabType.BOTTOM) {
             return !state.getValue(SlabBlock.WATERLOGGED);
         }
 
@@ -60,7 +67,8 @@ public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableB
             return true;
         }
 
-        if (blockState.getFluidState().getAmount() == 8) {
+        if (blockState.getFluidState()
+            .getAmount() == 8) {
             return false;
         }
 
@@ -68,23 +76,31 @@ public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableB
             return false;
         }
 
-        if (blockState.getBlock() instanceof SlabBlock && blockState.getValue(SlabBlock.TYPE) == SlabType.TOP){
+        if (blockState.getBlock() instanceof SlabBlock && blockState.getValue(SlabBlock.TYPE) == SlabType.TOP) {
             return true;
         }
 
-        if (blockState.getBlock() instanceof StairBlock && blockState.getValue(StairBlock.HALF) == Half.TOP){
+        if (blockState.getBlock() instanceof StairBlock && blockState.getValue(StairBlock.HALF) == Half.TOP) {
             return true;
         }
 
-        int i = LightEngine.getLightBlockInto(world, GRASS_BLOCK.defaultBlockState(), pos, blockState, blockPos, Direction.UP, blockState.getLightBlock(world, blockPos));
+        int i = LightEngine.getLightBlockInto(
+            world,
+            GRASS_BLOCK.defaultBlockState(),
+            pos,
+            blockState,
+            blockPos,
+            Direction.UP,
+            blockState.getLightBlock(world, blockPos));
         return i < world.getMaxLightLevel();
     }
 
     @Override
     public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
-        if(blockState.getValue(SlabBlock.TYPE) == SlabType.BOTTOM) return false;
+        if (blockState.getValue(SlabBlock.TYPE) == SlabType.BOTTOM) return false;
 
-        return levelReader.getBlockState(blockPos.above()).isAir();
+        return levelReader.getBlockState(blockPos.above())
+            .isAir();
     }
 
     @Override
@@ -105,7 +121,7 @@ public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableB
             world.setBlock(pos, getDirtSlabBlock().withPropertiesOf(state), Block.UPDATE_CLIENTS);
         } else {
             if (world.getMaxLocalRawBrightness(pos.above()) >= 9) {
-                for(int i = 0; i < 4; ++i) {
+                for (int i = 0; i < 4; ++i) {
                     BlockPos blockPos = pos.offset(random.nextInt(3) - 1, random.nextInt(5) - 3, random.nextInt(3) - 1);
                     trySpread(world, blockPos);
                 }
@@ -122,12 +138,16 @@ public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableB
             BlockState newState = null;
 
             if (oldState.is(Blocks.DIRT)) {
-                newState = GRASS_BLOCK.defaultBlockState().setValue(BlockStateProperties.SNOWY, isSnowy);
-            } else if(oldState.is(getDirtSlabBlock())){
-                newState = getGrassSlabBlock().withPropertiesOf(oldState).setValue(BlockStateProperties.SNOWY, isSnowy);
+                newState = GRASS_BLOCK.defaultBlockState()
+                    .setValue(BlockStateProperties.SNOWY, isSnowy);
+            } else if (oldState.is(getDirtSlabBlock())) {
+                newState = getGrassSlabBlock().withPropertiesOf(oldState)
+                    .setValue(BlockStateProperties.SNOWY, isSnowy);
             }
 
-            if (newState != null && canSurviveNew(newState, world, spreadPos) && !world.getFluidState(spreadPos.above()).is(FluidTags.WATER)) {
+            if (newState != null && canSurviveNew(newState, world, spreadPos)
+                && !world.getFluidState(spreadPos.above())
+                    .is(FluidTags.WATER)) {
                 world.setBlockAndUpdate(spreadPos, newState);
             }
         }
@@ -135,13 +155,15 @@ public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableB
 
     @Override
     @SuppressWarnings("deprecation")
-    public @NotNull ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull ItemInteractionResult useItemOn(ItemStack heldItem, BlockState state, Level world, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
 
         if (heldItem.is(ItemTags.SHOVELS)) {
             if (!world.isClientSide) {
-                BlockState pathState = ObjectRegistry.DIRT_PATH_SLAB.get().defaultBlockState()
-                        .setValue(TYPE, state.getValue(TYPE))
-                        .setValue(WATERLOGGED, state.getValue(WATERLOGGED));
+                BlockState pathState = ObjectRegistry.DIRT_PATH_SLAB.get()
+                    .defaultBlockState()
+                    .setValue(TYPE, state.getValue(TYPE))
+                    .setValue(WATERLOGGED, state.getValue(WATERLOGGED));
 
                 world.setBlock(pos, pathState, Block.UPDATE_ALL);
                 world.playSound(null, pos, SoundEvents.SHOVEL_FLATTEN, SoundSource.BLOCKS, 1.0F, 1.0F);
@@ -162,12 +184,16 @@ public class SpreadableGrassSlabBlock extends SlabBlock implements BonemealableB
         builder.add(SNOWY);
     }
 
-    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
 
-        state = state.setValue(SNOWY, world.getBlockState(pos.above()).is(BlockTags.SNOW));
+        state = state.setValue(
+            SNOWY,
+            world.getBlockState(pos.above())
+                .is(BlockTags.SNOW));
 
         return super.updateShape(state, direction, neighborState, world, pos, neighborPos);
     }

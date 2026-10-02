@@ -1,26 +1,22 @@
 package com.mrfuzzihead.vinery.core.recipe;
 
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParseException;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.HolderLookup;
 import net.minecraft.core.NonNullList;
-import net.minecraft.core.RegistryAccess;
-import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.util.GsonHelper;
-import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import com.mrfuzzihead.vinery.core.recipe.input.*;
-import com.mrfuzzihead.vinery.core.registry.RecipeTypesRegistry;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mrfuzzihead.vinery.core.recipe.input.*;
+import com.mrfuzzihead.vinery.core.registry.RecipeTypesRegistry;
+
 public class ApplePressMashingRecipe implements Recipe<ApplePressMashingRecipeInput> {
+
     public final Ingredient input;
     private final ItemStack output;
     public static RecipeType<ApplePressMashingRecipe> Type = RecipeTypesRegistry.APPLE_PRESS_MASHING_RECIPE_TYPE.get();
@@ -57,7 +53,6 @@ public class ApplePressMashingRecipe implements Recipe<ApplePressMashingRecipeIn
         return this.output.copy();
     }
 
-
     @Override
     public @NotNull RecipeSerializer<?> getSerializer() {
         return RecipeTypesRegistry.APPLE_PRESS_MASHING_RECIPE_SERIALIZER.get();
@@ -85,28 +80,33 @@ public class ApplePressMashingRecipe implements Recipe<ApplePressMashingRecipeIn
 
         @Override
         public MapCodec<ApplePressMashingRecipe> codec() {
-            return RecordCodecBuilder.mapCodec(inst->inst.group(
-                    Ingredient.CODEC.fieldOf("input").forGetter(ApplePressMashingRecipe::getInput),
-                    ItemStack.CODEC.fieldOf("output").forGetter(ApplePressMashingRecipe::getOutput)
-            ).apply(inst,ApplePressMashingRecipe::new));
+            return RecordCodecBuilder.mapCodec(
+                inst -> inst.group(
+                    Ingredient.CODEC.fieldOf("input")
+                        .forGetter(ApplePressMashingRecipe::getInput),
+                    ItemStack.CODEC.fieldOf("output")
+                        .forGetter(ApplePressMashingRecipe::getOutput))
+                    .apply(inst, ApplePressMashingRecipe::new));
         }
 
         @Override
         public StreamCodec<RegistryFriendlyByteBuf, ApplePressMashingRecipe> streamCodec() {
-            return new StreamCodec<>(){
+            return new StreamCodec<>() {
 
                 @Override
                 public void encode(RegistryFriendlyByteBuf buf, ApplePressMashingRecipe recipe) {
-                    Ingredient.CONTENTS_STREAM_CODEC.encode(buf,recipe.getInput());
-                    ItemStack.STREAM_CODEC.encode(buf,recipe.getOutput());
+                    Ingredient.CONTENTS_STREAM_CODEC.encode(buf, recipe.getInput());
+                    ItemStack.STREAM_CODEC.encode(buf, recipe.getOutput());
                 }
 
                 @Override
                 public ApplePressMashingRecipe decode(RegistryFriendlyByteBuf buf) {
-                    return new ApplePressMashingRecipe(Ingredient.CONTENTS_STREAM_CODEC.decode(buf),ItemStack.STREAM_CODEC.decode(buf));                }
+                    return new ApplePressMashingRecipe(
+                        Ingredient.CONTENTS_STREAM_CODEC.decode(buf),
+                        ItemStack.STREAM_CODEC.decode(buf));
+                }
             };
         }
     }
-
 
 }

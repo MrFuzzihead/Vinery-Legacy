@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.block.entity;
 
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.effect.MobEffectInstance;
 import net.minecraft.world.effect.MobEffects;
@@ -8,10 +10,9 @@ import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
-import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import com.mrfuzzihead.vinery.PlatformHelper;
 
-import java.util.List;
+import com.mrfuzzihead.vinery.PlatformHelper;
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 
 public class CompletionistBannerEntity extends BlockEntity {
 

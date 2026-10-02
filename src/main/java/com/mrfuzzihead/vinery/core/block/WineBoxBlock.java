@@ -1,11 +1,14 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import net.minecraft.Util;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,16 +26,15 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.TagRegistry;
 import com.mrfuzzihead.vinery.core.util.GeneralUtil;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
 
 public class WineBoxBlock extends StorageBlock {
+
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
 
@@ -74,7 +76,8 @@ public class WineBoxBlock extends StorageBlock {
 
     public WineBoxBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any()
+        this.registerDefaultState(
+            this.stateDefinition.any()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(OPEN, false));
     }
@@ -85,21 +88,21 @@ public class WineBoxBlock extends StorageBlock {
         builder.add(OPEN);
     }
 
-
     @Override
     public boolean propagatesSkylightDown(BlockState state, BlockGetter world, BlockPos pos) {
         return true;
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
         if (player.isShiftKeyDown() && stack.isEmpty()) {
             if (!world.isClientSide()) {
                 world.setBlock(pos, state.setValue(OPEN, !state.getValue(OPEN)), Block.UPDATE_ALL);
             }
             return ItemInteractionResult.sidedSuccess(world.isClientSide());
         } else if (state.getValue(OPEN)) {
-            return super.useItemOn(stack,state, world, pos, player, hand, hit);
+            return super.useItemOn(stack, state, world, pos, player, hand, hit);
         }
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
@@ -116,7 +119,7 @@ public class WineBoxBlock extends StorageBlock {
 
     @Override
     public Direction[] unAllowedDirections() {
-        return new Direction[]{Direction.DOWN, Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH};
+        return new Direction[] { Direction.DOWN, Direction.WEST, Direction.EAST, Direction.NORTH, Direction.SOUTH };
     }
 
     @Override

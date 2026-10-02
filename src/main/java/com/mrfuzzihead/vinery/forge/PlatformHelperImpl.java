@@ -1,20 +1,23 @@
 package com.mrfuzzihead.vinery.forge;
 
-import dev.architectury.registry.registries.DeferredRegister;
+import java.util.function.Supplier;
+
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
+
+import com.mrfuzzihead.vinery.PlatformHelper;
 import com.mrfuzzihead.vinery.core.Vinery;
 import com.mrfuzzihead.vinery.forge.core.config.VineryForgeConfig;
-import com.mrfuzzihead.vinery.PlatformHelper;
 
-import java.util.function.Supplier;
+import dev.architectury.registry.registries.DeferredRegister;
 
 @SuppressWarnings("unused")
 public class PlatformHelperImpl extends PlatformHelper {
 
-    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister.create(Vinery.MOD_ID, Registries.ENTITY_TYPE);
+    public static final DeferredRegister<EntityType<?>> ENTITY_TYPES = DeferredRegister
+        .create(Vinery.MOD_ID, Registries.ENTITY_TYPE);
 
     public static int getTotalFermentationTime() {
         return VineryForgeConfig.totalFermentationTimeCache;
@@ -100,7 +103,12 @@ public class PlatformHelperImpl extends PlatformHelper {
         return VineryForgeConfig.traderSpawnDelayCache;
     }
 
-    public static <T extends Entity> Supplier<EntityType<T>> registerBoatType(String name, EntityType.EntityFactory<T> factory, MobCategory category, float width, float height, int clientTrackingRange) {
-        return ENTITY_TYPES.register(name, () -> EntityType.Builder.of(factory, category).sized(width, height).build(name));
+    public static <T extends Entity> Supplier<EntityType<T>> registerBoatType(String name,
+        EntityType.EntityFactory<T> factory, MobCategory category, float width, float height, int clientTrackingRange) {
+        return ENTITY_TYPES.register(
+            name,
+            () -> EntityType.Builder.of(factory, category)
+                .sized(width, height)
+                .build(name));
     }
 }

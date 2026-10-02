@@ -1,20 +1,25 @@
 package com.mrfuzzihead.vinery.core.compat.jei.transfer;
 
-import mezz.jei.api.recipe.RecipeType;
-import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
-import net.minecraft.world.inventory.MenuType;
-import net.minecraft.world.inventory.Slot;
-import com.mrfuzzihead.vinery.client.gui.handler.FermentationBarrelGuiHandler;
-import com.mrfuzzihead.vinery.core.compat.jei.category.FermentationBarrelCategory;
-import com.mrfuzzihead.vinery.core.recipe.FermentationBarrelRecipe;
-import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class FermentationTransferInfo implements IRecipeTransferInfo<FermentationBarrelGuiHandler, FermentationBarrelRecipe> {
+import net.minecraft.world.inventory.MenuType;
+import net.minecraft.world.inventory.Slot;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mrfuzzihead.vinery.client.gui.handler.FermentationBarrelGuiHandler;
+import com.mrfuzzihead.vinery.core.compat.jei.category.FermentationBarrelCategory;
+import com.mrfuzzihead.vinery.core.recipe.FermentationBarrelRecipe;
+import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
+
+import mezz.jei.api.recipe.RecipeType;
+import mezz.jei.api.recipe.transfer.IRecipeTransferInfo;
+
+public class FermentationTransferInfo
+    implements IRecipeTransferInfo<FermentationBarrelGuiHandler, FermentationBarrelRecipe> {
+
     @Override
     public @NotNull Class<? extends FermentationBarrelGuiHandler> getContainerClass() {
         return FermentationBarrelGuiHandler.class;
@@ -39,14 +44,16 @@ public class FermentationTransferInfo implements IRecipeTransferInfo<Fermentatio
     public @NotNull List<Slot> getRecipeSlots(FermentationBarrelGuiHandler container, FermentationBarrelRecipe recipe) {
         List<Slot> slots = new ArrayList<>();
         slots.add(container.getSlot(0));
-        for(int i = 1; i <= recipe.getIngredients().size() && i < 5; i++){
+        for (int i = 1; i <= recipe.getIngredients()
+            .size() && i < 5; i++) {
             slots.add(container.getSlot(i));
         }
         return slots;
     }
 
     @Override
-    public @NotNull List<Slot> getInventorySlots(FermentationBarrelGuiHandler container, FermentationBarrelRecipe recipe) {
+    public @NotNull List<Slot> getInventorySlots(FermentationBarrelGuiHandler container,
+        FermentationBarrelRecipe recipe) {
         List<Slot> slots = new ArrayList<>();
         for (int i = 6; i < 6 + 36; i++) {
             Slot slot = container.getSlot(i);

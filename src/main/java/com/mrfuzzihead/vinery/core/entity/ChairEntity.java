@@ -16,10 +16,13 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 public class ChairEntity extends Entity {
+
     private BlockPos seatPos;
     private boolean seatPosInit;
 
@@ -28,8 +31,7 @@ public class ChairEntity extends Entity {
     }
 
     @Override
-    protected void defineSynchedData(SynchedEntityData.Builder builder) {
-    }
+    protected void defineSynchedData(SynchedEntityData.Builder builder) {}
 
     public void setSeatPos(BlockPos pos) {
         this.seatPos = pos.immutable();
@@ -88,24 +90,33 @@ public class ChairEntity extends Entity {
         BlockState s = level().getBlockState(p);
         float yaw = getYRot();
         if (s.hasProperty(BlockStateProperties.HORIZONTAL_FACING)) {
-            yaw = s.getValue(BlockStateProperties.HORIZONTAL_FACING).toYRot();
+            yaw = s.getValue(BlockStateProperties.HORIZONTAL_FACING)
+                .toYRot();
         } else if (s.hasProperty(BlockStateProperties.FACING)) {
-            yaw = s.getValue(BlockStateProperties.FACING).toYRot();
+            yaw = s.getValue(BlockStateProperties.FACING)
+                .toYRot();
         } else {
             for (Property<?> prop : s.getProperties()) {
-                if (prop.getName().equals("facing") && prop instanceof net.minecraft.world.level.block.state.properties.DirectionProperty dir) {
-                    yaw = s.getValue(dir).toYRot();
+                if (prop.getName()
+                    .equals("facing")
+                    && prop instanceof net.minecraft.world.level.block.state.properties.DirectionProperty dir) {
+                    yaw = s.getValue(dir)
+                        .toYRot();
                     break;
                 }
             }
         }
-        if (s.hasProperty(BlockStateProperties.BED_PART) && s.getValue(BlockStateProperties.BED_PART).toString().equals("head")) {
+        if (s.hasProperty(BlockStateProperties.BED_PART) && s.getValue(BlockStateProperties.BED_PART)
+            .toString()
+            .equals("head")) {
             yaw += 180.0F;
         } else {
             for (Property<?> prop : s.getProperties()) {
-                if (prop.getName().equals("part")) {
+                if (prop.getName()
+                    .equals("part")) {
                     Object v = s.getValue(prop);
-                    if (v.toString().equals("head")) {
+                    if (v.toString()
+                        .equals("head")) {
                         yaw += 180.0F;
                         break;
                     }

@@ -1,19 +1,23 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.mojang.serialization.MapCodec;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
+
 import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.MapCodec;
 
 public class FacingBlock extends HorizontalDirectionalBlock {
 
     public FacingBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(
+            this.defaultBlockState()
+                .setValue(FACING, Direction.NORTH));
     }
 
     @Override
@@ -24,7 +28,11 @@ public class FacingBlock extends HorizontalDirectionalBlock {
     @Nullable
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+        return this.defaultBlockState()
+            .setValue(
+                FACING,
+                ctx.getHorizontalDirection()
+                    .getOpposite());
     }
 
     @Override

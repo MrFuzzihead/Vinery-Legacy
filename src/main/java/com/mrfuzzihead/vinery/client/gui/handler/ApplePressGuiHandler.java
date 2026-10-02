@@ -6,10 +6,13 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
+
 public class ApplePressGuiHandler extends AbstractContainerMenu {
+
     private final Container inventory;
     private final ContainerData propertyDelegate;
 
@@ -79,12 +82,10 @@ public class ApplePressGuiHandler extends AbstractContainerMenu {
 
     private void addPlayerInventory(Inventory playerInventory) {
         for (int i = 0; i < 3; ++i)
-            for (int j = 0; j < 9; ++j)
-                this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
+            for (int j = 0; j < 9; ++j) this.addSlot(new Slot(playerInventory, j + i * 9 + 9, 8 + j * 18, 84 + i * 18));
     }
 
     private void addPlayerHotbar(Inventory playerInventory) {
-        for (int i = 0; i < 9; ++i)
-            this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
+        for (int i = 0; i < 9; ++i) this.addSlot(new Slot(playerInventory, i, 8 + i * 18, 142));
     }
 }

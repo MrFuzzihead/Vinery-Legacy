@@ -1,5 +1,15 @@
 package com.mrfuzzihead.vinery.core.compat.jei.category;
 
+import net.minecraft.client.Minecraft;
+import net.minecraft.network.chat.Component;
+import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.item.ItemStack;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mrfuzzihead.vinery.core.recipe.ApplePressMashingRecipe;
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+
 import mezz.jei.api.constants.VanillaTypes;
 import mezz.jei.api.gui.builder.IRecipeLayoutBuilder;
 import mezz.jei.api.gui.drawable.IDrawable;
@@ -8,16 +18,11 @@ import mezz.jei.api.recipe.IFocusGroup;
 import mezz.jei.api.recipe.RecipeIngredientRole;
 import mezz.jei.api.recipe.RecipeType;
 import mezz.jei.api.recipe.category.IRecipeCategory;
-import net.minecraft.client.Minecraft;
-import net.minecraft.network.chat.Component;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.item.ItemStack;
-import com.mrfuzzihead.vinery.core.recipe.ApplePressMashingRecipe;
-import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import org.jetbrains.annotations.NotNull;
 
 public class ApplePressMashingCategory implements IRecipeCategory<ApplePressMashingRecipe> {
-    public static final RecipeType<ApplePressMashingRecipe> APPLE_PRESS_MASHING_TYPE = RecipeType.create("vinery", "apple_press_mashing", ApplePressMashingRecipe.class);
+
+    public static final RecipeType<ApplePressMashingRecipe> APPLE_PRESS_MASHING_TYPE = RecipeType
+        .create("vinery", "apple_press_mashing", ApplePressMashingRecipe.class);
 
     private static final int BACKGROUND_WIDTH = 160;
     private static final int BACKGROUND_HEIGHT = 70;
@@ -33,7 +38,8 @@ public class ApplePressMashingCategory implements IRecipeCategory<ApplePressMash
         this.background = helper.createDrawable(texture, X_OFFSET, Y_OFFSET, BACKGROUND_WIDTH, BACKGROUND_HEIGHT);
         ItemStack pressStack = new ItemStack(ObjectRegistry.APPLE_PRESS.get());
         this.icon = helper.createDrawableIngredient(VanillaTypes.ITEM_STACK, pressStack);
-        this.title = ObjectRegistry.APPLE_PRESS.get().getName();
+        this.title = ObjectRegistry.APPLE_PRESS.get()
+            .getName();
     }
 
     @NotNull
@@ -64,10 +70,12 @@ public class ApplePressMashingCategory implements IRecipeCategory<ApplePressMash
     @Override
     public void setRecipe(IRecipeLayoutBuilder builder, ApplePressMashingRecipe recipe, IFocusGroup focuses) {
         builder.addSlot(RecipeIngredientRole.INPUT, 44 - X_OFFSET, 34 - Y_OFFSET)
-                .addIngredients(recipe.getIngredients().get(0));
+            .addIngredients(
+                recipe.getIngredients()
+                    .get(0));
 
         assert Minecraft.getInstance().level != null;
         builder.addSlot(RecipeIngredientRole.OUTPUT, 101 - X_OFFSET, 50 - Y_OFFSET)
-                .addItemStack(recipe.getResultItem(Minecraft.getInstance().level.registryAccess()));
+            .addItemStack(recipe.getResultItem(Minecraft.getInstance().level.registryAccess()));
     }
 }

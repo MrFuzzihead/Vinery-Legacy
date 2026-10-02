@@ -1,6 +1,9 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.mojang.serialization.MapCodec;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -8,7 +11,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.Container;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -27,18 +29,18 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mrfuzzihead.vinery.core.block.entity.FermentationBarrelBlockEntity;
-import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
+import com.mojang.serialization.MapCodec;
+import com.mrfuzzihead.vinery.core.block.entity.FermentationBarrelBlockEntity;
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 
-@SuppressWarnings({"unchecked", "deprecation"})
+@SuppressWarnings({ "unchecked", "deprecation" })
 public class FermentationBarrelBlock extends HorizontalDirectionalBlock implements EntityBlock {
+
     private static final Supplier<VoxelShape> voxelShapeSupplier = () -> {
         VoxelShape shape = Shapes.empty();
         shape = Shapes.join(shape, Shapes.box(0.0625, 0.125, 0, 0.9375, 1, 1), BooleanOp.OR);
@@ -49,7 +51,8 @@ public class FermentationBarrelBlock extends HorizontalDirectionalBlock implemen
     };
 
     public static final Map<Direction, VoxelShape> SHAPE = net.minecraft.Util.make(new HashMap<>(), map -> {
-        for (Direction direction : Direction.Plane.HORIZONTAL.stream().toList()) {
+        for (Direction direction : Direction.Plane.HORIZONTAL.stream()
+            .toList()) {
             map.put(direction, GeneralUtil.rotateShape(Direction.SOUTH, direction, voxelShapeSupplier.get()));
         }
     });
@@ -64,7 +67,8 @@ public class FermentationBarrelBlock extends HorizontalDirectionalBlock implemen
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+        BlockHitResult hit) {
         if (world.isClientSide) {
             return InteractionResult.SUCCESS;
         }
@@ -90,7 +94,8 @@ public class FermentationBarrelBlock extends HorizontalDirectionalBlock implemen
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
-        return this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection());
+        return this.defaultBlockState()
+            .setValue(FACING, ctx.getHorizontalDirection());
     }
 
     @Override
@@ -114,15 +119,19 @@ public class FermentationBarrelBlock extends HorizontalDirectionalBlock implemen
 
     @Nullable
     private static <E extends BlockEntity, A extends BlockEntity> BlockEntityTicker<A> createTicker(
-            BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
+        BlockEntityType<A> givenType, BlockEntityType<E> expectedType, BlockEntityTicker<? super E> ticker) {
         return expectedType == givenType ? (BlockEntityTicker<A>) ticker : null;
     }
 
     @Nullable
     @Override
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+        BlockEntityType<T> type) {
         return level.isClientSide ? null
-                : createTicker(type, EntityTypeRegistry.FERMENTATION_BARREL_ENTITY.get(), (world, pos, state1, blockEntity) -> FermentationBarrelBlockEntity.tick(world, pos, blockEntity));
+            : createTicker(
+                type,
+                EntityTypeRegistry.FERMENTATION_BARREL_ENTITY.get(),
+                (world, pos, state1, blockEntity) -> FermentationBarrelBlockEntity.tick(world, pos, blockEntity));
     }
 
     @Nullable

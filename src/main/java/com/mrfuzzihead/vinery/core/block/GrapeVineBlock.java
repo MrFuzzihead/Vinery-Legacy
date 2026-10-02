@@ -6,7 +6,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -23,13 +22,16 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
 import com.mrfuzzihead.vinery.core.util.GrapeType;
-import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
 public class GrapeVineBlock extends VineBlock implements BonemealableBlock {
+
     public static final IntegerProperty AGE;
     public static final BooleanProperty STERILIZED;
 
@@ -38,31 +40,53 @@ public class GrapeVineBlock extends VineBlock implements BonemealableBlock {
     public GrapeVineBlock(Properties settings, GrapeType type) {
         super(settings);
         this.type = type;
-        this.registerDefaultState(this.stateDefinition.any().setValue(STERILIZED, false).setValue(UP, false).setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false));
+        this.registerDefaultState(
+            this.stateDefinition.any()
+                .setValue(STERILIZED, false)
+                .setValue(UP, false)
+                .setValue(NORTH, false)
+                .setValue(EAST, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false));
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
         if (hand == InteractionHand.OFF_HAND) {
-            return super.useItemOn(stack,state, world, pos, player, hand, hit);
+            return super.useItemOn(stack, state, world, pos, player, hand, hit);
         }
-        if (player.getItemInHand(hand).is(Items.SHEARS)) {
+        if (player.getItemInHand(hand)
+            .is(Items.SHEARS)) {
             world.playSound(player, pos, SoundEvents.AXE_STRIP, SoundSource.BLOCKS, 1.0F, 1.0F);
             world.setBlockAndUpdate(pos, state.cycle(STERILIZED));
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         }
         int i = state.getValue(AGE);
         boolean bl = i == 3;
-        if (!bl && player.getItemInHand(hand).is(Items.BONE_MEAL)) {
+        if (!bl && player.getItemInHand(hand)
+            .is(Items.BONE_MEAL)) {
             return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         } else if (i > 1) {
             int x = world.random.nextInt(2);
-            popResource(world, pos, new ItemStack(this.type == GrapeTypeRegistry.JUNGLE_RED ? ObjectRegistry.JUNGLE_RED_GRAPE.get() : ObjectRegistry.JUNGLE_WHITE_GRAPE.get(), x + (bl ? 1 : 0)));
-            world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+            popResource(
+                world,
+                pos,
+                new ItemStack(
+                    this.type == GrapeTypeRegistry.JUNGLE_RED ? ObjectRegistry.JUNGLE_RED_GRAPE.get()
+                        : ObjectRegistry.JUNGLE_WHITE_GRAPE.get(),
+                    x + (bl ? 1 : 0)));
+            world.playSound(
+                null,
+                pos,
+                SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES,
+                SoundSource.BLOCKS,
+                1.0F,
+                0.8F + world.random.nextFloat() * 0.4F);
             world.setBlock(pos, state.setValue(AGE, 1), 2);
             return ItemInteractionResult.sidedSuccess(world.isClientSide);
         } else {
-            return super.useItemOn(stack,state, world, pos, player, hand, hit);
+            return super.useItemOn(stack, state, world, pos, player, hand, hit);
         }
     }
 
@@ -97,11 +121,11 @@ public class GrapeVineBlock extends VineBlock implements BonemealableBlock {
         int i = Math.min(3, state.getValue(AGE) + 1);
         world.setBlock(pos, state.setValue(AGE, i), 2);
     }
+
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         super.createBlockStateDefinition(builder);
         builder.add(AGE, STERILIZED);
     }
-
 
     static {
         AGE = BlockStateProperties.AGE_3;

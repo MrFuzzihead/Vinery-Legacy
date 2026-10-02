@@ -6,10 +6,13 @@ import net.minecraft.world.Container;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
-import com.mrfuzzihead.vinery.core.block.entity.FermentationBarrelBlockEntity;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.block.entity.FermentationBarrelBlockEntity;
+
 public class FermentationBarrelOutputSlot extends Slot {
+
     private final Player player;
     private int amount;
 
@@ -26,7 +29,10 @@ public class FermentationBarrelOutputSlot extends Slot {
     @Override
     public @NotNull ItemStack remove(int amount) {
         if (this.hasItem()) {
-            this.amount += Math.min(amount, this.getItem().getCount());
+            this.amount += Math.min(
+                amount,
+                this.getItem()
+                    .getCount());
         }
         return super.remove(amount);
     }
@@ -46,6 +52,7 @@ public class FermentationBarrelOutputSlot extends Slot {
     @Override
     protected void checkTakeAchievements(ItemStack stack) {
         stack.onCraftedBy(this.player.level(), this.player, this.amount);
-        if (this.player instanceof ServerPlayer && this.container instanceof FermentationBarrelBlockEntity && player.level() instanceof ServerLevel) this.amount = 0;
+        if (this.player instanceof ServerPlayer && this.container instanceof FermentationBarrelBlockEntity
+            && player.level() instanceof ServerLevel) this.amount = 0;
     }
 }

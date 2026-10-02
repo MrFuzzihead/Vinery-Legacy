@@ -1,6 +1,5 @@
 package com.mrfuzzihead.vinery.core.util;
 
-import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectInstance;
@@ -14,8 +13,7 @@ public class WineSettings {
 
     public WineSettings(Holder<MobEffect> effect, int duration, int strength) {
         this.baseDuration = duration;
-        this.properties = new Properties()
-                .food(createWineFoodComponent(effect, duration, strength));
+        this.properties = new Properties().food(createWineFoodComponent(effect, duration, strength));
     }
 
     public Properties getProperties() {
@@ -26,10 +24,8 @@ public class WineSettings {
         return baseDuration;
     }
 
-
     private FoodProperties createWineFoodComponent(Holder<MobEffect> effect, int duration, int strength) {
-        FoodProperties.Builder builder = new FoodProperties.Builder()
-                .alwaysEdible();
+        FoodProperties.Builder builder = new FoodProperties.Builder().alwaysEdible();
         if (effect != null) {
             builder.effect(new MobEffectInstance(effect, duration, strength), 1.0f);
         }

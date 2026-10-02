@@ -1,9 +1,9 @@
 package com.mrfuzzihead.vinery.client.render.block;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.Minecraft;
@@ -37,15 +37,17 @@ import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.phys.Vec3;
-import com.mrfuzzihead.vinery.core.block.entity.DarkCherrySignBlockEntity;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import com.mrfuzzihead.vinery.core.block.entity.DarkCherrySignBlockEntity;
 
 @SuppressWarnings("unused")
 @Environment(EnvType.CLIENT)
 public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> implements BlockEntityRenderer<T> {
+
     private static final String STICK = "stick";
     private static final int BLACK_TEXT_OUTLINE_COLOR = -988212;
     private static final int OUTLINE_RENDER_DISTANCE = Mth.square(16);
@@ -55,17 +57,31 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
     private final Font font;
 
     public DarkCherrySignRenderer(BlockEntityRendererProvider.Context context) {
-        this.signModels = WoodType.values().collect(ImmutableMap.toImmutableMap((woodType) -> woodType, (woodType) -> new SignModel(context.bakeLayer(ModelLayers.createSignModelName(woodType)))));
+        this.signModels = WoodType.values()
+            .collect(
+                ImmutableMap.toImmutableMap(
+                    (woodType) -> woodType,
+                    (woodType) -> new SignModel(context.bakeLayer(ModelLayers.createSignModelName(woodType)))));
         this.font = context.getFont();
     }
 
-    public void render(DarkCherrySignBlockEntity signBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j) {
+    public void render(DarkCherrySignBlockEntity signBlockEntity, float f, PoseStack poseStack,
+        MultiBufferSource multiBufferSource, int i, int j) {
         BlockState blockState = signBlockEntity.getBlockState();
         SignBlock signBlock = (SignBlock) blockState.getBlock();
         WoodType woodType = SignBlock.getWoodType(signBlock);
         SignModel signModel = (SignModel) this.signModels.get(woodType);
         signModel.stick.visible = blockState.getBlock() instanceof StandingSignBlock;
-        this.renderSignWithText(signBlockEntity, poseStack, multiBufferSource, i, j, blockState, signBlock, woodType, signModel);
+        this.renderSignWithText(
+            signBlockEntity,
+            poseStack,
+            multiBufferSource,
+            i,
+            j,
+            blockState,
+            signBlock,
+            woodType,
+            signModel);
     }
 
     public float getSignModelRenderScale() {
@@ -76,12 +92,30 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
         return 0.6666667F;
     }
 
-    void renderSignWithText(DarkCherrySignBlockEntity signBlockEntity, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, BlockState blockState, SignBlock signBlock, WoodType woodType, Model model) {
+    void renderSignWithText(DarkCherrySignBlockEntity signBlockEntity, PoseStack poseStack,
+        MultiBufferSource multiBufferSource, int i, int j, BlockState blockState, SignBlock signBlock,
+        WoodType woodType, Model model) {
         poseStack.pushPose();
         this.translateSign(poseStack, -signBlock.getYRotationDegrees(blockState), blockState);
         this.renderSign(poseStack, multiBufferSource, i, j, woodType, model);
-        this.renderSignText(signBlockEntity.getBlockPos(), signBlockEntity.getFrontText(), poseStack, multiBufferSource, i, signBlockEntity.getTextLineHeight(), signBlockEntity.getMaxTextLineWidth(), true);
-        this.renderSignText(signBlockEntity.getBlockPos(), signBlockEntity.getBackText(), poseStack, multiBufferSource, i, signBlockEntity.getTextLineHeight(), signBlockEntity.getMaxTextLineWidth(), false);
+        this.renderSignText(
+            signBlockEntity.getBlockPos(),
+            signBlockEntity.getFrontText(),
+            poseStack,
+            multiBufferSource,
+            i,
+            signBlockEntity.getTextLineHeight(),
+            signBlockEntity.getMaxTextLineWidth(),
+            true);
+        this.renderSignText(
+            signBlockEntity.getBlockPos(),
+            signBlockEntity.getBackText(),
+            poseStack,
+            multiBufferSource,
+            i,
+            signBlockEntity.getTextLineHeight(),
+            signBlockEntity.getMaxTextLineWidth(),
+            false);
         poseStack.popPose();
     }
 
@@ -94,7 +128,8 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
 
     }
 
-    void renderSign(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, WoodType woodType, Model model) {
+    void renderSign(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, WoodType woodType,
+        Model model) {
         poseStack.pushPose();
         float f = this.getSignModelRenderScale();
         poseStack.scale(f, -f, -f);
@@ -114,20 +149,25 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
         return Sheets.getSignMaterial(woodType);
     }
 
-    void renderSignText(BlockPos blockPos, SignText signText, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, int k, boolean bl) {
+    void renderSignText(BlockPos blockPos, SignText signText, PoseStack poseStack, MultiBufferSource multiBufferSource,
+        int i, int j, int k, boolean bl) {
         poseStack.pushPose();
         this.translateSignText(poseStack, bl, this.getTextOffset());
         int l = getDarkColor(signText);
         int m = 4 * j / 2;
-        FormattedCharSequence[] formattedCharSequences = signText.getRenderMessages(Minecraft.getInstance().isTextFilteringEnabled(), (component) -> {
-            List<FormattedCharSequence> list = this.font.split(component, k);
-            return list.isEmpty() ? FormattedCharSequence.EMPTY : (FormattedCharSequence) list.get(0);
-        });
+        FormattedCharSequence[] formattedCharSequences = signText.getRenderMessages(
+            Minecraft.getInstance()
+                .isTextFilteringEnabled(),
+            (component) -> {
+                List<FormattedCharSequence> list = this.font.split(component, k);
+                return list.isEmpty() ? FormattedCharSequence.EMPTY : (FormattedCharSequence) list.get(0);
+            });
         int n;
         boolean bl2;
         int o;
         if (signText.hasGlowingText()) {
-            n = signText.getColor().getTextColor();
+            n = signText.getColor()
+                .getTextColor();
             bl2 = isOutlineVisible(blockPos, n);
             o = 15728880;
         } else {
@@ -140,9 +180,29 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
             FormattedCharSequence formattedCharSequence = formattedCharSequences[p];
             float f = (float) (-this.font.width(formattedCharSequence) / 2);
             if (bl2) {
-                this.font.drawInBatch8xOutline(formattedCharSequence, f, (float) (p * j - m), n, l, poseStack.last().pose(), multiBufferSource, o);
+                this.font.drawInBatch8xOutline(
+                    formattedCharSequence,
+                    f,
+                    (float) (p * j - m),
+                    n,
+                    l,
+                    poseStack.last()
+                        .pose(),
+                    multiBufferSource,
+                    o);
             } else {
-                this.font.drawInBatch(formattedCharSequence, f, (float) (p * j - m), n, false, poseStack.last().pose(), multiBufferSource, DisplayMode.POLYGON_OFFSET, 0, o);
+                this.font.drawInBatch(
+                    formattedCharSequence,
+                    f,
+                    (float) (p * j - m),
+                    n,
+                    false,
+                    poseStack.last()
+                        .pose(),
+                    multiBufferSource,
+                    DisplayMode.POLYGON_OFFSET,
+                    0,
+                    o);
             }
         }
 
@@ -169,17 +229,20 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
         } else {
             Minecraft minecraft = Minecraft.getInstance();
             LocalPlayer localPlayer = minecraft.player;
-            if (localPlayer != null && minecraft.options.getCameraType().isFirstPerson() && localPlayer.isScoping()) {
+            if (localPlayer != null && minecraft.options.getCameraType()
+                .isFirstPerson() && localPlayer.isScoping()) {
                 return true;
             } else {
                 Entity entity = minecraft.getCameraEntity();
-                return entity != null && entity.distanceToSqr(Vec3.atCenterOf(blockPos)) < (double) OUTLINE_RENDER_DISTANCE;
+                return entity != null
+                    && entity.distanceToSqr(Vec3.atCenterOf(blockPos)) < (double) OUTLINE_RENDER_DISTANCE;
             }
         }
     }
 
     static int getDarkColor(SignText signText) {
-        int i = signText.getColor().getTextColor();
+        int i = signText.getColor()
+            .getTextColor();
         if (i == DyeColor.BLACK.getTextColor() && signText.hasGlowingText()) {
             return -988212;
         } else {
@@ -198,13 +261,24 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
     public static LayerDefinition createSignLayer() {
         MeshDefinition meshDefinition = new MeshDefinition();
         PartDefinition partDefinition = meshDefinition.getRoot();
-        partDefinition.addOrReplaceChild("sign", CubeListBuilder.create().texOffs(0, 0).addBox(-12.0F, -14.0F, -1.0F, 24.0F, 12.0F, 2.0F), PartPose.ZERO);
-        partDefinition.addOrReplaceChild("stick", CubeListBuilder.create().texOffs(0, 14).addBox(-1.0F, -2.0F, -1.0F, 2.0F, 14.0F, 2.0F), PartPose.ZERO);
+        partDefinition.addOrReplaceChild(
+            "sign",
+            CubeListBuilder.create()
+                .texOffs(0, 0)
+                .addBox(-12.0F, -14.0F, -1.0F, 24.0F, 12.0F, 2.0F),
+            PartPose.ZERO);
+        partDefinition.addOrReplaceChild(
+            "stick",
+            CubeListBuilder.create()
+                .texOffs(0, 14)
+                .addBox(-1.0F, -2.0F, -1.0F, 2.0F, 14.0F, 2.0F),
+            PartPose.ZERO);
         return LayerDefinition.create(meshDefinition, 64, 32);
     }
 
     @Environment(EnvType.CLIENT)
     public static final class SignModel extends Model {
+
         public final ModelPart root;
         public final ModelPart stick;
 
@@ -220,4 +294,3 @@ public class DarkCherrySignRenderer<T extends DarkCherrySignBlockEntity> impleme
         }
     }
 }
-

@@ -10,7 +10,8 @@ import com.gtnewhorizon.gtnhmixins.builders.TargetModBuilder;
  * {@link com.gtnewhorizon.gtnhmixins.builders.MixinBuilder#addRequiredMod} so a mixin is only
  * applied when its target actually loaded.
  *
- * <p>Most of these are integrated through their published API rather than mixins — see
+ * <p>
+ * Most of these are integrated through their published API rather than mixins — see
  * BACKPORT_PLAN.md section 4.15. They are listed here so a mixin into one of them can be added
  * later without inventing the detection logic.
  */
@@ -25,11 +26,6 @@ public enum TargetMods implements ITargetMod {
     // spotless:on
 
     private final TargetModBuilder builder;
-
-    TargetMods(String coreModClass, String modId) {
-        this.builder = new TargetModBuilder().setCoreModClass(coreModClass)
-            .setModId(modId);
-    }
 
     TargetMods(String modId) {
         this.builder = new TargetModBuilder().setModId(modId);

@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.Random;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.server.level.ServerLevel;
@@ -8,7 +10,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
@@ -31,17 +32,18 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import com.mrfuzzihead.vinery.core.block.entity.LatticeBlockEntity;
 import com.mrfuzzihead.vinery.core.item.GrapeBushSeedItem;
 import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 import com.mrfuzzihead.vinery.core.util.GrapeType;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 @SuppressWarnings("deprecation")
 public class LatticeBlock extends StemBlock implements EntityBlock {
+
     public static final BooleanProperty SUPPORT = BooleanProperty.create("support");
     public static final BooleanProperty BOTTOM = BooleanProperty.create("bottom");
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
@@ -58,7 +60,8 @@ public class LatticeBlock extends StemBlock implements EntityBlock {
 
     public LatticeBlock(Properties properties) {
         super(properties);
-        registerDefaultState(this.defaultBlockState()
+        registerDefaultState(
+            this.defaultBlockState()
                 .setValue(FACING, Direction.NORTH)
                 .setValue(SUPPORT, true)
                 .setValue(BOTTOM, false)
@@ -69,17 +72,22 @@ public class LatticeBlock extends StemBlock implements EntityBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Level level = context.getLevel();
-        Direction facing = context.getHorizontalDirection().getOpposite();
+        Direction facing = context.getHorizontalDirection()
+            .getOpposite();
         BlockPos clickedPos = context.getClickedPos();
         Direction clickedFace = context.getClickedFace();
         BlockPos clickedFacingPos = clickedPos.relative(clickedFace.getOpposite());
         BlockState clickedFacingState = level.getBlockState(clickedFacingPos);
-        if (context.getPlayer() != null && !context.getPlayer().isCrouching() && clickedFacingState.getBlock() instanceof LatticeBlock) {
+        if (context.getPlayer() != null && !context.getPlayer()
+            .isCrouching() && clickedFacingState.getBlock() instanceof LatticeBlock) {
             Direction clickedFacingFace = clickedFacingState.getValue(FACING);
-            if (clickedFacingFace != clickedFace && clickedFacingFace.getOpposite() != clickedFace) facing = clickedFacingFace;
+            if (clickedFacingFace != clickedFace && clickedFacingFace.getOpposite() != clickedFace)
+                facing = clickedFacingFace;
         }
         boolean bottom = clickedFace == Direction.DOWN || clickedFace == Direction.UP;
-        BlockState state = this.defaultBlockState().setValue(FACING, facing).setValue(BOTTOM, bottom);
+        BlockState state = this.defaultBlockState()
+            .setValue(FACING, facing)
+            .setValue(BOTTOM, bottom);
         if (!bottom) state = getConnection(state, level, clickedPos);
         return state;
     }
@@ -96,7 +104,8 @@ public class LatticeBlock extends StemBlock implements EntityBlock {
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(ItemStack stack , BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
         if (hand != InteractionHand.MAIN_HAND) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
         int age = state.getValue(AGE);
 
@@ -192,7 +201,8 @@ public class LatticeBlock extends StemBlock implements EntityBlock {
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (!state.canSurvive(world, pos)) world.scheduleTick(pos, this, 1);
         return getConnection(state, world, pos);
     }
@@ -209,18 +219,15 @@ public class LatticeBlock extends StemBlock implements EntityBlock {
         BlockState stateL = level.getBlockState(currentPos.relative(facing.getClockWise()));
         BlockState stateR = level.getBlockState(currentPos.relative(facing.getCounterClockWise()));
 
-        boolean sideL = stateL.getBlock() instanceof LatticeBlock
-                && stateL.getValue(FACING) == facing
-                && stateL.getValue(BOTTOM) == bottom;
+        boolean sideL = stateL.getBlock() instanceof LatticeBlock && stateL.getValue(FACING) == facing
+            && stateL.getValue(BOTTOM) == bottom;
 
-        boolean sideR = stateR.getBlock() instanceof LatticeBlock
-                && stateR.getValue(FACING) == facing
-                && stateR.getValue(BOTTOM) == bottom;
+        boolean sideR = stateR.getBlock() instanceof LatticeBlock && stateR.getValue(FACING) == facing
+            && stateR.getValue(BOTTOM) == bottom;
 
         GeneralUtil.LineConnectingType type = sideL && sideR ? GeneralUtil.LineConnectingType.MIDDLE
-                : (sideR ? GeneralUtil.LineConnectingType.LEFT
-                : (sideL ? GeneralUtil.LineConnectingType.RIGHT
-                : GeneralUtil.LineConnectingType.NONE));
+            : (sideR ? GeneralUtil.LineConnectingType.LEFT
+                : (sideL ? GeneralUtil.LineConnectingType.RIGHT : GeneralUtil.LineConnectingType.NONE));
 
         return state.setValue(TYPE, type);
     }

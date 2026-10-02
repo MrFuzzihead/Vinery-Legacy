@@ -17,38 +17,43 @@ import net.minecraft.world.level.material.Fluids;
 import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")
 public class DirtPathSlabBlock extends SlabBlock {
+
     protected static final VoxelShape BOTTOM_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 7.0D, 16.0D);
     protected static final VoxelShape TOP_SHAPE = Block.box(0.0D, 8.0D, 0.0D, 16.0D, 15.0D, 16.0D);
     protected static final VoxelShape DOUBLE_SHAPE = Block.box(0.0D, 0.0D, 0.0D, 16.0D, 15.0D, 16.0D);
 
     public DirtPathSlabBlock(BlockBehaviour.Properties properties) {
         super(properties);
-        this.registerDefaultState(this.defaultBlockState().setValue(TYPE, SlabType.BOTTOM).setValue(WATERLOGGED, false));
+        this.registerDefaultState(
+            this.defaultBlockState()
+                .setValue(TYPE, SlabType.BOTTOM)
+                .setValue(WATERLOGGED, false));
     }
 
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockState blockState = super.getStateForPlacement(context);
-        return blockState != null && blockState.canSurvive(context.getLevel(), context.getClickedPos()) ? blockState : Blocks.DIRT.defaultBlockState();
+        return blockState != null && blockState.canSurvive(context.getLevel(), context.getClickedPos()) ? blockState
+            : Blocks.DIRT.defaultBlockState();
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        LevelAccessor level, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             level.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(level));
         }
         return super.updateShape(state, direction, neighborState, level, pos, neighborPos);
     }
 
-
-
     @Override
     public void tick(BlockState state, ServerLevel level, BlockPos pos, RandomSource random) {
-        //FarmBlock.turnToDirt(null, state, level, pos);
+        // FarmBlock.turnToDirt(null, state, level, pos);
     }
 
     @Override

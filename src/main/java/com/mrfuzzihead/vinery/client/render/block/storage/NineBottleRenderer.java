@@ -1,19 +1,22 @@
 package com.mrfuzzihead.vinery.client.render.block.storage;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.BlockItem;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.state.BlockState;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.mrfuzzihead.vinery.client.util.ClientUtil;
 import com.mrfuzzihead.vinery.core.block.WineBottleBlock;
 import com.mrfuzzihead.vinery.core.block.entity.StorageBlockEntity;
 
 public class NineBottleRenderer implements StorageTypeRenderer {
+
     @Override
-    public void render(StorageBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, NonNullList<ItemStack> itemStacks) {
+    public void render(StorageBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers,
+        NonNullList<ItemStack> itemStacks) {
         matrices.translate(-0.13, 0.335, 0.125);
         matrices.scale(0.9f, 0.9f, 0.9f);
 
@@ -43,7 +46,8 @@ public class NineBottleRenderer implements StorageTypeRenderer {
             matrices.translate(x, y, 0f);
             matrices.mulPose(Axis.XN.rotationDegrees(90f));
 
-            BlockState state = blockItem.getBlock().defaultBlockState();
+            BlockState state = blockItem.getBlock()
+                .defaultBlockState();
             if (state.hasProperty(WineBottleBlock.FAKE_MODEL)) {
                 state = state.setValue(WineBottleBlock.FAKE_MODEL, false);
             }

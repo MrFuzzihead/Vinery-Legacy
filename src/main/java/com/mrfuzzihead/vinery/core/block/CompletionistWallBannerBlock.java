@@ -1,7 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Maps;
+import java.util.Map;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
@@ -15,40 +15,58 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.DirectionProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 
 public class CompletionistWallBannerBlock extends CompletionistBannerBlock {
 
     public static final DirectionProperty FACING = HorizontalDirectionalBlock.FACING;
-    private static final Map<Direction, VoxelShape> SHAPES = Maps.newEnumMap(ImmutableMap.of(Direction.SOUTH, box(0.0, 0.0, 14.0, 16.0, 12.5, 16.0), Direction.NORTH, box(0.0, 0.0, 0.0, 16.0, 12.5, 2.0), Direction.EAST, box(14.0, 0.0, 0.0, 16.0, 12.5, 16.0), Direction.WEST, box(0.0, 0.0, 0.0, 2.0, 12.5, 16.0)));
+    private static final Map<Direction, VoxelShape> SHAPES = Maps.newEnumMap(
+        ImmutableMap.of(
+            Direction.SOUTH,
+            box(0.0, 0.0, 14.0, 16.0, 12.5, 16.0),
+            Direction.NORTH,
+            box(0.0, 0.0, 0.0, 16.0, 12.5, 2.0),
+            Direction.EAST,
+            box(14.0, 0.0, 0.0, 16.0, 12.5, 16.0),
+            Direction.WEST,
+            box(0.0, 0.0, 0.0, 2.0, 12.5, 16.0)));
 
     public CompletionistWallBannerBlock(Properties properties) {
         super(properties);
     }
 
     protected void makeDefaultState() {
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH));
+        this.registerDefaultState(
+            this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH));
     }
 
     public @NotNull String getDescriptionId() {
-        return this.asItem().getDescriptionId();
+        return this.asItem()
+            .getDescriptionId();
     }
 
     @SuppressWarnings("deprecation")
     public boolean canSurvive(@NotNull BlockState blockState, LevelReader levelReader, BlockPos blockPos) {
-        return levelReader.getBlockState(blockPos.relative(blockState.getValue(FACING))).isSolid();
+        return levelReader.getBlockState(blockPos.relative(blockState.getValue(FACING)))
+            .isSolid();
     }
 
-    public @NotNull BlockState updateShape(@NotNull BlockState blockState, @NotNull Direction direction, @NotNull BlockState blockState2, @NotNull LevelAccessor levelAccessor, @NotNull BlockPos blockPos, @NotNull BlockPos blockPos2) {
+    public @NotNull BlockState updateShape(@NotNull BlockState blockState, @NotNull Direction direction,
+        @NotNull BlockState blockState2, @NotNull LevelAccessor levelAccessor, @NotNull BlockPos blockPos,
+        @NotNull BlockPos blockPos2) {
         if (direction == blockState.getValue(FACING) && !blockState.canSurvive(levelAccessor, blockPos)) {
             return Blocks.AIR.defaultBlockState();
         }
         return super.updateShape(blockState, direction, blockState2, levelAccessor, blockPos, blockPos2);
     }
 
-    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
+    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
+        @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         return SHAPES.get(blockState.getValue(FACING));
     }
 
@@ -58,7 +76,8 @@ public class CompletionistWallBannerBlock extends CompletionistBannerBlock {
         BlockPos blockPos = context.getClickedPos();
 
         for (Direction direction : context.getNearestLookingDirections()) {
-            if (direction.getAxis().isHorizontal()) {
+            if (direction.getAxis()
+                .isHorizontal()) {
                 Direction oppositeDirection = direction.getOpposite();
                 BlockState oppositeState = blockState.setValue(FACING, oppositeDirection);
                 if (oppositeState.canSurvive(level, blockPos)) {

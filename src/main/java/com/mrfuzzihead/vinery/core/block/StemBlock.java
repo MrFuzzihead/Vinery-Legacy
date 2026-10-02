@@ -20,13 +20,16 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
-import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
-import com.mrfuzzihead.vinery.core.block.state.properties.GrapeProperty;
-import com.mrfuzzihead.vinery.core.util.GrapeType;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.block.state.properties.GrapeProperty;
+import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
+
 public abstract class StemBlock extends Block implements BonemealableBlock {
+
     public static final GrapeProperty GRAPE;
     public static final IntegerProperty AGE;
 
@@ -38,17 +41,25 @@ public abstract class StemBlock extends Block implements BonemealableBlock {
     public void dropGrapes(Level world, BlockState state, BlockPos pos, Direction direction) {
         final int x = 1 + world.random.nextInt(this.isMature(state) ? 2 : 1);
         final int bonus = this.isMature(state) ? 2 : 1;
-        Item grape = state.getValue(GRAPE).getFruit();
+        Item grape = state.getValue(GRAPE)
+            .getFruit();
         ItemStack stack = new ItemStack(grape, x + bonus);
 
         if (direction == null) popResource(world, pos, stack);
         else GeneralUtil.popResourceFromFace(world, pos, direction, stack);
 
-        world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+        world.playSound(
+            null,
+            pos,
+            SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES,
+            SoundSource.BLOCKS,
+            1.0F,
+            0.8F + world.random.nextFloat() * 0.4F);
     }
 
     public void dropGrapeSeeds(Level world, BlockState state, BlockPos pos, Direction direction) {
-        Item grape = state.getValue(GRAPE).getSeeds();
+        Item grape = state.getValue(GRAPE)
+            .getSeeds();
         ItemStack stack = new ItemStack(grape);
 
         if (direction == null) popResource(world, pos, stack);
@@ -56,14 +67,14 @@ public abstract class StemBlock extends Block implements BonemealableBlock {
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+        BlockHitResult hit) {
         final int age = state.getValue(AGE);
         if (age > 3) {
             dropGrapes(world, state, pos, hit.getDirection());
             world.setBlock(pos, state.setValue(AGE, 2), 2);
             return InteractionResult.sidedSuccess(world.isClientSide);
-        }
-        else {
+        } else {
             return InteractionResult.PASS;
         }
     }
@@ -77,7 +88,8 @@ public abstract class StemBlock extends Block implements BonemealableBlock {
     }
 
     public boolean hasTrunk(Level world, BlockPos pos) {
-        return world.getBlockState(pos.below()).getBlock() == this;
+        return world.getBlockState(pos.below())
+            .getBlock() == this;
     }
 
     private void boneMealGrow(Level world, BlockState state, BlockPos pos) {
@@ -91,7 +103,10 @@ public abstract class StemBlock extends Block implements BonemealableBlock {
 
     public StemBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.defaultBlockState().setValue(GRAPE, GrapeTypeRegistry.NONE).setValue(AGE, 0));
+        this.registerDefaultState(
+            this.defaultBlockState()
+                .setValue(GRAPE, GrapeTypeRegistry.NONE)
+                .setValue(AGE, 0));
     }
 
     @Override
@@ -105,8 +120,10 @@ public abstract class StemBlock extends Block implements BonemealableBlock {
 
     @Override
     public boolean isValidBonemealTarget(LevelReader levelReader, BlockPos blockPos, BlockState state) {
-        return !isMature(state) && levelReader.getBlockState(blockPos.below()).getBlock() == this && state.getValue(AGE) > 0;
+        return !isMature(state) && levelReader.getBlockState(blockPos.below())
+            .getBlock() == this && state.getValue(AGE) > 0;
     }
+
     @Override
     public boolean isBonemealSuccess(Level world, RandomSource random, BlockPos pos, BlockState state) {
         return true;
@@ -118,6 +135,7 @@ public abstract class StemBlock extends Block implements BonemealableBlock {
     }
 
     public BlockState withAge(BlockState state, int age, GrapeType type) {
-        return state.setValue(AGE, age).setValue(GRAPE, type);
+        return state.setValue(AGE, age)
+            .setValue(GRAPE, type);
     }
 }

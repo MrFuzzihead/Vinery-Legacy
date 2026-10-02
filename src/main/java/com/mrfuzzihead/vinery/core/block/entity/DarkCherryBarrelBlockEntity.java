@@ -14,15 +14,17 @@ import net.minecraft.world.inventory.ChestMenu;
 import net.minecraft.world.inventory.MenuType;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+
 public class DarkCherryBarrelBlockEntity extends RandomizableContainerBlockEntity {
+
     private NonNullList<ItemStack> inventory;
     private final ContainerOpenersCounter stateManager;
 
@@ -30,6 +32,7 @@ public class DarkCherryBarrelBlockEntity extends RandomizableContainerBlockEntit
         super(EntityTypeRegistry.DARK_CHERRY_BARREL_ENTITY.get(), pos, state);
         this.inventory = NonNullList.withSize(27, ItemStack.EMPTY);
         this.stateManager = new ContainerOpenersCounter() {
+
             @Override
             protected void onOpen(Level world, BlockPos pos, BlockState state) {
                 world.setBlock(pos, state.setValue(BlockStateProperties.OPEN, true), 3);
@@ -41,8 +44,8 @@ public class DarkCherryBarrelBlockEntity extends RandomizableContainerBlockEntit
             }
 
             @Override
-            protected void openerCountChanged(Level world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-            }
+            protected void openerCountChanged(Level world, BlockPos pos, BlockState state, int oldViewerCount,
+                int newViewerCount) {}
 
             @Override
             protected boolean isOwnContainer(Player player) {
@@ -90,7 +93,10 @@ public class DarkCherryBarrelBlockEntity extends RandomizableContainerBlockEntit
 
     @Override
     protected @NotNull Component getDefaultName() {
-        return Component.translatable(this.getBlockState().getBlock().getDescriptionId());
+        return Component.translatable(
+            this.getBlockState()
+                .getBlock()
+                .getDescriptionId());
     }
 
     @Override

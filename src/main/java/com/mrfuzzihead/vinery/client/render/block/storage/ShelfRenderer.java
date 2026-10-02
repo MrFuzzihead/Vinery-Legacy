@@ -1,18 +1,19 @@
 package com.mrfuzzihead.vinery.client.render.block.storage;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.math.Axis;
-import net.fabricmc.api.EnvType;
-import net.fabricmc.api.Environment;
 import net.minecraft.client.renderer.MultiBufferSource;
 import net.minecraft.core.NonNullList;
 import net.minecraft.world.item.ItemStack;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.math.Axis;
 import com.mrfuzzihead.vinery.client.util.ClientUtil;
 import com.mrfuzzihead.vinery.core.block.entity.StorageBlockEntity;
 
 public class ShelfRenderer implements StorageTypeRenderer {
+
     @Override
-    public void render(StorageBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers, NonNullList<ItemStack> itemStacks) {
+    public void render(StorageBlockEntity entity, PoseStack matrices, MultiBufferSource vertexConsumers,
+        NonNullList<ItemStack> itemStacks) {
 
         matrices.translate(-0.4, 0.5, 0.25);
         matrices.mulPose(Axis.YP.rotationDegrees(90));

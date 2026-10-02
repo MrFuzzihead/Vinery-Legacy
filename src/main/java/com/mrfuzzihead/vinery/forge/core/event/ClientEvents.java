@@ -13,9 +13,11 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
+
+import org.lwjgl.glfw.GLFW;
+
 import com.mrfuzzihead.vinery.core.Vinery;
 import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
-import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = Vinery.MOD_ID, value = Dist.CLIENT)
 public class ClientEvents {
@@ -65,8 +67,10 @@ public class ClientEvents {
     }
 
     private static boolean canJump(LocalPlayer player) {
-        return !wearingUsableElytra(player) && !player.isFallFlying() && !player.isPassenger()
-                && !player.isInWater() && !player.hasEffect(MobEffects.LEVITATION);
+        return !wearingUsableElytra(player) && !player.isFallFlying()
+            && !player.isPassenger()
+            && !player.isInWater()
+            && !player.hasEffect(MobEffects.LEVITATION);
     }
 
     private static boolean wearingUsableElytra(LocalPlayer player) {

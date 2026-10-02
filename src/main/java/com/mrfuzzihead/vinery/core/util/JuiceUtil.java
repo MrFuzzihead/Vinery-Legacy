@@ -1,15 +1,17 @@
 package com.mrfuzzihead.vinery.core.util;
 
-import net.minecraft.tags.TagKey;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.ItemStack;
-import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import com.mrfuzzihead.vinery.core.registry.TagRegistry;
-
 import java.util.HashMap;
 import java.util.Map;
 
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.ItemStack;
+
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+import com.mrfuzzihead.vinery.core.registry.TagRegistry;
+
 public class JuiceUtil {
+
     public static final Map<TagKey<Item>, String> RED_JUICE_TAGS = new HashMap<>();
     public static final Map<TagKey<Item>, String> WHITE_JUICE_TAGS = new HashMap<>();
     public static final Map<Item, String> APPLE_JUICES = new HashMap<>();

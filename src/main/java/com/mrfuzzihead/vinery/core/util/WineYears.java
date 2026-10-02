@@ -2,11 +2,13 @@ package com.mrfuzzihead.vinery.core.util;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
+import com.mrfuzzihead.vinery.PlatformHelper;
 import com.mrfuzzihead.vinery.core.components.WineYearComponent;
 import com.mrfuzzihead.vinery.core.registry.DataComponentRegistry;
-import com.mrfuzzihead.vinery.PlatformHelper;
 
 public class WineYears {
+
     public static final int YEARS_START = 0;
 
     public static int getDays(Level world) {
@@ -83,15 +85,16 @@ public class WineYears {
         int maxDuration = Math.max(0, PlatformHelper.getWineMaxDuration());
         int maxLevel = Math.max(0, PlatformHelper.getWineMaxLevel());
 
-        wine.set(DataComponentRegistry.WINE_YEAR.get(), new WineYearComponent(
+        wine.set(
+            DataComponentRegistry.WINE_YEAR.get(),
+            new WineYearComponent(
                 brewedDay,
                 daysPerYear,
                 yearsPerEffectLevel,
                 startDuration,
                 durationPerYear,
                 maxDuration,
-                maxLevel
-        ));
+                maxLevel));
     }
 
     public static boolean hasWineYear(ItemStack wine) {

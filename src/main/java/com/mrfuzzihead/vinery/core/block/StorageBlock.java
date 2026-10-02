@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.Optional;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -9,9 +11,7 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.Tuple;
 import net.minecraft.world.Containers;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
-import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
@@ -22,12 +22,12 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
-import com.mrfuzzihead.vinery.core.block.entity.StorageBlockEntity;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Optional;
+import com.mrfuzzihead.vinery.core.block.entity.StorageBlockEntity;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 
 public abstract class StorageBlock extends FacingBlock implements EntityBlock {
 
@@ -38,11 +38,13 @@ public abstract class StorageBlock extends FacingBlock implements EntityBlock {
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+        BlockHitResult hit) {
         ItemStack stack = player.getMainHandItem();
         BlockEntity blockEntity = world.getBlockEntity(pos);
         if (blockEntity instanceof StorageBlockEntity shelfBlockEntity) {
-            Optional<Tuple<Float, Float>> optional = GeneralUtil.getRelativeHitCoordinatesForBlockFace(hit, state.getValue(FACING), unAllowedDirections());
+            Optional<Tuple<Float, Float>> optional = GeneralUtil
+                .getRelativeHitCoordinatesForBlockFace(hit, state.getValue(FACING), unAllowedDirections());
             if (optional.isEmpty()) {
                 return InteractionResult.PASS;
             } else {
@@ -51,7 +53,9 @@ public abstract class StorageBlock extends FacingBlock implements EntityBlock {
                 if (i == Integer.MIN_VALUE) {
                     return InteractionResult.PASS;
                 }
-                if (!shelfBlockEntity.getInventory().get(i).isEmpty()) {
+                if (!shelfBlockEntity.getInventory()
+                    .get(i)
+                    .isEmpty()) {
                     remove(world, pos, player, shelfBlockEntity, i);
                     return InteractionResult.sidedSuccess(world.isClientSide);
                 } else {
@@ -68,7 +72,8 @@ public abstract class StorageBlock extends FacingBlock implements EntityBlock {
         }
     }
 
-    public void add(Level level, BlockPos blockPos, Player player, StorageBlockEntity shelfBlockEntity, ItemStack itemStack, int i) {
+    public void add(Level level, BlockPos blockPos, Player player, StorageBlockEntity shelfBlockEntity,
+        ItemStack itemStack, int i) {
         if (!level.isClientSide) {
             SoundEvent soundEvent = getAddSound(level, blockPos, player, i);
             shelfBlockEntity.setStack(i, itemStack.split(1));
@@ -79,23 +84,25 @@ public abstract class StorageBlock extends FacingBlock implements EntityBlock {
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockPos);
         }
     }
+
     public void remove(Level level, BlockPos blockPos, Player player, StorageBlockEntity shelfBlockEntity, int i) {
         if (!level.isClientSide) {
             ItemStack itemStack = shelfBlockEntity.removeStack(i);
             SoundEvent soundEvent = getRemoveSound(level, blockPos, player, i);
             level.playSound(null, blockPos, soundEvent, SoundSource.BLOCKS, 1.0F, 1.0F);
-            if (!player.getInventory().add(itemStack)) {
+            if (!player.getInventory()
+                .add(itemStack)) {
                 player.drop(itemStack, false);
             }
             level.gameEvent(player, GameEvent.BLOCK_CHANGE, blockPos);
         }
     }
 
-    public SoundEvent getRemoveSound(Level level, BlockPos blockPos, Player player,  int i){
+    public SoundEvent getRemoveSound(Level level, BlockPos blockPos, Player player, int i) {
         return event;
     }
 
-    public SoundEvent getAddSound(Level level, BlockPos blockPos, Player player,  int i){
+    public SoundEvent getAddSound(Level level, BlockPos blockPos, Player player, int i) {
         return event;
     }
 
@@ -131,5 +138,6 @@ public abstract class StorageBlock extends FacingBlock implements EntityBlock {
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
         return new StorageBlockEntity(pos, state, size());
     }
+
     public abstract int getSection(Float x, Float y);
 }

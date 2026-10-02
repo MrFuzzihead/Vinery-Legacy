@@ -1,6 +1,5 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.mojang.datafixers.util.Pair;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.NonNullList;
@@ -8,7 +7,6 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -24,13 +22,17 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.datafixers.util.Pair;
 import com.mrfuzzihead.vinery.core.block.entity.StorageBlockEntity;
 import com.mrfuzzihead.vinery.core.item.DrinkBlockItem;
 import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.TagRegistry;
-import org.jetbrains.annotations.NotNull;
 
 public class WineBottleBlock extends StorageBlock {
+
     private static final VoxelShape SHAPE = Shapes.box(0.125, 0, 0.125, 0.875, 0.875, 0.875);
 
     public static final BooleanProperty FAKE_MODEL = BooleanProperty.create("fake_model");
@@ -40,20 +42,23 @@ public class WineBottleBlock extends StorageBlock {
     public WineBottleBlock(Properties settings, int maxCount) {
         super(settings);
         this.maxCount = maxCount;
-        this.registerDefaultState(this.defaultBlockState().setValue(FAKE_MODEL, true));
+        this.registerDefaultState(
+            this.defaultBlockState()
+                .setValue(FAKE_MODEL, true));
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
         BlockEntity blockEntity = world.getBlockEntity(pos);
 
-        if(blockEntity instanceof StorageBlockEntity wineEntity){
+        if (blockEntity instanceof StorageBlockEntity wineEntity) {
             NonNullList<ItemStack> inventory = wineEntity.getInventory();
 
             if (canInsertStack(stack) && willFitStack(stack, inventory)) {
                 int posInE = getFirstEmptySlot(inventory);
-                if(posInE == Integer.MIN_VALUE) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-                if(!world.isClientSide()){
+                if (posInE == Integer.MIN_VALUE) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                if (!world.isClientSide()) {
                     wineEntity.setStack(posInE, stack.split(1));
                     if (player.isCreative()) {
                         stack.grow(1);
@@ -63,10 +68,11 @@ public class WineBottleBlock extends StorageBlock {
                 return ItemInteractionResult.sidedSuccess(world.isClientSide());
             } else if (stack.isEmpty() && !isEmpty(inventory)) {
                 int posInE = getLastFullSlot(inventory);
-                if(posInE == Integer.MIN_VALUE) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
-                if(!world.isClientSide()){
+                if (posInE == Integer.MIN_VALUE) return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
+                if (!world.isClientSide()) {
                     ItemStack wine = wineEntity.removeStack(posInE);
-                    if (!player.getInventory().add(wine)) {
+                    if (!player.getInventory()
+                        .add(wine)) {
                         player.drop(wine, false);
                     }
                     if (isEmpty(inventory)) {
@@ -80,27 +86,27 @@ public class WineBottleBlock extends StorageBlock {
         return ItemInteractionResult.PASS_TO_DEFAULT_BLOCK_INTERACTION;
     }
 
-    public boolean isEmpty(NonNullList<ItemStack> inventory){
-        for(ItemStack stack : inventory){
-            if(!stack.isEmpty()) return false;
+    public boolean isEmpty(NonNullList<ItemStack> inventory) {
+        for (ItemStack stack : inventory) {
+            if (!stack.isEmpty()) return false;
         }
         return true;
     }
 
-    public int getFirstEmptySlot(NonNullList<ItemStack> inventory){
-        for(ItemStack stack : inventory){
-            if(stack.isEmpty()) return inventory.indexOf(stack);
+    public int getFirstEmptySlot(NonNullList<ItemStack> inventory) {
+        for (ItemStack stack : inventory) {
+            if (stack.isEmpty()) return inventory.indexOf(stack);
         }
         return Integer.MIN_VALUE;
     }
 
-    public int getLastFullSlot(NonNullList<ItemStack> inventory){
-        for(int i = inventory.size() - 1; i >=0; i--){
-            if(!inventory.get(i).isEmpty()) return i;
+    public int getLastFullSlot(NonNullList<ItemStack> inventory) {
+        for (int i = inventory.size() - 1; i >= 0; i--) {
+            if (!inventory.get(i)
+                .isEmpty()) return i;
         }
         return Integer.MIN_VALUE;
     }
-
 
     @Override
     public @NotNull VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
@@ -114,16 +120,19 @@ public class WineBottleBlock extends StorageBlock {
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState2, LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
+    public @NotNull BlockState updateShape(BlockState blockState, Direction direction, BlockState blockState2,
+        LevelAccessor levelAccessor, BlockPos blockPos, BlockPos blockPos2) {
         if (direction == Direction.DOWN && !blockState.canSurvive(levelAccessor, blockPos)) {
             levelAccessor.destroyBlock(blockPos, true);
         }
         return super.updateShape(blockState, direction, blockState2, levelAccessor, blockPos, blockPos2);
     }
+
     @Override
     public int size() {
         return maxCount;
     }
+
     @Override
     public ResourceLocation type() {
         return StorageTypeRegistry.WINE_BOTTLE;
@@ -139,18 +148,19 @@ public class WineBottleBlock extends StorageBlock {
         int biggest = p.getSecond();
         int count = p.getFirst();
         int stackCount = getCount(itemStack);
-        if(biggest == Integer.MAX_VALUE) return true;
+        if (biggest == Integer.MAX_VALUE) return true;
 
         return stackCount > count && count < biggest;
     }
 
-    public static Pair<Integer, Integer> getFilledAmountAndBiggest(NonNullList<ItemStack> inventory){
+    public static Pair<Integer, Integer> getFilledAmountAndBiggest(NonNullList<ItemStack> inventory) {
         int count = 0;
         int biggest = Integer.MAX_VALUE;
-        for(ItemStack stack : inventory){
-            if(!stack.isEmpty()){
+        for (ItemStack stack : inventory) {
+            if (!stack.isEmpty()) {
                 count++;
-                if(stack.getItem() instanceof DrinkBlockItem item && item.getBlock() instanceof WineBottleBlock wine && wine.maxCount < biggest){
+                if (stack.getItem() instanceof DrinkBlockItem item && item.getBlock() instanceof WineBottleBlock wine
+                    && wine.maxCount < biggest) {
                     biggest = wine.maxCount;
                 }
             }
@@ -158,8 +168,8 @@ public class WineBottleBlock extends StorageBlock {
         return new Pair<>(count, biggest);
     }
 
-    public static int getCount(ItemStack itemStack){
-        if(itemStack.getItem() instanceof DrinkBlockItem item && item.getBlock() instanceof WineBottleBlock wine){
+    public static int getCount(ItemStack itemStack) {
+        if (itemStack.getItem() instanceof DrinkBlockItem item && item.getBlock() instanceof WineBottleBlock wine) {
             return wine.maxCount;
         }
         return Integer.MIN_VALUE;

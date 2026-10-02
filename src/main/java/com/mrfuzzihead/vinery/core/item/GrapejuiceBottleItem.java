@@ -15,8 +15,10 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.ItemUtils;
 import net.minecraft.world.item.UseAnim;
 import net.minecraft.world.level.Level;
-import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+
 import org.jetbrains.annotations.NotNull;
+
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
 
 public class GrapejuiceBottleItem extends Item {
 
@@ -37,14 +39,14 @@ public class GrapejuiceBottleItem extends Item {
         if (livingEntity instanceof Player player && !player.getAbilities().instabuild) {
             itemStack.shrink(1);
             ItemStack itemStack2 = new ItemStack(ObjectRegistry.WINE_BOTTLE.get());
-            if (!player.getInventory().add(itemStack2)) {
+            if (!player.getInventory()
+                .add(itemStack2)) {
                 player.drop(itemStack2, false);
             }
         }
 
         return itemStack.isEmpty() ? ItemStack.EMPTY : itemStack;
     }
-
 
     public int getUseDuration(ItemStack itemStack) {
         return 40;
@@ -62,7 +64,8 @@ public class GrapejuiceBottleItem extends Item {
         return SoundEvents.HONEY_DRINK;
     }
 
-    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player, InteractionHand interactionHand) {
+    public @NotNull InteractionResultHolder<ItemStack> use(Level level, Player player,
+        InteractionHand interactionHand) {
         return ItemUtils.startUsingInstantly(level, player, interactionHand);
     }
 }

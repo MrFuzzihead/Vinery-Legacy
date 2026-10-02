@@ -5,10 +5,13 @@ import net.minecraft.world.level.block.CeilingHangingSignBlock;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
-import com.mrfuzzihead.vinery.core.block.entity.DarkCherryHangingSignBlockEntity;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.block.entity.DarkCherryHangingSignBlockEntity;
+
 public class DarkCherryCeilingHangingSignBlock extends CeilingHangingSignBlock {
+
     public DarkCherryCeilingHangingSignBlock(Properties properties, WoodType type) {
         super(type, properties);
     }

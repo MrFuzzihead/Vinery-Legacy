@@ -1,9 +1,7 @@
 package com.mrfuzzihead.vinery.client.render.block;
 
-import com.google.common.collect.ImmutableMap;
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
+import java.util.Map;
+
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.model.Model;
@@ -25,13 +23,17 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.phys.Vec3;
-import com.mrfuzzihead.vinery.core.block.entity.DarkCherrySignBlockEntity;
 
-import java.util.Map;
+import com.google.common.collect.ImmutableMap;
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
+import com.mrfuzzihead.vinery.core.block.entity.DarkCherrySignBlockEntity;
 
 @SuppressWarnings("unused")
 @Environment(EnvType.CLIENT)
 public class DarkCherryHangingSignRenderer extends DarkCherrySignRenderer {
+
     private static final String PLANK = "plank";
     private static final String V_CHAINS = "vChains";
     private static final String NORMAL_CHAINS = "normalChains";
@@ -47,7 +49,12 @@ public class DarkCherryHangingSignRenderer extends DarkCherrySignRenderer {
 
     public DarkCherryHangingSignRenderer(BlockEntityRendererProvider.Context context) {
         super(context);
-        this.hangingSignModels = WoodType.values().collect(ImmutableMap.toImmutableMap((woodType) -> woodType, (woodType) -> new HangingSignModel(context.bakeLayer(ModelLayers.createHangingSignModelName(woodType)))));
+        this.hangingSignModels = WoodType.values()
+            .collect(
+                ImmutableMap.toImmutableMap(
+                    (woodType) -> woodType,
+                    (woodType) -> new HangingSignModel(
+                        context.bakeLayer(ModelLayers.createHangingSignModelName(woodType)))));
     }
 
     public float getSignModelRenderScale() {
@@ -58,13 +65,23 @@ public class DarkCherryHangingSignRenderer extends DarkCherrySignRenderer {
         return 0.9F;
     }
 
-    public void render(DarkCherrySignBlockEntity signBlockEntity, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j) {
+    public void render(DarkCherrySignBlockEntity signBlockEntity, float f, PoseStack poseStack,
+        MultiBufferSource multiBufferSource, int i, int j) {
         BlockState blockState = signBlockEntity.getBlockState();
         SignBlock signBlock = (SignBlock) blockState.getBlock();
         WoodType woodType = SignBlock.getWoodType(signBlock);
         HangingSignModel hangingSignModel = (HangingSignModel) this.hangingSignModels.get(woodType);
         hangingSignModel.evaluateVisibleParts(blockState);
-        this.renderSignWithText(signBlockEntity, poseStack, multiBufferSource, i, j, blockState, signBlock, woodType, hangingSignModel);
+        this.renderSignWithText(
+            signBlockEntity,
+            poseStack,
+            multiBufferSource,
+            i,
+            j,
+            blockState,
+            signBlock,
+            woodType,
+            hangingSignModel);
     }
 
     void translateSign(PoseStack poseStack, float f, BlockState blockState) {
@@ -89,19 +106,56 @@ public class DarkCherryHangingSignRenderer extends DarkCherrySignRenderer {
     public static LayerDefinition createHangingSignLayer() {
         MeshDefinition meshDefinition = new MeshDefinition();
         PartDefinition partDefinition = meshDefinition.getRoot();
-        partDefinition.addOrReplaceChild("board", CubeListBuilder.create().texOffs(0, 12).addBox(-7.0F, 0.0F, -1.0F, 14.0F, 10.0F, 2.0F), PartPose.ZERO);
-        partDefinition.addOrReplaceChild("plank", CubeListBuilder.create().texOffs(0, 0).addBox(-8.0F, -6.0F, -2.0F, 16.0F, 2.0F, 4.0F), PartPose.ZERO);
-        PartDefinition partDefinition2 = partDefinition.addOrReplaceChild("normalChains", CubeListBuilder.create(), PartPose.ZERO);
-        partDefinition2.addOrReplaceChild("chainL1", CubeListBuilder.create().texOffs(0, 6).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F), PartPose.offsetAndRotation(-5.0F, -6.0F, 0.0F, 0.0F, -0.7853982F, 0.0F));
-        partDefinition2.addOrReplaceChild("chainL2", CubeListBuilder.create().texOffs(6, 6).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F), PartPose.offsetAndRotation(-5.0F, -6.0F, 0.0F, 0.0F, 0.7853982F, 0.0F));
-        partDefinition2.addOrReplaceChild("chainR1", CubeListBuilder.create().texOffs(0, 6).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F), PartPose.offsetAndRotation(5.0F, -6.0F, 0.0F, 0.0F, -0.7853982F, 0.0F));
-        partDefinition2.addOrReplaceChild("chainR2", CubeListBuilder.create().texOffs(6, 6).addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F), PartPose.offsetAndRotation(5.0F, -6.0F, 0.0F, 0.0F, 0.7853982F, 0.0F));
-        partDefinition.addOrReplaceChild("vChains", CubeListBuilder.create().texOffs(14, 6).addBox(-6.0F, -6.0F, 0.0F, 12.0F, 6.0F, 0.0F), PartPose.ZERO);
+        partDefinition.addOrReplaceChild(
+            "board",
+            CubeListBuilder.create()
+                .texOffs(0, 12)
+                .addBox(-7.0F, 0.0F, -1.0F, 14.0F, 10.0F, 2.0F),
+            PartPose.ZERO);
+        partDefinition.addOrReplaceChild(
+            "plank",
+            CubeListBuilder.create()
+                .texOffs(0, 0)
+                .addBox(-8.0F, -6.0F, -2.0F, 16.0F, 2.0F, 4.0F),
+            PartPose.ZERO);
+        PartDefinition partDefinition2 = partDefinition
+            .addOrReplaceChild("normalChains", CubeListBuilder.create(), PartPose.ZERO);
+        partDefinition2.addOrReplaceChild(
+            "chainL1",
+            CubeListBuilder.create()
+                .texOffs(0, 6)
+                .addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F),
+            PartPose.offsetAndRotation(-5.0F, -6.0F, 0.0F, 0.0F, -0.7853982F, 0.0F));
+        partDefinition2.addOrReplaceChild(
+            "chainL2",
+            CubeListBuilder.create()
+                .texOffs(6, 6)
+                .addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F),
+            PartPose.offsetAndRotation(-5.0F, -6.0F, 0.0F, 0.0F, 0.7853982F, 0.0F));
+        partDefinition2.addOrReplaceChild(
+            "chainR1",
+            CubeListBuilder.create()
+                .texOffs(0, 6)
+                .addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F),
+            PartPose.offsetAndRotation(5.0F, -6.0F, 0.0F, 0.0F, -0.7853982F, 0.0F));
+        partDefinition2.addOrReplaceChild(
+            "chainR2",
+            CubeListBuilder.create()
+                .texOffs(6, 6)
+                .addBox(-1.5F, 0.0F, 0.0F, 3.0F, 6.0F, 0.0F),
+            PartPose.offsetAndRotation(5.0F, -6.0F, 0.0F, 0.0F, 0.7853982F, 0.0F));
+        partDefinition.addOrReplaceChild(
+            "vChains",
+            CubeListBuilder.create()
+                .texOffs(14, 6)
+                .addBox(-6.0F, -6.0F, 0.0F, 12.0F, 6.0F, 0.0F),
+            PartPose.ZERO);
         return LayerDefinition.create(meshDefinition, 64, 32);
     }
 
     @Environment(EnvType.CLIENT)
     public static final class HangingSignModel extends Model {
+
         public final ModelPart root;
         public final ModelPart plank;
         public final ModelPart vChains;
@@ -134,4 +188,3 @@ public class DarkCherryHangingSignRenderer extends DarkCherrySignRenderer {
         }
     }
 }
-

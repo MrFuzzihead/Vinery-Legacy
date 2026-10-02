@@ -12,10 +12,11 @@ import net.minecraft.world.level.ItemLike;
 import net.minecraft.world.level.block.Block;
 
 public class VillagerUtil {
-    public VillagerUtil() {
-    }
+
+    public VillagerUtil() {}
 
     public static class SellItemFactory implements VillagerTrades.ItemListing {
+
         private final ItemStack sell;
         private final int price;
         private final int count;
@@ -28,11 +29,11 @@ public class VillagerUtil {
         }
 
         public SellItemFactory(Block item, int price, int count, int experience) {
-            this((ItemStack)(new ItemStack(item)), price, count, 12, experience);
+            this((ItemStack) (new ItemStack(item)), price, count, 12, experience);
         }
 
         public SellItemFactory(Item item, int price, int count, int experience) {
-            this((ItemStack)(new ItemStack(item)), price, count, 12, experience);
+            this((ItemStack) (new ItemStack(item)), price, count, 12, experience);
         }
 
         public SellItemFactory(Item item, int price, int count, int maxUses, int experience) {
@@ -53,11 +54,17 @@ public class VillagerUtil {
         }
 
         public MerchantOffer getOffer(Entity entity, RandomSource random) {
-            return new MerchantOffer(new ItemCost(Items.EMERALD,this.price), new ItemStack(this.sell.getItem(), this.count), this.maxUses, this.experience, this.multiplier);
+            return new MerchantOffer(
+                new ItemCost(Items.EMERALD, this.price),
+                new ItemStack(this.sell.getItem(), this.count),
+                this.maxUses,
+                this.experience,
+                this.multiplier);
         }
     }
 
     public static class BuyForOneEmeraldFactory implements VillagerTrades.ItemListing {
+
         private final Item buy;
         private final int price;
         private final int maxUses;
@@ -74,8 +81,12 @@ public class VillagerUtil {
 
         public MerchantOffer getOffer(Entity entity, RandomSource random) {
             ItemStack itemStack = new ItemStack(this.buy, this.price);
-            return new MerchantOffer(new ItemCost(itemStack.getItem(),this.price), new ItemStack(Items.EMERALD), this.maxUses, this.experience, this.multiplier);
+            return new MerchantOffer(
+                new ItemCost(itemStack.getItem(), this.price),
+                new ItemStack(Items.EMERALD),
+                this.maxUses,
+                this.experience,
+                this.multiplier);
         }
     }
 }
-

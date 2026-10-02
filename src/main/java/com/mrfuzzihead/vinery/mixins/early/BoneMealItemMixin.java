@@ -1,22 +1,22 @@
 package com.mrfuzzihead.vinery.mixins.early;
 
 import net.minecraft.server.level.ServerLevel;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.BoneMealItem;
-import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import com.mrfuzzihead.vinery.core.item.WinemakerBootsItem;
-import com.mrfuzzihead.vinery.core.item.WinemakerChestItem;
-import com.mrfuzzihead.vinery.core.item.WinemakerHelmetItem;
-import com.mrfuzzihead.vinery.core.item.WinemakerLegsItem;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.mrfuzzihead.vinery.core.item.WinemakerBootsItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerChestItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerHelmetItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerLegsItem;
 
 @Mixin(BoneMealItem.class)
 public abstract class BoneMealItemMixin {
@@ -34,15 +34,19 @@ public abstract class BoneMealItemMixin {
         Player player = context.getPlayer();
         if (player == null) return;
 
-        ItemStack helmet = player.getInventory().getArmor(3);
-        ItemStack chestplate = player.getInventory().getArmor(2);
-        ItemStack leggings = player.getInventory().getArmor(1);
-        ItemStack boots = player.getInventory().getArmor(0);
+        ItemStack helmet = player.getInventory()
+            .getArmor(3);
+        ItemStack chestplate = player.getInventory()
+            .getArmor(2);
+        ItemStack leggings = player.getInventory()
+            .getArmor(1);
+        ItemStack boots = player.getInventory()
+            .getArmor(0);
 
-        boolean hasFullSet = helmet.getItem() instanceof WinemakerHelmetItem &&
-                chestplate.getItem() instanceof WinemakerChestItem &&
-                leggings.getItem() instanceof WinemakerLegsItem &&
-                boots.getItem() instanceof WinemakerBootsItem;
+        boolean hasFullSet = helmet.getItem() instanceof WinemakerHelmetItem
+            && chestplate.getItem() instanceof WinemakerChestItem
+            && leggings.getItem() instanceof WinemakerLegsItem
+            && boots.getItem() instanceof WinemakerBootsItem;
 
         if (hasFullSet) {
             System.out.println("YES");
@@ -53,9 +57,10 @@ public abstract class BoneMealItemMixin {
             }
 
             for (int i = 0; i < 4; i++) {
-                ItemStack armorPiece = player.getInventory().getArmor(i);
+                ItemStack armorPiece = player.getInventory()
+                    .getArmor(i);
                 if (!armorPiece.isEmpty()) {
-                    EquipmentSlot slot = switch(i) {
+                    EquipmentSlot slot = switch (i) {
                         case 0 -> EquipmentSlot.FEET;
                         case 1 -> EquipmentSlot.LEGS;
                         case 2 -> EquipmentSlot.CHEST;

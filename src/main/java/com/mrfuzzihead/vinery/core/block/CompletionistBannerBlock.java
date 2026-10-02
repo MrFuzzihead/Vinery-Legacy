@@ -1,6 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.mojang.serialization.MapCodec;
+import java.util.List;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -25,18 +26,20 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
+
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import com.mojang.serialization.MapCodec;
+import com.mrfuzzihead.vinery.PlatformHelper;
 import com.mrfuzzihead.vinery.Vinery;
 import com.mrfuzzihead.vinery.core.block.entity.CompletionistBannerEntity;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import com.mrfuzzihead.vinery.PlatformHelper;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 @SuppressWarnings("deprecation")
 public class CompletionistBannerBlock extends BaseEntityBlock {
+
     public static final IntegerProperty ROTATION = BlockStateProperties.ROTATION_16;
     private static final VoxelShape SHAPE = Block.box(4.0D, 0.0D, 4.0D, 12.0D, 16.0D, 12.0D);
 
@@ -57,7 +60,9 @@ public class CompletionistBannerBlock extends BaseEntityBlock {
     }
 
     protected void makeDefaultState() {
-        registerDefaultState(this.stateDefinition.any().setValue(ROTATION, 0));
+        registerDefaultState(
+            this.stateDefinition.any()
+                .setValue(ROTATION, 0));
     }
 
     @Override
@@ -72,7 +77,8 @@ public class CompletionistBannerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter, @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
+    public @NotNull VoxelShape getShape(@NotNull BlockState blockState, @NotNull BlockGetter blockGetter,
+        @NotNull BlockPos blockPos, @NotNull CollisionContext collisionContext) {
         return SHAPE;
     }
 
@@ -80,15 +86,19 @@ public class CompletionistBannerBlock extends BaseEntityBlock {
     public BlockState getStateForPlacement(BlockPlaceContext context) {
         Direction clickedFace = context.getClickedFace();
         if (clickedFace == Direction.UP || clickedFace == Direction.DOWN) {
-            return this.defaultBlockState().setValue(ROTATION, Mth.floor((double) ((180.0f + context.getRotation()) * 16.0f / 360.0f) + 0.5) & 0xF);
+            return this.defaultBlockState()
+                .setValue(
+                    ROTATION,
+                    Mth.floor((double) ((180.0f + context.getRotation()) * 16.0f / 360.0f) + 0.5) & 0xF);
         } else {
             if (this == ObjectRegistry.VINERY_STANDARD.get()) {
-                return ObjectRegistry.VINERY_WALL_STANDARD.get().defaultBlockState().setValue(HorizontalDirectionalBlock.FACING, clickedFace.getOpposite());
+                return ObjectRegistry.VINERY_WALL_STANDARD.get()
+                    .defaultBlockState()
+                    .setValue(HorizontalDirectionalBlock.FACING, clickedFace.getOpposite());
             }
         }
         return this.defaultBlockState();
     }
-
 
     @Override
     public @NotNull BlockState rotate(BlockState blockState, Rotation rotation) {
@@ -107,12 +117,19 @@ public class CompletionistBannerBlock extends BaseEntityBlock {
 
     @Override
     @Nullable
-    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        return level.isClientSide ? null : createTickerHelper(type, EntityTypeRegistry.VINERY_STANDARD.get(), (level1, pos, state1, entity) -> CompletionistBannerEntity.tick(level1, pos));
+    public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state,
+        BlockEntityType<T> type) {
+        return level.isClientSide ? null
+            : createTickerHelper(
+                type,
+                EntityTypeRegistry.VINERY_STANDARD.get(),
+                (level1, pos, state1, entity) -> CompletionistBannerEntity.tick(level1, pos));
     }
 
     @Override
-    public @NotNull BlockState updateShape(@NotNull BlockState blockState, @NotNull Direction direction, @NotNull BlockState blockState2, @NotNull LevelAccessor levelAccessor, @NotNull BlockPos blockPos, @NotNull BlockPos blockPos2) {
+    public @NotNull BlockState updateShape(@NotNull BlockState blockState, @NotNull Direction direction,
+        @NotNull BlockState blockState2, @NotNull LevelAccessor levelAccessor, @NotNull BlockPos blockPos,
+        @NotNull BlockPos blockPos2) {
         if (direction == Direction.DOWN && !blockState.canSurvive(levelAccessor, blockPos)) {
             return Blocks.AIR.defaultBlockState();
         }
@@ -124,14 +141,23 @@ public class CompletionistBannerBlock extends BaseEntityBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> tooltip,
+        TooltipFlag tooltipFlag) {
         if (PlatformHelper.shouldShowTooltip()) {
-            tooltip.add(Component.translatable("tooltip.vinery.banner.thankyou_1").withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
+            tooltip.add(
+                Component.translatable("tooltip.vinery.banner.thankyou_1")
+                    .withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
             tooltip.add(Component.empty());
-            tooltip.add(Component.translatable("tooltip.vinery.banner.thankyou_2").withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
-            tooltip.add(Component.translatable("tooltip.vinery.banner.thankyou_4").withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
+            tooltip.add(
+                Component.translatable("tooltip.vinery.banner.thankyou_2")
+                    .withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
+            tooltip.add(
+                Component.translatable("tooltip.vinery.banner.thankyou_4")
+                    .withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
             tooltip.add(Component.empty());
-            tooltip.add(Component.translatable("tooltip.vinery.banner.thankyou_3").withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
+            tooltip.add(
+                Component.translatable("tooltip.vinery.banner.thankyou_3")
+                    .withStyle(style -> style.withColor(TextColor.fromRgb(0x513A8B))));
         }
     }
 }

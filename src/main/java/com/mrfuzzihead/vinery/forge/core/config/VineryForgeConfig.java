@@ -1,12 +1,13 @@
 package com.mrfuzzihead.vinery.forge.core.config;
 
+import java.util.List;
+
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;
 import net.neoforged.neoforge.common.ModConfigSpec;
 
-import java.util.List;
-
 public class VineryForgeConfig {
+
     public static final ModConfigSpec COMMON_CONFIG;
 
     public static final ModConfigSpec.IntValue TOTAL_FERMENTATION_TIME;
@@ -68,149 +69,137 @@ public class VineryForgeConfig {
         ModConfigSpec.Builder commonBuilder = new ModConfigSpec.Builder();
         commonBuilder.push("Blocks");
 
-        TOTAL_FERMENTATION_TIME = commonBuilder
-                .comment("Total fermentation time in ticks")
-                .defineInRange("totalFermentationTime", 6000, 1, Integer.MAX_VALUE);
+        TOTAL_FERMENTATION_TIME = commonBuilder.comment("Total fermentation time in ticks")
+            .defineInRange("totalFermentationTime", 6000, 1, Integer.MAX_VALUE);
 
-        MAX_FLUID_LEVEL = commonBuilder
-                .comment("Maximum fluid level in the Fermentation Barrel")
-                .defineInRange("maxFluidLevel", 100, 10, 1000);
+        MAX_FLUID_LEVEL = commonBuilder.comment("Maximum fluid level in the Fermentation Barrel")
+            .defineInRange("maxFluidLevel", 100, 10, 1000);
 
-        MAX_FLUID_INCREASE = commonBuilder
-                .comment("How much Fluid a Grapejuice Bottle fills")
-                .defineInRange("maxFluidPerJuice", 25, 1, 1000);
+        MAX_FLUID_INCREASE = commonBuilder.comment("How much Fluid a Grapejuice Bottle fills")
+            .defineInRange("maxFluidPerJuice", 25, 1, 1000);
 
-        APPLE_PRESS_MASHING_TIME = commonBuilder
-                .comment("Apple Press mashing time in ticks")
-                .defineInRange("applePressMaxMashingProgress", 600, 1, 1000);
+        APPLE_PRESS_MASHING_TIME = commonBuilder.comment("Apple Press mashing time in ticks")
+            .defineInRange("applePressMaxMashingProgress", 600, 1, 1000);
 
-        APPLE_PRESS_FERMENTING_TIME = commonBuilder
-                .comment("Apple Press fermenting time in ticks")
-                .defineInRange("applePressMaxFermentingProgress", 800, 1, 1000);
+        APPLE_PRESS_FERMENTING_TIME = commonBuilder.comment("Apple Press fermenting time in ticks")
+            .defineInRange("applePressMaxFermentingProgress", 800, 1, 1000);
 
-        CHERRY_GROWTH_CHANCE = commonBuilder
-                .comment("Chance for cherries to grow")
-                .defineInRange("cherryGrowthChance", 0.4, 0.0, 1.0);
+        CHERRY_GROWTH_CHANCE = commonBuilder.comment("Chance for cherries to grow")
+            .defineInRange("cherryGrowthChance", 0.4, 0.0, 1.0);
 
-        APPLE_GROWTH_CHANCE = commonBuilder
-                .comment("Chance for apples to grow")
-                .defineInRange("appleGrowthChance", 0.4, 0.0, 1.0);
+        APPLE_GROWTH_CHANCE = commonBuilder.comment("Chance for apples to grow")
+            .defineInRange("appleGrowthChance", 0.4, 0.0, 1.0);
 
-        GRAPE_GROWTH_CHANCE = commonBuilder
-                .comment("Chance for grapes to grow")
-                .defineInRange("grapeGrowthChance", 0.5, 0.0, 1.0);
+        GRAPE_GROWTH_CHANCE = commonBuilder.comment("Chance for grapes to grow")
+            .defineInRange("grapeGrowthChance", 0.5, 0.0, 1.0);
 
-        GRAPE_GROWTH_MULTIPLIER = commonBuilder
-                .comment("Multiplier for grape growth speed")
-                .defineInRange("grapeGrowthMultiplier", 1.0, 0.0, 10.0);
+        GRAPE_GROWTH_MULTIPLIER = commonBuilder.comment("Multiplier for grape growth speed")
+            .defineInRange("grapeGrowthMultiplier", 1.0, 0.0, 10.0);
 
         GRAPEVINE_LEAVES_ENABLED = commonBuilder
-                .comment("Whether Red/White Grapevine stems grow a canopy of leaves around them after some time")
-                .define("grapevineLeavesEnabled", true);
+            .comment("Whether Red/White Grapevine stems grow a canopy of leaves around them after some time")
+            .define("grapevineLeavesEnabled", true);
 
         commonBuilder.pop();
 
         commonBuilder.push("Items");
         commonBuilder.push("Wine");
 
-        MAX_LEVEL = commonBuilder
-                .comment("Maximum level for wine")
-                .defineInRange("maxLevel", 5, 1, 10);
+        MAX_LEVEL = commonBuilder.comment("Maximum level for wine")
+            .defineInRange("maxLevel", 5, 1, 10);
 
-        START_DURATION = commonBuilder
-                .comment("Start duration for wine in seconds")
-                .defineInRange("startDuration", 1800, 1, 100000);
+        START_DURATION = commonBuilder.comment("Start duration for wine in seconds")
+            .defineInRange("startDuration", 1800, 1, 100000);
 
-        DURATION_PER_YEAR = commonBuilder
-                .comment("Duration per year in seconds")
-                .defineInRange("durationPerYear", 200, 1, 10000);
+        DURATION_PER_YEAR = commonBuilder.comment("Duration per year in seconds")
+            .defineInRange("durationPerYear", 200, 1, 10000);
 
-        DAYS_PER_YEAR = commonBuilder
-                .comment("Days per year")
-                .defineInRange("daysPerYear", 24, 1, 100);
+        DAYS_PER_YEAR = commonBuilder.comment("Days per year")
+            .defineInRange("daysPerYear", 24, 1, 100);
 
-        YEARS_PER_EFFECT_LEVEL = commonBuilder
-                .comment("Years per effect level")
-                .defineInRange("yearsPerEffectLevel", 6, 1, 100);
+        YEARS_PER_EFFECT_LEVEL = commonBuilder.comment("Years per effect level")
+            .defineInRange("yearsPerEffectLevel", 6, 1, 100);
 
-        MAX_DURATION = commonBuilder
-                .comment("Maximum duration in seconds")
-                .defineInRange("maxDuration", 15000, 1, 100000);
+        MAX_DURATION = commonBuilder.comment("Maximum duration in seconds")
+            .defineInRange("maxDuration", 15000, 1, 100000);
 
         commonBuilder.pop();
         commonBuilder.push("Banner");
 
-        GIVE_EFFECT = commonBuilder
-                .comment("Set to false to disable the banner's effect.")
-                .define("giveEffect", true);
+        GIVE_EFFECT = commonBuilder.comment("Set to false to disable the banner's effect.")
+            .define("giveEffect", true);
 
-        SHOW_TOOLTIP = commonBuilder
-                .comment("Set to false to hide the banner's tooltip. If giveEffect is false, showTooltip is automatically false.")
-                .define("showTooltip", true);
+        SHOW_TOOLTIP = commonBuilder.comment(
+            "Set to false to hide the banner's tooltip. If giveEffect is false, showTooltip is automatically false.")
+            .define("showTooltip", true);
 
         commonBuilder.pop();
 
         commonBuilder.push("WanderingTrader");
 
-        TRADER_SPAWN_CHANCE = commonBuilder
-                .comment("Chance for the custom trader to spawn. Range: 0.0 to 1.0")
-                .defineInRange("spawnChance", 0.5, 0.0, 1.0);
+        TRADER_SPAWN_CHANCE = commonBuilder.comment("Chance for the custom trader to spawn. Range: 0.0 to 1.0")
+            .defineInRange("spawnChance", 0.5, 0.0, 1.0);
 
-        SPAWN_WITH_MULES = commonBuilder
-                .comment("If true, the trader will spawn with mules.")
-                .define("spawnWithMules", true);
+        SPAWN_WITH_MULES = commonBuilder.comment("If true, the trader will spawn with mules.")
+            .define("spawnWithMules", true);
 
-        TRADER_SPAWN_DELAY = commonBuilder
-                .comment("Spawn delay for the trader in ticks.")
-                .defineInRange("spawnDelay", 48000, 1, Integer.MAX_VALUE);
+        TRADER_SPAWN_DELAY = commonBuilder.comment("Spawn delay for the trader in ticks.")
+            .defineInRange("spawnDelay", 48000, 1, Integer.MAX_VALUE);
 
         commonBuilder.pop();
         commonBuilder.push("VillagerTrades");
 
         LEVEL1_TRADES = commonBuilder
-                .comment("List of trades for Level 1. Format: item|price|quantity|maxUses|isSelling")
-                .defineList("level1Trades", List.of(
-                        "vinery:red_grape|5|4|5|false",
-                        "vinery:white_grape|5|4|5|false",
-                        "vinery:red_grape_seeds|2|1|1|true",
-                        "vinery:white_grape_seeds|2|1|1|true"
-                ), obj -> obj instanceof String);
+            .comment("List of trades for Level 1. Format: item|price|quantity|maxUses|isSelling")
+            .defineList(
+                "level1Trades",
+                List.of(
+                    "vinery:red_grape|5|4|5|false",
+                    "vinery:white_grape|5|4|5|false",
+                    "vinery:red_grape_seeds|2|1|1|true",
+                    "vinery:white_grape_seeds|2|1|1|true"),
+                obj -> obj instanceof String);
 
         LEVEL2_TRADES = commonBuilder
-                .comment("List of trades for Level 2. Format: item|price|quantity|maxUses|isSelling")
-                .defineList("level2Trades", List.of(
-                        "vinery:wine_bottle|1|1|4|true",
-                        "vinery:cherry|12|1|4|false",
-                        "vinery:apple_mash|1|1|4|true"
-                ), obj -> obj instanceof String);
+            .comment("List of trades for Level 2. Format: item|price|quantity|maxUses|isSelling")
+            .defineList(
+                "level2Trades",
+                List.of("vinery:wine_bottle|1|1|4|true", "vinery:cherry|12|1|4|false", "vinery:apple_mash|1|1|4|true"),
+                obj -> obj instanceof String);
 
         LEVEL3_TRADES = commonBuilder
-                .comment("List of trades for Level 3. Format: item|price|quantity|maxUses|isSelling")
-                .defineList("level3Trades", List.of(
-                        "vinery:white_grape_bag|7|1|2|true",
-                        "vinery:red_grape_bag|7|1|2|true",
-                        "vinery:cherry_bag|7|1|2|true",
-                        "vinery:apple_bag|7|1|2|true"
-                ), obj -> obj instanceof String);
+            .comment("List of trades for Level 3. Format: item|price|quantity|maxUses|isSelling")
+            .defineList(
+                "level3Trades",
+                List.of(
+                    "vinery:white_grape_bag|7|1|2|true",
+                    "vinery:red_grape_bag|7|1|2|true",
+                    "vinery:cherry_bag|7|1|2|true",
+                    "vinery:apple_bag|7|1|2|true"),
+                obj -> obj instanceof String);
 
         LEVEL4_TRADES = commonBuilder
-                .comment("List of trades for Level 4. Format: item|price|quantity|maxUses|isSelling")
-                .defineList("level4Trades", List.of(
-                        "vinery:window|12|1|2|true",
-                        "vinery:dark_cherry_beam|6|4|2|true",
-                        "vinery:grapevine_pot|6|1|2|true",
-                        "vinery:taiga_grape_seeds_red|2|1|2|true",
-                        "vinery:taiga_grape_seeds_white|2|1|2|true"
-                ), obj -> obj instanceof String);
+            .comment("List of trades for Level 4. Format: item|price|quantity|maxUses|isSelling")
+            .defineList(
+                "level4Trades",
+                List.of(
+                    "vinery:window|12|1|2|true",
+                    "vinery:dark_cherry_beam|6|4|2|true",
+                    "vinery:grapevine_pot|6|1|2|true",
+                    "vinery:taiga_grape_seeds_red|2|1|2|true",
+                    "vinery:taiga_grape_seeds_white|2|1|2|true"),
+                obj -> obj instanceof String);
 
         LEVEL5_TRADES = commonBuilder
-                .comment("List of trades for Level 5. Format: item|price|quantity|maxUses|isSelling")
-                .defineList("level5Trades", List.of(
-                        "vinery:wine_box|10|1|2|true",
-                        "vinery:lilitu_wine|4|1|2|true",
-                        "vinery:winemaker_apron|18|1|1|true",
-                        "vinery:straw_hat|12|1|1|true"
-                ), obj -> obj instanceof String);
+            .comment("List of trades for Level 5. Format: item|price|quantity|maxUses|isSelling")
+            .defineList(
+                "level5Trades",
+                List.of(
+                    "vinery:wine_box|10|1|2|true",
+                    "vinery:lilitu_wine|4|1|2|true",
+                    "vinery:winemaker_apron|18|1|1|true",
+                    "vinery:straw_hat|12|1|1|true"),
+                obj -> obj instanceof String);
 
         commonBuilder.pop();
 
@@ -243,39 +232,32 @@ public class VineryForgeConfig {
         traderSpawnDelayCache = 48000;
 
         level1TradesCache = List.of(
-                "vinery:red_grape|5|4|5|false",
-                "vinery:white_grape|5|4|5|false",
-                "vinery:red_grape_seeds|2|1|1|true",
-                "vinery:white_grape_seeds|2|1|1|true"
-        );
+            "vinery:red_grape|5|4|5|false",
+            "vinery:white_grape|5|4|5|false",
+            "vinery:red_grape_seeds|2|1|1|true",
+            "vinery:white_grape_seeds|2|1|1|true");
 
-        level2TradesCache = List.of(
-                "vinery:wine_bottle|1|1|4|true",
-                "vinery:cherry|12|1|4|false",
-                "vinery:apple_mash|1|1|4|true"
-        );
+        level2TradesCache = List
+            .of("vinery:wine_bottle|1|1|4|true", "vinery:cherry|12|1|4|false", "vinery:apple_mash|1|1|4|true");
 
         level3TradesCache = List.of(
-                "vinery:white_grape_bag|7|1|2|true",
-                "vinery:red_grape_bag|7|1|2|true",
-                "vinery:cherry_bag|7|1|2|true",
-                "vinery:apple_bag|7|1|2|true"
-        );
+            "vinery:white_grape_bag|7|1|2|true",
+            "vinery:red_grape_bag|7|1|2|true",
+            "vinery:cherry_bag|7|1|2|true",
+            "vinery:apple_bag|7|1|2|true");
 
         level4TradesCache = List.of(
-                "vinery:window|12|1|2|true",
-                "vinery:dark_cherry_beam|6|4|2|true",
-                "vinery:grapevine_pot|6|1|2|true",
-                "vinery:taiga_grape_seeds_red|2|1|2|true",
-                "vinery:taiga_grape_seeds_white|2|1|2|true"
-        );
+            "vinery:window|12|1|2|true",
+            "vinery:dark_cherry_beam|6|4|2|true",
+            "vinery:grapevine_pot|6|1|2|true",
+            "vinery:taiga_grape_seeds_red|2|1|2|true",
+            "vinery:taiga_grape_seeds_white|2|1|2|true");
 
         level5TradesCache = List.of(
-                "vinery:wine_box|10|1|2|true",
-                "vinery:lilitu_wine|4|1|2|true",
-                "vinery:winemaker_apron|18|1|1|true",
-                "vinery:straw_hat|12|1|1|true"
-        );
+            "vinery:wine_box|10|1|2|true",
+            "vinery:lilitu_wine|4|1|2|true",
+            "vinery:winemaker_apron|18|1|1|true",
+            "vinery:straw_hat|12|1|1|true");
     }
 
     @SubscribeEvent

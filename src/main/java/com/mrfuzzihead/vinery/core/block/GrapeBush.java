@@ -1,14 +1,13 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
+import java.util.Iterator;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -30,22 +29,29 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mrfuzzihead.vinery.core.util.GrapeType;
-import com.mrfuzzihead.vinery.PlatformHelper;
+
 import org.jetbrains.annotations.NotNull;
 
-import java.util.Iterator;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
+import com.mrfuzzihead.vinery.PlatformHelper;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 
 @SuppressWarnings("deprecation")
 public class GrapeBush extends BushBlock implements BonemealableBlock {
+
     public static final IntegerProperty AGE;
     private static final VoxelShape SHAPE;
 
     public final GrapeType type;
-    public static final MapCodec<GrapeBush> CODEC = RecordCodecBuilder.mapCodec(inst-> inst.group(
-            Properties.CODEC.fieldOf("settings").forGetter(GrapeBush::properties),
-            GrapeType.CODEC.fieldOf("type").forGetter(GrapeBush::grapeType)
-    ).apply(inst,GrapeBush::new));
+    public static final MapCodec<GrapeBush> CODEC = RecordCodecBuilder.mapCodec(
+        inst -> inst.group(
+            Properties.CODEC.fieldOf("settings")
+                .forGetter(GrapeBush::properties),
+            GrapeType.CODEC.fieldOf("type")
+                .forGetter(GrapeBush::grapeType))
+            .apply(inst, GrapeBush::new));
+
     public GrapeBush(Properties settings, GrapeType type) {
         super(settings);
         this.type = type;
@@ -63,11 +69,14 @@ public class GrapeBush extends BushBlock implements BonemealableBlock {
 
     @Override
     public ItemStack getCloneItemStack(LevelReader levelReader, BlockPos blockPos, BlockState blockState) {
-        return new ItemStack(this.grapeType().getSeeds());
+        return new ItemStack(
+            this.grapeType()
+                .getSeeds());
     }
 
     @Override
-    public @NotNull ItemInteractionResult useItemOn(ItemStack stack,BlockState state, Level world, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
+    public @NotNull ItemInteractionResult useItemOn(ItemStack stack, BlockState state, Level world, BlockPos pos,
+        Player player, InteractionHand hand, BlockHitResult hit) {
         int i = state.getValue(AGE);
         boolean bl = i == 3;
         if (!bl && stack.is(Items.BONE_MEAL)) {
@@ -75,11 +84,17 @@ public class GrapeBush extends BushBlock implements BonemealableBlock {
         } else if (i > 1) {
             int x = world.random.nextInt(2);
             popResource(world, pos, new ItemStack(getGrapeType().getItem(), x + (bl ? 1 : 0)));
-            world.playSound(null, pos, SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES, SoundSource.BLOCKS, 1.0F, 0.8F + world.random.nextFloat() * 0.4F);
+            world.playSound(
+                null,
+                pos,
+                SoundEvents.SWEET_BERRY_BUSH_PICK_BERRIES,
+                SoundSource.BLOCKS,
+                1.0F,
+                0.8F + world.random.nextFloat() * 0.4F);
             world.setBlock(pos, state.setValue(AGE, 1), 2);
             return ItemInteractionResult.sidedSuccess(world.isClientSide);
         } else {
-            return super.useItemOn(stack,state, world, pos, player, hand, hit);
+            return super.useItemOn(stack, state, world, pos, player, hand, hit);
         }
     }
 
@@ -118,7 +133,9 @@ public class GrapeBush extends BushBlock implements BonemealableBlock {
         boolean soilValid = this.mayPlaceOn(world.getBlockState(blockPos.below()), world, blockPos);
         if (!soilValid) return false;
 
-        if (world.getChunk(blockPos).getPersistedStatus().getIndex() < ChunkStatus.FULL.getIndex()) {
+        if (world.getChunk(blockPos)
+            .getPersistedStatus()
+            .getIndex() < ChunkStatus.FULL.getIndex()) {
             return true;
         }
         return canGrowPlace(world, blockPos, blockState);
@@ -134,9 +151,10 @@ public class GrapeBush extends BushBlock implements BonemealableBlock {
     }
 
     public ItemStack getGrapeType() {
-        return new ItemStack(this.grapeType().getFruit());
+        return new ItemStack(
+            this.grapeType()
+                .getFruit());
     }
-
 
     @Override
     public void performBonemeal(ServerLevel world, RandomSource random, BlockPos pos, BlockState state) {
@@ -178,7 +196,9 @@ public class GrapeBush extends BushBlock implements BonemealableBlock {
                 return false;
             }
             int size = 4;
-            Iterator<BlockPos> var2 = BlockPos.betweenClosed(blockPos.offset(-size, -2, -size), blockPos.offset(size, 1, size)).iterator();
+            Iterator<BlockPos> var2 = BlockPos
+                .betweenClosed(blockPos.offset(-size, -2, -size), blockPos.offset(size, 1, size))
+                .iterator();
 
             BlockPos pos;
             do {
@@ -187,7 +207,12 @@ public class GrapeBush extends BushBlock implements BonemealableBlock {
                 }
 
                 pos = var2.next();
-            } while (!(world.getBlockState(pos).getBlock() == Blocks.PODZOL || world.getBlockState(pos).getBlock() == Blocks.COARSE_DIRT || world.getBlockState(pos).getBlock() == Blocks.GRASS_BLOCK));
+            } while (!(world.getBlockState(pos)
+                .getBlock() == Blocks.PODZOL
+                || world.getBlockState(pos)
+                    .getBlock() == Blocks.COARSE_DIRT
+                || world.getBlockState(pos)
+                    .getBlock() == Blocks.GRASS_BLOCK));
 
             return true;
         }

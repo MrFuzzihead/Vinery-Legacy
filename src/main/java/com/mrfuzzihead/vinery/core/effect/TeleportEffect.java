@@ -9,6 +9,7 @@ import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
+
 import org.jetbrains.annotations.Nullable;
 
 public class TeleportEffect extends InstantenousMobEffect {
@@ -18,7 +19,8 @@ public class TeleportEffect extends InstantenousMobEffect {
     }
 
     @Override
-    public void applyInstantenousEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target, int amplifier, double proximity) {
+    public void applyInstantenousEffect(@Nullable Entity source, @Nullable Entity attacker, LivingEntity target,
+        int amplifier, double proximity) {
         teleport(source);
     }
 
@@ -34,18 +36,22 @@ public class TeleportEffect extends InstantenousMobEffect {
         Level world = player.level();
 
         for (int attempt = 0; attempt < 16; attempt++) {
-            double x = player.getX() + (player.getRandom().nextDouble() - 0.5) * 16.0;
-            double y = player.getY() + (player.getRandom().nextDouble() - 0.5) * 16.0;
-            double z = player.getZ() + (player.getRandom().nextDouble() - 0.5) * 16.0;
+            double x = player.getX() + (player.getRandom()
+                .nextDouble() - 0.5) * 16.0;
+            double y = player.getY() + (player.getRandom()
+                .nextDouble() - 0.5) * 16.0;
+            double z = player.getZ() + (player.getRandom()
+                .nextDouble() - 0.5) * 16.0;
 
             BlockPos pos = new BlockPos((int) Math.floor(x), (int) Math.floor(y), (int) Math.floor(z));
 
-            if (world.isInWorldBounds(pos) &&
-                    !world.getBlockState(pos).liquid() &&
-                    !world.getBlockState(pos.above()).liquid() &&
-                    !fullBlockAt(world, pos) &&
-                    !fullBlockAt(world, pos.above()) &&
-                    fullBlockAt(world, pos.below())) {
+            if (world.isInWorldBounds(pos) && !world.getBlockState(pos)
+                .liquid()
+                && !world.getBlockState(pos.above())
+                    .liquid()
+                && !fullBlockAt(world, pos)
+                && !fullBlockAt(world, pos.above())
+                && fullBlockAt(world, pos.below())) {
 
                 if (!player.level().isClientSide) {
                     player.teleportTo(x + 0.5, pos.getY() + 0.5, z + 0.5);
@@ -57,7 +63,9 @@ public class TeleportEffect extends InstantenousMobEffect {
         }
     }
 
-    private static boolean fullBlockAt(Level world, BlockPos target){
-        return Block.isShapeFullBlock(world.getBlockState(target).getCollisionShape(world, target));
+    private static boolean fullBlockAt(Level world, BlockPos target) {
+        return Block.isShapeFullBlock(
+            world.getBlockState(target)
+                .getCollisionShape(world, target));
     }
 }

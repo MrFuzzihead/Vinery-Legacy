@@ -29,11 +29,11 @@ Source of truth: `origin/main` (Vinery 1.21.1 NeoForge/Architectury).
 
 **Source tree** — 183 Java files / 16,199 LOC:
 
-| Area                           | Files       | Notes                                                       |
-|--------------------------------|-------------|-------------------------------------------------------------|
-| `core/`                        | 138         | blocks, items, entities, recipes, effects, registries       |
-| `client/`                      | 29          | renderers, GUI, models                                      |
-| `forge/`                       | 14          | NeoForge entry points, config, villager trades, mixins      |
+| Area                                | Files       | Notes                                                                                 |
+|-------------------------------------|-------------|---------------------------------------------------------------------------------------|
+| `core/`                             | 138         | blocks, items, entities, recipes, effects, registries                                 |
+| `client/`                           | 29          | renderers, GUI, models                                                                |
+| `forge/`                            | 14          | NeoForge entry points, config, villager trades, mixins                                |
 | `mixins/early` + `mixins/late/dmod` | 14 (13 + 1) | see §6 — splits by UniMixins phase; shrinks to 7 once Forge-native hooks replace them |
 
 **Blocking problems:**
@@ -286,14 +286,14 @@ com.mrfuzzihead.vinery.compat.CompatLoader                     // single entry p
 
 The 1.21 `vinery.accesswidener` was a useful checklist of encapsulation walls. Access *transformers* (1.7.10's equivalent, via `accessTransformersFile`) are **almost certainly unnecessary**, because RFG's dev workspace is already MCP-named and 1.7.10's equivalents are public. Translation:
 
-| 1.21 access widener entry | 1.7.10 equivalent | AT needed? |
-|---|---|---|
-| `MobEffectInstance.amplifier` / `.duration` | `PotionEffect#getAmplifier()` / `#getDuration()` are public | ❌ no |
-| `PoiTypes.TYPE_BY_STATE` | 1.7.10 POI system is entirely different (`net.minecraft.entity.ai.village.*`) | ❌ n/a |
-| `VillagerTrades$EmeraldForItems` / `$ItemsForEmeralds` | 1.7.10 `MerchantRecipeList` | ❌ no |
-| `SpreadingSnowyDirtBlock.canBeGrass` | dropped (no snowy dirt) | ❌ n/a |
-| `WoodType.register` | 1.7.10 `BlockWood` enum, registered by FML | ❌ no |
-| `FireBlock.setFlammable` | 1.7.10 `Block#setFireResistance` + `BlockFlammable` | ❌ no |
+| 1.21 access widener entry                              | 1.7.10 equivalent                                                             | AT needed? |
+|--------------------------------------------------------|-------------------------------------------------------------------------------|------------|
+| `MobEffectInstance.amplifier` / `.duration`            | `PotionEffect#getAmplifier()` / `#getDuration()` are public                   | ❌ no      |
+| `PoiTypes.TYPE_BY_STATE`                               | 1.7.10 POI system is entirely different (`net.minecraft.entity.ai.village.*`) | ❌ n/a     |
+| `VillagerTrades$EmeraldForItems` / `$ItemsForEmeralds` | 1.7.10 `MerchantRecipeList`                                                   | ❌ no      |
+| `SpreadingSnowyDirtBlock.canBeGrass`                   | dropped (no snowy dirt)                                                       | ❌ n/a     |
+| `WoodType.register`                                    | 1.7.10 `BlockWood` enum, registered by FML                                    | ❌ no      |
+| `FireBlock.setFlammable`                               | 1.7.10 `Block#setFireResistance` + `BlockFlammable`                           | ❌ no      |
 
 **Conclusion: leave `accessTransformersFile` empty.** Revisit only if a compile error reports a genuinely inaccessible 1.7.10 field.
 
@@ -368,10 +368,10 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 
 `com.gtnewhorizon.gtnhmixins` (shipped **inside UniMixins 0.2.1** — no extra dependency) splits mixins by *load phase* instead of hand-maintaining two config files:
 
-| Phase | Loader | Config package | For |
-|---|---|---|---|
-| `EARLY` | `EarlyMixinsLoader` (an `IFMLLoadingPlugin` core mod) | `…mixins.early` | Minecraft, Forge, **and Vinery's own classes** |
-| `LATE` | `LateMixinsLoader` (`@LateMixin`) | `…mixins.late` | third-party mod classes, gated by `addRequiredMod(TargetMods.X)` |
+| Phase   | Loader                                                | Config package  | For                                                              |
+|---------|-------------------------------------------------------|-----------------|------------------------------------------------------------------|
+| `EARLY` | `EarlyMixinsLoader` (an `IFMLLoadingPlugin` core mod) | `…mixins.early` | Minecraft, Forge, **and Vinery's own classes**                   |
+| `LATE`  | `LateMixinsLoader` (`@LateMixin`)                     | `…mixins.late`  | third-party mod classes, gated by `addRequiredMod(TargetMods.X)` |
 
 - `Mixins` enum = every mixin, grouped by concern, tagged `Phase.EARLY`/`Phase.LATE`. Names are **short names resolved against the config's `package`** — e.g. `"BlockMixin"`, or `"dmod.FoxEntityEatSweetBerriesGoalMixin"` for a late mixin living in a per-mod subpackage.
 - `TargetMods` enum = `ITargetMod` entries (`DMOD`, `ET_FUTURUM`) so a mod-targeted mixin applies only when its target actually loaded.
@@ -379,21 +379,21 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 
 ### 6.2 Per-mixin disposition
 
-> **Correction (audit pass 2):** the previous draft claimed the four armour mixins target `ItemArmor`. They actually target **Vinery's own item classes** (`WinemakerBootsItem`, `WinemakerChestItem`, `WinemakerHelmetItem`, `WinemakerLegsItem`) to supply custom armour models/textures. Because that rendering code (`IClientItemExtensions`, `HumanoidModel`, `ArmorRegistryClient`) is client-only, they are **client-side early mixins**, not common.
+> **Correction (audit pass 2):** the previous draft claimed the four armor mixins target `ItemArmor`. They actually target **Vinery's own item classes** (`WinemakerBootsItem`, `WinemakerChestItem`, `WinemakerHelmetItem`, `WinemakerLegsItem`) to supply custom armor models/textures. Because that rendering code (`IClientItemExtensions`, `HumanoidModel`, `ArmorRegistryClient`) is client-only, they are **client-side early mixins**, not common.
 
-| Mixin (1.21 target) | Phase / side | 1.7.10 handling | Stays a mixin? |
-|---|---|---|---|
-| `BlockMixin` (`Block#isExceptionForConnection`) | early / common | override `BlockFence#canConnectFenceTo` + `Block#canConnectRedstone` | ❌ no |
-| `PlantBlockMixin` (`BushBlock#mayPlaceOn`) | early / common | 1.7.10 **has `BlockBush`** (+ Forge `IPlantable`); put the check in our own block | ❌ no |
-| `SpreadingSnowyDirtBlockMixin` | early / common | no snowy dirt in 1.7.10 | ❌ delete |
-| `ShovelItemMixin` (flattenable / dirt paths) | early / common | Et Futurum `BlockDirtPath` + our own `ItemSpade` | ❌ likely no |
-| `BoneMealItemMixin` (`BoneMealItem#useOn`) | early / common | mixin `ItemBoneMeal#applyBonemeal` | ✅ |
-| `LivingEntityMixin` | early / common | mixin `EntityLivingBase` | ✅ |
-| `ExperienceOrbMixin` (`playerTouch`) | early / common | **`PlayerPickupXpEvent`** handler (cancelable, fired before XP is granted) | ❌ no |
-| `WanderingTraderManagerMixin` (`WanderingTraderSpawner`) | early / common | no wandering trader anywhere in 1.7.10 → our own spawn routine | ❌ no |
-| `ClientPlayerEntityMixin` (`LocalPlayer`) | early / **client** | mixin `EntityPlayerSP` | ✅ |
-| `Boots/Chestplate/Helmet/LeggingsItemMixin` (our own items) | early / **client** | 1.7.10 equivalent is `ItemArmor#getArmorTexture` + `RenderBiped` armour layers | ✅ 4 |
-| `FoxEntityEatSweetBerriesGoalMixin` (`Fox.FoxEatBerriesGoal`) | **late** / common, requires `TargetMods.DMOD` | or drop entirely for D-Mod's `IBerryBushHandler` API (§4.15) | ➕ late |
+| Mixin (1.21 target)                                           | Phase / side                                  | 1.7.10 handling                                                                   | Stays a mixin? |
+|---------------------------------------------------------------|-----------------------------------------------|-----------------------------------------------------------------------------------|----------------|
+| `BlockMixin` (`Block#isExceptionForConnection`)               | early / common                                | override `BlockFence#canConnectFenceTo` + `Block#canConnectRedstone`              | ❌ no          |
+| `PlantBlockMixin` (`BushBlock#mayPlaceOn`)                    | early / common                                | 1.7.10 **has `BlockBush`** (+ Forge `IPlantable`); put the check in our own block | ❌ no          |
+| `SpreadingSnowyDirtBlockMixin`                                | early / common                                | no snowy dirt in 1.7.10                                                           | ❌ delete      |
+| `ShovelItemMixin` (flattenable / dirt paths)                  | early / common                                | Et Futurum `BlockDirtPath` + our own `ItemSpade`                                  | ❌ likely no   |
+| `BoneMealItemMixin` (`BoneMealItem#useOn`)                    | early / common                                | mixin `ItemBoneMeal#applyBonemeal`                                                | ✅             |
+| `LivingEntityMixin`                                           | early / common                                | mixin `EntityLivingBase`                                                          | ✅             |
+| `ExperienceOrbMixin` (`playerTouch`)                          | early / common                                | **`PlayerPickupXpEvent`** handler (cancelable, fired before XP is granted)        | ❌ no          |
+| `WanderingTraderManagerMixin` (`WanderingTraderSpawner`)      | early / common                                | no wandering trader anywhere in 1.7.10 → our own spawn routine                    | ❌ no          |
+| `ClientPlayerEntityMixin` (`LocalPlayer`)                     | early / **client**                            | mixin `EntityPlayerSP`                                                            | ✅             |
+| `Boots/Chestplate/Helmet/LeggingsItemMixin` (our own items)   | early / **client**                            | 1.7.10 equivalent is `ItemArmor#getArmorTexture` + `RenderBiped` armour layers    | ✅ 4           |
+| `FoxEntityEatSweetBerriesGoalMixin` (`Fox.FoxEatBerriesGoal`) | **late** / common, requires `TargetMods.DMOD` | or drop entirely for D-Mod's `IBerryBushHandler` API (§4.15)                      | ➕ late        |
 
 **Net: 14 → 7** (6 early + 1 late) — a 50% cut in mixin surface, which matters because mixins are the main source of port fragility on 1.7.10.
 
@@ -409,7 +409,7 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |
 | **6. Rendering**         | Vanilla-path block wiring → flat items → ~10 ISBRH → targeted OBJ converter + 1 shared renderer → entity models (§5)                                                   | 2–3 weeks, mostly mechanical |
-| **7. Recipes & compat**  | recipe converter + custom recipe classes, tags, config, **Et Futurum / D-Mod integration** (§4.15), remaining mixins (§6), JEI                                                     | 1 week                       |
+| **7. Recipes & compat**  | recipe converter + custom recipe classes, tags, config, **Et Futurum / D-Mod integration** (§4.15), remaining mixins (§6), JEI                                         | 1 week                       |
 | **8. Polish**            | lang cleanup (16 files), sounds, textures, `mcmod.info`, CI, publishing                                                                                                | 2–3 days                     |
 
 Total ≈ **6–9 weeks** now that rendering is scoped (§5, ~2–3 weeks and mostly mechanical) and the mixin surface is cut by half. The spread is driven by the remaining open questions in §8 (structures, advancements, standalone banners add or remove ~1–2 weeks).

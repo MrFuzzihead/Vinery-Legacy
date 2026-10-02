@@ -10,13 +10,15 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.mrfuzzihead.vinery.client.gui.handler.slot.ExtendedSlot;
 import com.mrfuzzihead.vinery.client.gui.handler.slot.FermentationBarrelOutputSlot;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
 import com.mrfuzzihead.vinery.core.registry.RecipeTypesRegistry;
 import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
 import com.mrfuzzihead.vinery.core.util.JuiceUtil;
-import org.jetbrains.annotations.NotNull;
 
 public class FermentationBarrelGuiHandler extends AbstractContainerMenu {
 
@@ -31,7 +33,8 @@ public class FermentationBarrelGuiHandler extends AbstractContainerMenu {
         this(syncId, playerInventory, new SimpleContainer(6), new SimpleContainerData(4));
     }
 
-    public FermentationBarrelGuiHandler(int syncId, Inventory playerInventory, Container inventory, ContainerData data) {
+    public FermentationBarrelGuiHandler(int syncId, Inventory playerInventory, Container inventory,
+        ContainerData data) {
         super(ScreenhandlerTypeRegistry.FERMENTATION_BARREL_GUI_HANDLER.get(), syncId);
         this.inventory = inventory;
         this.level = playerInventory.player.level();
@@ -47,7 +50,13 @@ public class FermentationBarrelGuiHandler extends AbstractContainerMenu {
         this.addSlot(new ExtendedSlot(inventory, 1, 67, 58, this::isIngredient));
         this.addSlot(new ExtendedSlot(inventory, 2, 85, 58, this::isIngredient));
         this.addSlot(new ExtendedSlot(inventory, 3, 103, 58, this::isIngredient));
-        this.addSlot(new ExtendedSlot(inventory, WINE_BOTTLE_SLOT, 123, 58, stack -> stack.is(ObjectRegistry.WINE_BOTTLE.get())));
+        this.addSlot(
+            new ExtendedSlot(
+                inventory,
+                WINE_BOTTLE_SLOT,
+                123,
+                58,
+                stack -> stack.is(ObjectRegistry.WINE_BOTTLE.get())));
         this.addSlot(new FermentationBarrelOutputSlot(playerInventory.player, inventory, OUTPUT_SLOT_GENERAL, 103, 17));
     }
 
@@ -70,9 +79,13 @@ public class FermentationBarrelGuiHandler extends AbstractContainerMenu {
 
     private boolean isIngredient(ItemStack stack) {
         return this.level.getRecipeManager()
-                .getAllRecipesFor(RecipeTypesRegistry.FERMENTATION_BARREL_RECIPE_TYPE.get())
-                .stream()
-                .anyMatch(recipe -> recipe.value().getIngredients().stream().anyMatch(ingredient -> ingredient.test(stack)));
+            .getAllRecipesFor(RecipeTypesRegistry.FERMENTATION_BARREL_RECIPE_TYPE.get())
+            .stream()
+            .anyMatch(
+                recipe -> recipe.value()
+                    .getIngredients()
+                    .stream()
+                    .anyMatch(ingredient -> ingredient.test(stack)));
     }
 
     @Override

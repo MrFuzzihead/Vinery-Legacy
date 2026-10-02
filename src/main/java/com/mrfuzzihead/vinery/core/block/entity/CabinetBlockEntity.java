@@ -20,10 +20,13 @@ import net.minecraft.world.level.block.entity.ContainerOpenersCounter;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
-import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+
 public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
+
     private NonNullList<ItemStack> inventory;
     private final ContainerOpenersCounter stateManager;
 
@@ -31,6 +34,7 @@ public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
         super(EntityTypeRegistry.CABINET_BLOCK_ENTITY.get(), pos, state);
         this.inventory = NonNullList.withSize(18, ItemStack.EMPTY);
         this.stateManager = new ContainerOpenersCounter() {
+
             @Override
             protected void onOpen(Level world, BlockPos pos, BlockState state) {
                 world.setBlock(pos, state.setValue(BlockStateProperties.OPEN, true), 3);
@@ -42,8 +46,8 @@ public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
             }
 
             @Override
-            protected void openerCountChanged(Level world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-            }
+            protected void openerCountChanged(Level world, BlockPos pos, BlockState state, int oldViewerCount,
+                int newViewerCount) {}
 
             @Override
             protected boolean isOwnContainer(Player player) {
@@ -57,12 +61,12 @@ public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
         };
     }
 
-    public CabinetBlockEntity(BlockEntityType<? extends BlockEntity> entity,BlockPos pos, BlockState state)
-    {
-        super(entity,pos,state);
+    public CabinetBlockEntity(BlockEntityType<? extends BlockEntity> entity, BlockPos pos, BlockState state) {
+        super(entity, pos, state);
 
         this.inventory = NonNullList.withSize(18, ItemStack.EMPTY);
         this.stateManager = new ContainerOpenersCounter() {
+
             @Override
             protected void onOpen(Level world, BlockPos pos, BlockState state) {
                 world.setBlock(pos, state.setValue(BlockStateProperties.OPEN, true), 3);
@@ -74,8 +78,8 @@ public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
             }
 
             @Override
-            protected void openerCountChanged(Level world, BlockPos pos, BlockState state, int oldViewerCount, int newViewerCount) {
-            }
+            protected void openerCountChanged(Level world, BlockPos pos, BlockState state, int oldViewerCount,
+                int newViewerCount) {}
 
             @Override
             protected boolean isOwnContainer(Player player) {
@@ -91,18 +95,18 @@ public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
 
     @Override
     protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
-        super.saveAdditional(nbt,provider);
+        super.saveAdditional(nbt, provider);
         if (!this.trySaveLootTable(nbt)) {
-            ContainerHelper.saveAllItems(nbt, this.inventory,provider);
+            ContainerHelper.saveAllItems(nbt, this.inventory, provider);
         }
     }
 
     @Override
-    public void loadAdditional(CompoundTag nbt,HolderLookup.Provider provider) {
-        super.loadAdditional(nbt,provider);
+    public void loadAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
+        super.loadAdditional(nbt, provider);
         this.inventory = NonNullList.withSize(this.getContainerSize(), ItemStack.EMPTY);
         if (!this.tryLoadLootTable(nbt)) {
-            ContainerHelper.loadAllItems(nbt, this.inventory,provider);
+            ContainerHelper.loadAllItems(nbt, this.inventory, provider);
         }
     }
 
@@ -123,7 +127,10 @@ public class CabinetBlockEntity extends RandomizableContainerBlockEntity {
 
     @Override
     protected @NotNull Component getDefaultName() {
-        return Component.translatable(this.getBlockState().getBlock().getDescriptionId());
+        return Component.translatable(
+            this.getBlockState()
+                .getBlock()
+                .getDescriptionId());
     }
 
     @Override

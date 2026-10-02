@@ -2,6 +2,7 @@ package com.mrfuzzihead.vinery.core.recipe.input;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.RecipeInput;
+
 import org.jetbrains.annotations.NotNull;
 
 public record ApplePressMashingRecipeInput(ItemStack input) implements RecipeInput {

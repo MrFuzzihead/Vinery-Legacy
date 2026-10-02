@@ -1,12 +1,13 @@
 package com.mrfuzzihead.vinery.client.gui.handler.slot;
 
+import java.util.function.Predicate;
+
 import net.minecraft.world.Container;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 
-import java.util.function.Predicate;
-
 public class ExtendedSlot extends Slot {
+
     private final Predicate<ItemStack> filter;
 
     public ExtendedSlot(Container inventory, int index, int x, int y, Predicate<ItemStack> filter) {

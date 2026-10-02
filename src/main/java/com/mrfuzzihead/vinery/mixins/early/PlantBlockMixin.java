@@ -8,11 +8,13 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import com.mrfuzzihead.vinery.core.block.SpreadableGrassSlabBlock;
+
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import com.mrfuzzihead.vinery.core.block.SpreadableGrassSlabBlock;
 
 @Mixin(BushBlock.class)
 public class PlantBlockMixin extends Block {
@@ -22,10 +24,11 @@ public class PlantBlockMixin extends Block {
     }
 
     @Inject(method = "mayPlaceOn", at = @At("HEAD"), cancellable = true)
-    private void injected(BlockState floor, BlockGetter blockGetter, BlockPos blockPos, CallbackInfoReturnable<Boolean> cir) {
-        if(floor.is(BlockTags.DIRT)){
-            if(floor.getBlock() instanceof SpreadableGrassSlabBlock && floor.getValue(SlabBlock.TYPE) == SlabType.BOTTOM)
-                cir.setReturnValue(false);
+    private void injected(BlockState floor, BlockGetter blockGetter, BlockPos blockPos,
+        CallbackInfoReturnable<Boolean> cir) {
+        if (floor.is(BlockTags.DIRT)) {
+            if (floor.getBlock() instanceof SpreadableGrassSlabBlock
+                && floor.getValue(SlabBlock.TYPE) == SlabType.BOTTOM) cir.setReturnValue(false);
         }
     }
 }

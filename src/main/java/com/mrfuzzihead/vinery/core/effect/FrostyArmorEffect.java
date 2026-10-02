@@ -6,35 +6,29 @@ import net.minecraft.world.effect.MobEffectCategory;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.ai.attributes.AttributeModifier;
 import net.minecraft.world.entity.ai.attributes.Attributes;
+
 import com.mrfuzzihead.vinery.Vinery;
 
 public class FrostyArmorEffect extends MobEffect {
-    private static final ResourceLocation MOVEMENT_SPEED_ID = ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "frosty_movement_speed");
-    private static final ResourceLocation DAMAGE_ID = ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "frosty_damage");
-    private static final ResourceLocation ARMOR_ID = ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "frosty_armor");
+
+    private static final ResourceLocation MOVEMENT_SPEED_ID = ResourceLocation
+        .fromNamespaceAndPath(Vinery.MOD_ID, "frosty_movement_speed");
+    private static final ResourceLocation DAMAGE_ID = ResourceLocation
+        .fromNamespaceAndPath(Vinery.MOD_ID, "frosty_damage");
+    private static final ResourceLocation ARMOR_ID = ResourceLocation
+        .fromNamespaceAndPath(Vinery.MOD_ID, "frosty_armor");
 
     public static final double FROST_MULTIPLIER = -0.05D;
 
     public FrostyArmorEffect() {
         super(MobEffectCategory.NEUTRAL, 0x56CBFD);
         this.addAttributeModifier(
-                Attributes.MOVEMENT_SPEED,
-                MOVEMENT_SPEED_ID,
-                FROST_MULTIPLIER,
-                AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
-        );
-        this.addAttributeModifier(
-                Attributes.ATTACK_DAMAGE,
-                DAMAGE_ID,
-                2.0,
-                AttributeModifier.Operation.ADD_VALUE
-        );
-        this.addAttributeModifier(
-                Attributes.ARMOR,
-                ARMOR_ID,
-                4.0,
-                AttributeModifier.Operation.ADD_VALUE
-        );
+            Attributes.MOVEMENT_SPEED,
+            MOVEMENT_SPEED_ID,
+            FROST_MULTIPLIER,
+            AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL);
+        this.addAttributeModifier(Attributes.ATTACK_DAMAGE, DAMAGE_ID, 2.0, AttributeModifier.Operation.ADD_VALUE);
+        this.addAttributeModifier(Attributes.ARMOR, ARMOR_ID, 4.0, AttributeModifier.Operation.ADD_VALUE);
     }
 
     @Override

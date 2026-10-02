@@ -1,5 +1,9 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Supplier;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
@@ -16,15 +20,13 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
-import com.mrfuzzihead.vinery.core.registry.TagRegistry;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Supplier;
+import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
+import com.mrfuzzihead.vinery.core.registry.TagRegistry;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 
 @SuppressWarnings("deprecation")
 public class ShelfBlock extends StorageBlock {
@@ -52,9 +54,14 @@ public class ShelfBlock extends StorageBlock {
         BlockState blockState;
         Direction side = ctx.getClickedFace();
         if (side != Direction.DOWN && side != Direction.UP) {
-            blockState = this.defaultBlockState().setValue(FACING, ctx.getClickedFace());
+            blockState = this.defaultBlockState()
+                .setValue(FACING, ctx.getClickedFace());
         } else {
-            blockState = this.defaultBlockState().setValue(FACING, ctx.getHorizontalDirection().getOpposite());
+            blockState = this.defaultBlockState()
+                .setValue(
+                    FACING,
+                    ctx.getHorizontalDirection()
+                        .getOpposite());
         }
 
         if (blockState.canSurvive(ctx.getLevel(), ctx.getClickedPos())) {
@@ -65,7 +72,7 @@ public class ShelfBlock extends StorageBlock {
 
     @Override
     public Direction[] unAllowedDirections() {
-        return new Direction[]{Direction.DOWN};
+        return new Direction[] { Direction.DOWN };
     }
 
     @Override
@@ -79,7 +86,7 @@ public class ShelfBlock extends StorageBlock {
     }
 
     @Override
-    public int size(){
+    public int size() {
         return 9;
     }
 
@@ -95,29 +102,21 @@ public class ShelfBlock extends StorageBlock {
 
         if (f < oneS) {
             nSection = 0;
-        }
-        else if(f < oneS*2){
+        } else if (f < oneS * 2) {
             nSection = 1;
-        }
-        else if(f < oneS*3){
+        } else if (f < oneS * 3) {
             nSection = 2;
-        }
-        else if(f < oneS*4){
+        } else if (f < oneS * 4) {
             nSection = 3;
-        }
-        else if(f < oneS*5){
+        } else if (f < oneS * 5) {
             nSection = 4;
-        }
-        else if(f < oneS*6){
+        } else if (f < oneS * 6) {
             nSection = 5;
-        }
-        else if(f < oneS*7){
+        } else if (f < oneS * 7) {
             nSection = 6;
-        }
-        else if(f < oneS*8){
+        } else if (f < oneS * 8) {
             nSection = 7;
-        }
-        else nSection = 8;
+        } else nSection = 8;
 
         return 8 - nSection;
     }
@@ -133,22 +132,27 @@ public class ShelfBlock extends StorageBlock {
     public boolean canSurvive(BlockState state, LevelReader world, BlockPos pos) {
         VoxelShape shape;
         Direction direction;
-        switch (state.getValue(FACING).getOpposite()) {
+        switch (state.getValue(FACING)
+            .getOpposite()) {
             case EAST -> {
-                shape = world.getBlockState(pos.east()).getShape(world, pos.east());
+                shape = world.getBlockState(pos.east())
+                    .getShape(world, pos.east());
                 direction = Direction.WEST;
             }
 
             case SOUTH -> {
-                shape = world.getBlockState(pos.south()).getShape(world, pos.south());
+                shape = world.getBlockState(pos.south())
+                    .getShape(world, pos.south());
                 direction = Direction.NORTH;
             }
             case WEST -> {
-                shape = world.getBlockState(pos.west()).getShape(world, pos.west());
+                shape = world.getBlockState(pos.west())
+                    .getShape(world, pos.west());
                 direction = Direction.EAST;
             }
             default -> {
-                shape = world.getBlockState(pos.north()).getShape(world, pos.north());
+                shape = world.getBlockState(pos.north())
+                    .getShape(world, pos.north());
                 direction = Direction.SOUTH;
             }
         }
@@ -156,7 +160,8 @@ public class ShelfBlock extends StorageBlock {
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (!state.canSurvive(world, pos)) {
             world.scheduleTick(pos, this, 1);
         }

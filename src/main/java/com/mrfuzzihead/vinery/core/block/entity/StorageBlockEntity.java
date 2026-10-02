@@ -14,11 +14,14 @@ import net.minecraft.world.ContainerHelper;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
-import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 public class StorageBlockEntity extends BlockEntity implements Clearable {
+
     private int size;
 
     private NonNullList<ItemStack> inventory;
@@ -59,17 +62,17 @@ public class StorageBlockEntity extends BlockEntity implements Clearable {
 
     @Override
     public void loadAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
-        super.loadAdditional(nbt,provider);
+        super.loadAdditional(nbt, provider);
         this.size = nbt.getInt("size");
         this.inventory = NonNullList.withSize(this.size, ItemStack.EMPTY);
-        ContainerHelper.loadAllItems(nbt, this.inventory,provider);
+        ContainerHelper.loadAllItems(nbt, this.inventory, provider);
     }
 
     @Override
-    protected void saveAdditional(CompoundTag nbt,HolderLookup.Provider provider) {
-        ContainerHelper.saveAllItems(nbt, this.inventory,provider);
+    protected void saveAdditional(CompoundTag nbt, HolderLookup.Provider provider) {
+        ContainerHelper.saveAllItems(nbt, this.inventory, provider);
         nbt.putInt("size", this.size);
-        super.saveAdditional(nbt,provider);
+        super.saveAdditional(nbt, provider);
     }
 
     @Override

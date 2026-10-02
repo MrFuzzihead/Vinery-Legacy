@@ -2,9 +2,11 @@ package com.mrfuzzihead.vinery.core.item;
 
 import net.minecraft.world.item.ItemNameBlockItem;
 import net.minecraft.world.level.block.Block;
+
 import com.mrfuzzihead.vinery.core.util.GrapeType;
 
 public class GrapeBushSeedItem extends ItemNameBlockItem {
+
     private final GrapeType type;
 
     public GrapeBushSeedItem(Block block, Properties settings, GrapeType type) {

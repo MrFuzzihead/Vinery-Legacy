@@ -13,25 +13,35 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.material.Fluids;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 public class WindowBlock extends IronBarsBlock {
+
     public static final IntegerProperty PART = IntegerProperty.create("part", 0, 3);
 
     public WindowBlock(BlockBehaviour.Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any().setValue(NORTH, false).setValue(EAST, false).setValue(SOUTH, false).setValue(WEST, false).setValue(WATERLOGGED, false));
+        this.registerDefaultState(
+            this.stateDefinition.any()
+                .setValue(NORTH, false)
+                .setValue(EAST, false)
+                .setValue(SOUTH, false)
+                .setValue(WEST, false)
+                .setValue(WATERLOGGED, false));
     }
 
-    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer, ItemStack itemStack) {
+    public void setPlacedBy(Level world, BlockPos pos, BlockState state, @Nullable LivingEntity placer,
+        ItemStack itemStack) {
         if (!world.isClientSide()) {
             this.updateWindows(world, pos, state);
         }
 
     }
 
-    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         if (state.getValue(WATERLOGGED)) {
             world.scheduleTick(pos, Fluids.WATER, Fluids.WATER.getTickDelay(world));
         }
@@ -45,7 +55,7 @@ public class WindowBlock extends IronBarsBlock {
         int height = 0;
 
         BlockPos current;
-        for(current = lowest; current.compareTo(highest) <= 0; current = current.above()) {
+        for (current = lowest; current.compareTo(highest) <= 0; current = current.above()) {
             ++height;
         }
 
@@ -57,7 +67,7 @@ public class WindowBlock extends IronBarsBlock {
         } else {
             world.setBlock(lowest, state.setValue(PART, 1), 3);
 
-            for(current = lowest.above(); current.compareTo(highest) < 0; current = current.above()) {
+            for (current = lowest.above(); current.compareTo(highest) < 0; current = current.above()) {
                 world.setBlock(current, state.setValue(PART, 2), 3);
             }
 
@@ -67,7 +77,8 @@ public class WindowBlock extends IronBarsBlock {
     }
 
     private BlockPos getLowestWindow(LevelAccessor world, BlockPos pos) {
-        while(world.getBlockState(pos.below()).getBlock() == this) {
+        while (world.getBlockState(pos.below())
+            .getBlock() == this) {
             pos = pos.below();
         }
 
@@ -75,14 +86,16 @@ public class WindowBlock extends IronBarsBlock {
     }
 
     private BlockPos getHighestWindow(LevelAccessor world, BlockPos pos) {
-        while(world.getBlockState(pos.above()).getBlock() == this) {
+        while (world.getBlockState(pos.above())
+            .getBlock() == this) {
             pos = pos.above();
         }
 
         return pos;
     }
 
-    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos, boolean isMoving) {
+    public void neighborChanged(BlockState state, Level world, BlockPos pos, Block block, BlockPos fromPos,
+        boolean isMoving) {
         super.neighborChanged(state, world, pos, block, fromPos, isMoving);
         if (!world.isClientSide()) {
             this.updatePartOnNeighborChange(world, pos, state);
@@ -91,8 +104,10 @@ public class WindowBlock extends IronBarsBlock {
     }
 
     private void updatePartOnNeighborChange(Level world, BlockPos pos, BlockState state) {
-        boolean hasBelow = world.getBlockState(pos.below()).getBlock() == this;
-        boolean hasAbove = world.getBlockState(pos.above()).getBlock() == this;
+        boolean hasBelow = world.getBlockState(pos.below())
+            .getBlock() == this;
+        boolean hasAbove = world.getBlockState(pos.above())
+            .getBlock() == this;
         if (!hasBelow && !hasAbove) {
             world.setBlock(pos, state.setValue(PART, 0), 3);
         } else if (!hasBelow) {
@@ -107,4 +122,3 @@ public class WindowBlock extends IronBarsBlock {
         builder.add(PART, NORTH, EAST, WEST, SOUTH, WATERLOGGED);
     }
 }
-

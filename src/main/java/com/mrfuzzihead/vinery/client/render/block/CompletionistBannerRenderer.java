@@ -1,8 +1,5 @@
 package com.mrfuzzihead.vinery.client.render.block;
 
-import com.mojang.blaze3d.vertex.PoseStack;
-import com.mojang.blaze3d.vertex.VertexConsumer;
-import com.mojang.math.Axis;
 import net.minecraft.client.model.geom.ModelLayerLocation;
 import net.minecraft.client.model.geom.ModelPart;
 import net.minecraft.client.model.geom.PartPose;
@@ -16,13 +13,20 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
+
+import com.mojang.blaze3d.vertex.PoseStack;
+import com.mojang.blaze3d.vertex.VertexConsumer;
+import com.mojang.math.Axis;
 import com.mrfuzzihead.vinery.core.Vinery;
 import com.mrfuzzihead.vinery.core.block.CompletionistBannerBlock;
 import com.mrfuzzihead.vinery.core.block.CompletionistWallBannerBlock;
 import com.mrfuzzihead.vinery.core.block.entity.CompletionistBannerEntity;
 
 public class CompletionistBannerRenderer implements BlockEntityRenderer<CompletionistBannerEntity> {
-    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "banner"), "main");
+
+    public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(
+        ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "banner"),
+        "main");
 
     public static final String FLAG = "flag";
     private static final String POLE = "pole";
@@ -41,21 +45,39 @@ public class CompletionistBannerRenderer implements BlockEntityRenderer<Completi
     public static LayerDefinition createBodyLayer() {
         MeshDefinition meshDefinition = new MeshDefinition();
         PartDefinition partDefinition = meshDefinition.getRoot();
-        partDefinition.addOrReplaceChild(FLAG, CubeListBuilder.create().texOffs(0, 0).addBox(-10.0F, 0.0F, -1.0F, 20.0F, 40.0F, 1.0F, new CubeDeformation(0.0F)), PartPose.offsetAndRotation(0.0F, -44.0F, -1.0F, -0.0349F, 0.0F, 0.0F));
-        partDefinition.addOrReplaceChild(POLE, CubeListBuilder.create().texOffs(44, 0).addBox(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f), PartPose.ZERO);
-        partDefinition.addOrReplaceChild(BAR, CubeListBuilder.create().texOffs(0, 42).addBox(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f), PartPose.ZERO);
+        partDefinition.addOrReplaceChild(
+            FLAG,
+            CubeListBuilder.create()
+                .texOffs(0, 0)
+                .addBox(-10.0F, 0.0F, -1.0F, 20.0F, 40.0F, 1.0F, new CubeDeformation(0.0F)),
+            PartPose.offsetAndRotation(0.0F, -44.0F, -1.0F, -0.0349F, 0.0F, 0.0F));
+        partDefinition.addOrReplaceChild(
+            POLE,
+            CubeListBuilder.create()
+                .texOffs(44, 0)
+                .addBox(-1.0f, -30.0f, -1.0f, 2.0f, 42.0f, 2.0f),
+            PartPose.ZERO);
+        partDefinition.addOrReplaceChild(
+            BAR,
+            CubeListBuilder.create()
+                .texOffs(0, 42)
+                .addBox(-10.0f, -32.0f, -1.0f, 20.0f, 2.0f, 2.0f),
+            PartPose.ZERO);
         return LayerDefinition.create(meshDefinition, 64, 64);
     }
 
-    public static void renderBanner(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j, ModelPart modelPart, CompletionistBannerEntity banner) {
-        ResourceLocation location = ((CompletionistBannerBlock) banner.getBlockState().getBlock()).getRenderTexture();
+    public static void renderBanner(PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j,
+        ModelPart modelPart, CompletionistBannerEntity banner) {
+        ResourceLocation location = ((CompletionistBannerBlock) banner.getBlockState()
+            .getBlock()).getRenderTexture();
         VertexConsumer vc = multiBufferSource.getBuffer(RenderType.entitySolid(location));
 
         modelPart.render(poseStack, vc, i, j);
     }
 
     @Override
-    public void render(CompletionistBannerEntity banner, float f, PoseStack poseStack, MultiBufferSource multiBufferSource, int i, int j) {
+    public void render(CompletionistBannerEntity banner, float f, PoseStack poseStack,
+        MultiBufferSource multiBufferSource, int i, int j) {
         long time;
         float scale = 0.66f;
         boolean inInventory = banner.getLevel() == null;
@@ -66,7 +88,8 @@ public class CompletionistBannerRenderer implements BlockEntityRenderer<Completi
             poseStack.translate(0.5, 0.5, 0.5);
             this.pole.visible = true;
         } else {
-            time = banner.getLevel().getGameTime();
+            time = banner.getLevel()
+                .getGameTime();
             BlockState blockState = banner.getBlockState();
             float rotation;
             if (!(blockState.getBlock() instanceof CompletionistWallBannerBlock)) {
@@ -76,7 +99,8 @@ public class CompletionistBannerRenderer implements BlockEntityRenderer<Completi
                 this.pole.visible = true;
             } else {
                 poseStack.translate(0.5, -0.1666666716337204, 0.5);
-                rotation = -blockState.getValue(CompletionistWallBannerBlock.FACING).toYRot() + 180.0f;
+                rotation = -blockState.getValue(CompletionistWallBannerBlock.FACING)
+                    .toYRot() + 180.0f;
                 poseStack.mulPose(Axis.YP.rotationDegrees(rotation));
                 poseStack.translate(0.0, -0.3125, -0.4375);
                 this.pole.visible = false;
@@ -88,7 +112,8 @@ public class CompletionistBannerRenderer implements BlockEntityRenderer<Completi
         this.pole.render(poseStack, vertexConsumer, i, j);
         this.bar.render(poseStack, vertexConsumer, i, j);
         BlockPos blockPos = banner.getBlockPos();
-        float k = ((float) Math.floorMod(blockPos.getX() * 7L + blockPos.getY() * 9L + blockPos.getZ() * 13L + time, 100L) + f) / 100.0f;
+        float k = ((float) Math
+            .floorMod(blockPos.getX() * 7L + blockPos.getY() * 9L + blockPos.getZ() * 13L + time, 100L) + f) / 100.0f;
         this.flag.xRot = (-0.0125f + 0.01f * Mth.cos((float) Math.PI * 2 * k)) * (float) Math.PI;
         this.flag.y = -32.0f;
         renderBanner(poseStack, multiBufferSource, i, j, this.flag, banner);

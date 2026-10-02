@@ -1,9 +1,11 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.world.InteractionHand;
-import net.minecraft.world.InteractionResult;
 import net.minecraft.world.ItemInteractionResult;
 import net.minecraft.world.entity.LivingEntity;
 import net.minecraft.world.entity.player.Player;
@@ -25,14 +27,14 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
-import java.util.Map;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 
 public class ChairBlock extends Block {
+
     public static final EnumProperty<DoubleBlockHalf> HALF = BlockStateProperties.DOUBLE_BLOCK_HALF;
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -40,13 +42,15 @@ public class ChairBlock extends Block {
     private static final VoxelShape SHAPE_UPPER = makeUpperShape();
 
     public static final Map<Direction, VoxelShape> SHAPE_LOWER_MAP = net.minecraft.Util.make(new HashMap<>(), map -> {
-        for (Direction direction : Direction.Plane.HORIZONTAL.stream().toList()) {
+        for (Direction direction : Direction.Plane.HORIZONTAL.stream()
+            .toList()) {
             map.put(direction, GeneralUtil.rotateShape(Direction.NORTH, direction, SHAPE_LOWER));
         }
     });
 
     public static final Map<Direction, VoxelShape> SHAPE_UPPER_MAP = net.minecraft.Util.make(new HashMap<>(), map -> {
-        for (Direction direction : Direction.Plane.HORIZONTAL.stream().toList()) {
+        for (Direction direction : Direction.Plane.HORIZONTAL.stream()
+            .toList()) {
             map.put(direction, GeneralUtil.rotateShape(Direction.NORTH, direction, SHAPE_UPPER));
         }
     });
@@ -70,9 +74,15 @@ public class ChairBlock extends Block {
     }
 
     @Override
-    public void setPlacedBy(Level level, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity, ItemStack itemStack) {
+    public void setPlacedBy(Level level, BlockPos blockPos, BlockState blockState, @Nullable LivingEntity livingEntity,
+        ItemStack itemStack) {
         BlockPos abovePos = blockPos.above();
-        level.setBlock(abovePos, this.defaultBlockState().setValue(HALF, DoubleBlockHalf.UPPER).setValue(FACING, blockState.getValue(FACING)), 3);
+        level.setBlock(
+            abovePos,
+            this.defaultBlockState()
+                .setValue(HALF, DoubleBlockHalf.UPPER)
+                .setValue(FACING, blockState.getValue(FACING)),
+            3);
         super.setPlacedBy(level, blockPos, blockState, livingEntity, itemStack);
     }
 
@@ -90,16 +100,26 @@ public class ChairBlock extends Block {
     public @Nullable BlockState getStateForPlacement(BlockPlaceContext context) {
         BlockPos pos = context.getClickedPos();
         Level world = context.getLevel();
-        return pos.getY() < world.getMaxBuildHeight() - 1 && world.getBlockState(pos.above()).canBeReplaced(context) ? this.defaultBlockState().setValue(FACING, context.getHorizontalDirection().getOpposite()).setValue(HALF, DoubleBlockHalf.LOWER) : null;
+        return pos.getY() < world.getMaxBuildHeight() - 1 && world.getBlockState(pos.above())
+            .canBeReplaced(context) ? this.defaultBlockState()
+                .setValue(
+                    FACING,
+                    context.getHorizontalDirection()
+                        .getOpposite())
+                .setValue(HALF, DoubleBlockHalf.LOWER) : null;
     }
 
     public ChairBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any().setValue(FACING, Direction.NORTH).setValue(HALF, DoubleBlockHalf.LOWER));
+        this.registerDefaultState(
+            this.stateDefinition.any()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(HALF, DoubleBlockHalf.LOWER));
     }
 
     @Override
-    protected @NotNull ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level, BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
+    protected @NotNull ItemInteractionResult useItemOn(ItemStack itemStack, BlockState blockState, Level level,
+        BlockPos blockPos, Player player, InteractionHand interactionHand, BlockHitResult blockHitResult) {
         if (blockState.getValue(HALF) == DoubleBlockHalf.LOWER) {
             return GeneralUtil.onUse(level, player, interactionHand, blockHitResult, -0.2);
         }
@@ -138,6 +158,7 @@ public class ChairBlock extends Block {
 
     @Override
     public @NotNull VoxelShape getShape(BlockState state, BlockGetter world, BlockPos pos, CollisionContext context) {
-        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_UPPER_MAP.get(state.getValue(FACING)) : SHAPE_LOWER_MAP.get(state.getValue(FACING));
+        return state.getValue(HALF) == DoubleBlockHalf.UPPER ? SHAPE_UPPER_MAP.get(state.getValue(FACING))
+            : SHAPE_LOWER_MAP.get(state.getValue(FACING));
     }
 }

@@ -11,10 +11,11 @@ import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.SnowballItem;
 import net.minecraft.world.level.Level;
+
 import org.jetbrains.annotations.NotNull;
 
-
 public class RottenCherryItem extends SnowballItem {
+
     public RottenCherryItem(Item.Properties settings) {
         super(settings);
     }
@@ -22,7 +23,16 @@ public class RottenCherryItem extends SnowballItem {
     @Override
     public @NotNull InteractionResultHolder<ItemStack> use(Level world, Player user, InteractionHand hand) {
         ItemStack itemStack = user.getItemInHand(hand);
-        world.playSound(null, user.getX(), user.getY(), user.getZ(), SoundEvents.SNOWBALL_THROW, SoundSource.NEUTRAL, 0.5F, 0.4F / (world.getRandom().nextFloat() * 0.4F + 0.8F));
+        world.playSound(
+            null,
+            user.getX(),
+            user.getY(),
+            user.getZ(),
+            SoundEvents.SNOWBALL_THROW,
+            SoundSource.NEUTRAL,
+            0.5F,
+            0.4F / (world.getRandom()
+                .nextFloat() * 0.4F + 0.8F));
         if (!world.isClientSide) {
             Snowball snowballEntity = new Snowball(world, user);
             snowballEntity.setItem(itemStack);

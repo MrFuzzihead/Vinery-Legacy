@@ -1,6 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
-import com.mojang.serialization.MapCodec;
+import java.util.List;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -10,13 +11,11 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.HorizontalDirectionalBlock;
@@ -25,16 +24,21 @@ import net.minecraft.world.level.block.state.StateDefinition;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.phys.BlockHitResult;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.serialization.MapCodec;
 import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.TagRegistry;
-import org.jetbrains.annotations.NotNull;
-import java.util.List;
 
 public class BigBottleStorageBlock extends StorageBlock {
 
     public BigBottleStorageBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH).setValue(OPEN, false));
+        this.registerDefaultState(
+            this.defaultBlockState()
+                .setValue(FACING, Direction.NORTH)
+                .setValue(OPEN, false));
     }
 
     @Override
@@ -45,9 +49,9 @@ public class BigBottleStorageBlock extends StorageBlock {
     public static final BooleanProperty OPEN = BlockStateProperties.OPEN;
     private static final SoundEvent OPEN_SOUND = SoundEvents.BAMBOO_WOOD_DOOR_OPEN;
 
-
     @Override
-    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+        BlockHitResult hit) {
         ItemStack stack = player.getItemInHand(player.getUsedItemHand());
         if (player.isShiftKeyDown() && stack.isEmpty()) {
             if (!world.isClientSide()) {
@@ -84,7 +88,7 @@ public class BigBottleStorageBlock extends StorageBlock {
 
     @Override
     public Direction[] unAllowedDirections() {
-        return new Direction[]{Direction.DOWN, Direction.UP};
+        return new Direction[] { Direction.DOWN, Direction.UP };
     }
 
     @Override
@@ -93,15 +97,21 @@ public class BigBottleStorageBlock extends StorageBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> list, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> list,
+        TooltipFlag tooltipFlag) {
         MutableComponent allBold = Component.translatable("tooltip.vinery.large_bottle_first")
-                .withStyle(style -> style.withBold(true).withColor(ChatFormatting.GRAY));
+            .withStyle(
+                style -> style.withBold(true)
+                    .withColor(ChatFormatting.GRAY));
         MutableComponent allRest = Component.translatable("tooltip.vinery.large_bottle_rest")
-                .withStyle(ChatFormatting.GRAY);
+            .withStyle(ChatFormatting.GRAY);
 
-        MutableComponent combined = Component.empty().append(allBold).append(" ").append(allRest);
+        MutableComponent combined = Component.empty()
+            .append(allBold)
+            .append(" ")
+            .append(allRest);
         MutableComponent full = Component.translatable("tooltip.vinery.storage", combined)
-                .withStyle(ChatFormatting.GRAY);
+            .withStyle(ChatFormatting.GRAY);
 
         list.add(full);
     }

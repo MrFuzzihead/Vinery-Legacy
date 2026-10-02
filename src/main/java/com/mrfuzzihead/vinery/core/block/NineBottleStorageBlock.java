@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.List;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -8,20 +10,18 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
+
 import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.TagRegistry;
 
-import java.util.List;
-
 public class NineBottleStorageBlock extends StorageBlock {
-
 
     public NineBottleStorageBlock(Properties settings) {
         super(settings);
     }
+
     @Override
-    public int size(){
+    public int size() {
         return 9;
     }
 
@@ -37,13 +37,13 @@ public class NineBottleStorageBlock extends StorageBlock {
 
     @Override
     public Direction[] unAllowedDirections() {
-        return new Direction[]{Direction.DOWN, Direction.UP};
+        return new Direction[] { Direction.DOWN, Direction.UP };
     }
 
     @Override
     public int getSection(Float x, Float y) {
 
-        float l = (float) 1/3;
+        float l = (float) 1 / 3;
 
         int nSection;
         if (x < 0.375F) {
@@ -52,20 +52,26 @@ public class NineBottleStorageBlock extends StorageBlock {
             nSection = x < 0.6875F ? 1 : 2;
         }
 
-        int i = y >= l*2 ? 0 : y >= l ? 1 : 2;
+        int i = y >= l * 2 ? 0 : y >= l ? 1 : 2;
         return nSection + i * 3;
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> tooltip,
+        TooltipFlag tooltipFlag) {
         MutableComponent allBold = Component.translatable("tooltip.vinery.small_bottle_first")
-                .withStyle(style -> style.withBold(true).withColor(ChatFormatting.GRAY));
+            .withStyle(
+                style -> style.withBold(true)
+                    .withColor(ChatFormatting.GRAY));
         MutableComponent allRest = Component.translatable("tooltip.vinery.small_bottle_rest")
-                .withStyle(ChatFormatting.GRAY);
+            .withStyle(ChatFormatting.GRAY);
 
-        MutableComponent combined = Component.empty().append(allBold).append(" ").append(allRest);
+        MutableComponent combined = Component.empty()
+            .append(allBold)
+            .append(" ")
+            .append(allRest);
         MutableComponent full = Component.translatable("tooltip.vinery.storage", combined)
-                .withStyle(ChatFormatting.GRAY);
+            .withStyle(ChatFormatting.GRAY);
 
         tooltip.add(full);
     }

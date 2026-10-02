@@ -1,15 +1,20 @@
 package com.mrfuzzihead.vinery.core.registry;
 
-import dev.architectury.registry.registries.DeferredRegister;
-import dev.architectury.registry.registries.Registrar;
-import dev.architectury.registry.registries.RegistrySupplier;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.sounds.SoundEvent;
+
 import com.mrfuzzihead.vinery.Vinery;
 
+import dev.architectury.registry.registries.DeferredRegister;
+import dev.architectury.registry.registries.Registrar;
+import dev.architectury.registry.registries.RegistrySupplier;
+
 public class SoundEventRegistry {
-    private static final Registrar<SoundEvent> SOUND_EVENTS = DeferredRegister.create(Vinery.MOD_ID, Registries.SOUND_EVENT).getRegistrar();
+
+    private static final Registrar<SoundEvent> SOUND_EVENTS = DeferredRegister
+        .create(Vinery.MOD_ID, Registries.SOUND_EVENT)
+        .getRegistrar();
 
     public static final RegistrySupplier<SoundEvent> BLOCK_GRAPEVINE_POT_SQUEEZE = create();
     public static final RegistrySupplier<SoundEvent> CABINET_OPEN = create("cabinet_open");
@@ -27,6 +32,5 @@ public class SoundEventRegistry {
         return SOUND_EVENTS.register(id, () -> SoundEvent.createVariableRangeEvent(id));
     }
 
-    public static void init() {
-    }
+    public static void init() {}
 }

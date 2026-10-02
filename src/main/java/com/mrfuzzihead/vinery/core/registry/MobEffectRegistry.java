@@ -1,17 +1,20 @@
 package com.mrfuzzihead.vinery.core.registry;
 
-import com.mrfuzzihead.vinery.Vinery;
-import com.mrfuzzihead.vinery.core.effect.*;
-import dev.architectury.registry.registries.DeferredRegister;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
 
+import com.mrfuzzihead.vinery.Vinery;
+import com.mrfuzzihead.vinery.core.effect.*;
+
+import dev.architectury.registry.registries.DeferredRegister;
+
 public class MobEffectRegistry {
 
-    private static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister.create(Vinery.MOD_ID,Registries.MOB_EFFECT);
+    private static final DeferredRegister<MobEffect> EFFECTS = DeferredRegister
+        .create(Vinery.MOD_ID, Registries.MOB_EFFECT);
 
     public static final ResourceLocation ARMOR_EFFECT = Vinery.identifier("armor_effect");
     public static final ResourceLocation HEALTH_EFFECT = Vinery.identifier("health_effect");
@@ -49,7 +52,8 @@ public class MobEffectRegistry {
     }
 
     public static Holder<MobEffect> getHolder(ResourceLocation id) {
-        Holder<MobEffect> holder = EFFECTS.getRegistrar().getHolder(id);
+        Holder<MobEffect> holder = EFFECTS.getRegistrar()
+            .getHolder(id);
         if (holder == null) {
             throw new IllegalArgumentException("MobEffect with id " + id + " does not exist");
         }

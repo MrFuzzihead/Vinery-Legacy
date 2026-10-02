@@ -3,8 +3,10 @@ package com.mrfuzzihead.vinery.core.block.entity;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import net.minecraft.world.level.block.state.BlockState;
-import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+
 import org.jetbrains.annotations.NotNull;
+
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 
 public class DarkCherryHangingSignBlockEntity extends DarkCherrySignBlockEntity {
 

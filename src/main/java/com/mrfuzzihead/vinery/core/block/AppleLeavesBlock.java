@@ -7,7 +7,6 @@ import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
 import net.minecraft.tags.BlockTags;
 import net.minecraft.util.RandomSource;
-import net.minecraft.world.InteractionHand;
 import net.minecraft.world.InteractionResult;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.ItemStack;
@@ -26,18 +25,22 @@ import net.minecraft.world.level.block.state.properties.BooleanProperty;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
-import com.mrfuzzihead.vinery.PlatformHelper;
+
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.mrfuzzihead.vinery.PlatformHelper;
+
 public class AppleLeavesBlock extends LeavesBlock implements BonemealableBlock {
+
     public static final BooleanProperty CAN_GROW_APPLES = BooleanProperty.create("can_grow_apples");
     public static final BooleanProperty HAS_APPLES = BooleanProperty.create("has_apples");
     public static final IntegerProperty AGE = IntegerProperty.create("age", 0, 3);
 
     public AppleLeavesBlock(Properties settings) {
         super(settings);
-        this.registerDefaultState(this.stateDefinition.any()
+        this.registerDefaultState(
+            this.stateDefinition.any()
                 .setValue(PERSISTENT, true)
                 .setValue(DISTANCE, 7)
                 .setValue(CAN_GROW_APPLES, false)
@@ -47,14 +50,23 @@ public class AppleLeavesBlock extends LeavesBlock implements BonemealableBlock {
     }
 
     @Override
-    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player, BlockHitResult hit) {
+    public @NotNull InteractionResult useWithoutItem(BlockState state, Level world, BlockPos pos, Player player,
+        BlockHitResult hit) {
         if (state.getValue(HAS_APPLES) && state.getValue(AGE) == 3) {
             if (!world.isClientSide()) {
-                int dropCount = world.getRandom().nextBoolean() ? world.getRandom().nextInt(1, 4) : 1;
+                int dropCount = world.getRandom()
+                    .nextBoolean()
+                        ? world.getRandom()
+                            .nextInt(1, 4)
+                        : 1;
                 ItemStack dropStack = new ItemStack(Items.APPLE, dropCount);
                 AppleLeavesBlock.popResourceFromFace(world, pos, hit.getDirection(), dropStack);
                 world.playSound(null, pos, SoundEvents.ITEM_FRAME_REMOVE_ITEM, SoundSource.BLOCKS, 1F, 1F);
-                world.setBlock(pos, state.setValue(HAS_APPLES, false).setValue(AGE, 1), 2);
+                world.setBlock(
+                    pos,
+                    state.setValue(HAS_APPLES, false)
+                        .setValue(AGE, 1),
+                    2);
             }
             return InteractionResult.SUCCESS;
         }
@@ -73,12 +85,15 @@ public class AppleLeavesBlock extends LeavesBlock implements BonemealableBlock {
     @Override
     public BlockState getStateForPlacement(BlockPlaceContext ctx) {
         boolean canGrowApples = ctx.getLevel().random.nextFloat() < 0.3f;
-        return updateDistance(this.defaultBlockState()
+        return updateDistance(
+            this.defaultBlockState()
                 .setValue(PERSISTENT, true)
                 .setValue(CAN_GROW_APPLES, canGrowApples)
                 .setValue(AGE, 0)
                 .setValue(HAS_APPLES, false)
-                .setValue(WATERLOGGED, false), ctx.getLevel(), ctx.getClickedPos());
+                .setValue(WATERLOGGED, false),
+            ctx.getLevel(),
+            ctx.getClickedPos());
     }
 
     @Override
@@ -97,7 +112,9 @@ public class AppleLeavesBlock extends LeavesBlock implements BonemealableBlock {
         double chance = PlatformHelper.getAppleGrowthChance();
 
         if (can && !has && age < 2 && random.nextDouble() < chance && canGrowPlace(world, pos)) {
-            BlockState newState = age == 0 ? state.setValue(AGE, 1) : state.setValue(AGE, 2).setValue(HAS_APPLES, true);
+            BlockState newState = age == 0 ? state.setValue(AGE, 1)
+                : state.setValue(AGE, 2)
+                    .setValue(HAS_APPLES, true);
             world.setBlock(pos, newState, 2);
             world.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(newState));
         } else if (has && age == 2 && random.nextDouble() < chance && canGrowPlace(world, pos)) {
@@ -133,7 +150,9 @@ public class AppleLeavesBlock extends LeavesBlock implements BonemealableBlock {
         boolean has = s.getValue(HAS_APPLES);
 
         if (!has && age < 2 && canGrowPlace(level, pos)) {
-            BlockState newState = age == 0 ? s.setValue(AGE, 1) : s.setValue(AGE, 2).setValue(HAS_APPLES, true);
+            BlockState newState = age == 0 ? s.setValue(AGE, 1)
+                : s.setValue(AGE, 2)
+                    .setValue(HAS_APPLES, true);
             level.setBlock(pos, newState, 2);
             level.gameEvent(GameEvent.BLOCK_CHANGE, pos, GameEvent.Context.of(newState));
         } else if (has && age == 2 && canGrowPlace(level, pos)) {
@@ -144,12 +163,14 @@ public class AppleLeavesBlock extends LeavesBlock implements BonemealableBlock {
     }
 
     @Override
-    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState, LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
+    public @NotNull BlockState updateShape(BlockState state, Direction direction, BlockState neighborState,
+        LevelAccessor world, BlockPos pos, BlockPos neighborPos) {
         return updateDistance(state, world, pos);
     }
 
     private static int getDistanceAt(BlockState neighborState) {
-        return neighborState.getBlock() instanceof LeavesBlock ? neighborState.getValue(DISTANCE) : (neighborState.is(BlockTags.LOGS) ? 0 : 7);
+        return neighborState.getBlock() instanceof LeavesBlock ? neighborState.getValue(DISTANCE)
+            : (neighborState.is(BlockTags.LOGS) ? 0 : 7);
     }
 
     private BlockState updateDistance(BlockState state, LevelAccessor world, BlockPos pos) {

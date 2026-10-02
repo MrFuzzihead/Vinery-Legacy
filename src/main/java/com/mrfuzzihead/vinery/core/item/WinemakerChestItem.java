@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.item;
 
+import java.util.List;
+
 import net.minecraft.client.Minecraft;
 import net.minecraft.core.Holder;
 import net.minecraft.network.chat.Component;
@@ -9,17 +11,17 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.Level;
-import com.mrfuzzihead.vinery.core.registry.ArmorRegistryClient;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+import org.jetbrains.annotations.NotNull;
+
+import com.mrfuzzihead.vinery.core.registry.ArmorRegistryClient;
 
 public class WinemakerChestItem extends ArmorItem {
+
     private final ResourceLocation chestplateTexture;
 
-    public WinemakerChestItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties, ResourceLocation chestplateTexture) {
+    public WinemakerChestItem(Holder<ArmorMaterial> armorMaterial, Type type, Properties properties,
+        ResourceLocation chestplateTexture) {
         super(armorMaterial, type, properties);
         this.chestplateTexture = chestplateTexture;
     }
@@ -34,7 +36,8 @@ public class WinemakerChestItem extends ArmorItem {
     }
 
     @Override
-    public void appendHoverText(@NotNull ItemStack stack, TooltipContext context ,@NotNull List<Component> tooltip, @NotNull TooltipFlag flag) {
+    public void appendHoverText(@NotNull ItemStack stack, TooltipContext context, @NotNull List<Component> tooltip,
+        @NotNull TooltipFlag flag) {
         if (Minecraft.getInstance().level != null && Minecraft.getInstance().level.isClientSide()) {
             ArmorRegistryClient.appendToolTip(tooltip);
         }

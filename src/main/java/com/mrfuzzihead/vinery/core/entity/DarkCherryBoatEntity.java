@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.entity;
 
+import java.util.function.Supplier;
+
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.protocol.Packet;
 import net.minecraft.network.protocol.game.ClientGamePacketListener;
@@ -13,16 +15,17 @@ import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.vehicle.Boat;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.level.Level;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.mrfuzzihead.vinery.Vinery;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import org.jetbrains.annotations.NotNull;
-
-import java.util.function.Supplier;
 
 public class DarkCherryBoatEntity extends Boat {
 
-    private static final EntityDataAccessor<Integer> WOOD_TYPE = SynchedEntityData.defineId(DarkCherryBoatEntity.class, EntityDataSerializers.INT);
+    private static final EntityDataAccessor<Integer> WOOD_TYPE = SynchedEntityData
+        .defineId(DarkCherryBoatEntity.class, EntityDataSerializers.INT);
 
     public DarkCherryBoatEntity(EntityType<? extends Boat> type, Level level) {
         super(type, level);
@@ -53,7 +56,10 @@ public class DarkCherryBoatEntity extends Boat {
     @Override
     protected void addAdditionalSaveData(CompoundTag pCompound) {
         super.addAdditionalSaveData(pCompound);
-        pCompound.putString("Type", this.getWoodType().getName());
+        pCompound.putString(
+            "Type",
+            this.getWoodType()
+                .getName());
     }
 
     public Type getWoodType() {
@@ -66,17 +72,19 @@ public class DarkCherryBoatEntity extends Boat {
 
     @Override
     public @NotNull Item getDropItem() {
-        return this.getWoodType().getItem().get();
+        return this.getWoodType()
+            .getItem()
+            .get();
     }
 
     @Override
     public @NotNull Packet<ClientGamePacketListener> getAddEntityPacket(ServerEntity entity) {
-        return new ClientboundAddEntityPacket(this,entity);
+        return new ClientboundAddEntityPacket(this, entity);
     }
 
     public enum Type {
-        DARK_CHERRY("dark_cherry", ObjectRegistry.DARK_CHERRY_BOAT, ObjectRegistry.DARK_CHERRY_CHEST_BOAT);
 
+        DARK_CHERRY("dark_cherry", ObjectRegistry.DARK_CHERRY_BOAT, ObjectRegistry.DARK_CHERRY_CHEST_BOAT);
 
         private final String name;
         private final Supplier<Item> item;
@@ -90,7 +98,8 @@ public class DarkCherryBoatEntity extends Boat {
 
         public ResourceLocation getTexture(boolean hasChest) {
             if (hasChest) {
-                return ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "textures/entity/chest_boat/" + name + ".png");
+                return ResourceLocation
+                    .fromNamespaceAndPath(Vinery.MOD_ID, "textures/entity/chest_boat/" + name + ".png");
             }
             return ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "textures/entity/boat/" + name + ".png");
         }
@@ -128,7 +137,8 @@ public class DarkCherryBoatEntity extends Boat {
             Type[] values = values();
 
             for (Type value : values) {
-                if (value.getName().equals(name)) {
+                if (value.getName()
+                    .equals(name)) {
                     return value;
                 }
             }

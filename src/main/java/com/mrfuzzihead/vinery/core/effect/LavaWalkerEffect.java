@@ -11,6 +11,7 @@ import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.phys.Vec3;
 
 public class LavaWalkerEffect extends MobEffect {
+
     public LavaWalkerEffect() {
         super(MobEffectCategory.BENEFICIAL, 0xCC3300);
     }
@@ -25,18 +26,41 @@ public class LavaWalkerEffect extends MobEffect {
             BlockPos futureBlockPos = new BlockPos((int) futurePos.x, (int) futurePos.y, (int) futurePos.z);
             if (pLivingEntity.isInLava()) {
                 pLivingEntity.setDeltaMovement(movement.add(0, 0.1, 0));
-            } else if (pLivingEntity.level().getFluidState(onPos).is(FluidTags.LAVA)) {
-                if (pLivingEntity.level() instanceof ServerLevel level) {
-                    level.sendParticles(ParticleTypes.LAVA, pos.x(), pos.y() + 0.1D, pos.z(), 10, 0.2, 0.1, 0.2, 1.5);
-                }
-                pLivingEntity.setDeltaMovement(movement.x(), Math.max(movement.y(), 0D), movement.z());
-                pLivingEntity.setOnGround(true);
-            } else if (pLivingEntity.level().getFluidState(futureBlockPos).is(FluidTags.LAVA) && movement.y() > -0.8) {
-                if (pLivingEntity.level() instanceof ServerLevel level) {
-                    level.sendParticles(ParticleTypes.LAVA, pos.x(), pos.y() + 0.1D, pos.z(), 10, 0.2, 0.1, 0.2, 1.5);
-                }
-                pLivingEntity.setDeltaMovement(movement.x(), Math.max(movement.y(), movement.y() * 0.5), movement.z());
-            }
+            } else if (pLivingEntity.level()
+                .getFluidState(onPos)
+                .is(FluidTags.LAVA)) {
+                    if (pLivingEntity.level() instanceof ServerLevel level) {
+                        level.sendParticles(
+                            ParticleTypes.LAVA,
+                            pos.x(),
+                            pos.y() + 0.1D,
+                            pos.z(),
+                            10,
+                            0.2,
+                            0.1,
+                            0.2,
+                            1.5);
+                    }
+                    pLivingEntity.setDeltaMovement(movement.x(), Math.max(movement.y(), 0D), movement.z());
+                    pLivingEntity.setOnGround(true);
+                } else if (pLivingEntity.level()
+                    .getFluidState(futureBlockPos)
+                    .is(FluidTags.LAVA) && movement.y() > -0.8) {
+                        if (pLivingEntity.level() instanceof ServerLevel level) {
+                            level.sendParticles(
+                                ParticleTypes.LAVA,
+                                pos.x(),
+                                pos.y() + 0.1D,
+                                pos.z(),
+                                10,
+                                0.2,
+                                0.1,
+                                0.2,
+                                1.5);
+                        }
+                        pLivingEntity
+                            .setDeltaMovement(movement.x(), Math.max(movement.y(), movement.y() * 0.5), movement.z());
+                    }
             return super.applyEffectTick(pLivingEntity, pAmplifier);
         }
         return false;

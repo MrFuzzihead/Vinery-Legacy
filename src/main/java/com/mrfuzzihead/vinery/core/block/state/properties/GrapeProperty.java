@@ -1,15 +1,18 @@
 package com.mrfuzzihead.vinery.core.block.state.properties;
 
-import net.minecraft.world.level.block.state.properties.Property;
-import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
-import com.mrfuzzihead.vinery.core.util.GrapeType;
-import org.jetbrains.annotations.NotNull;
-
 import java.util.Collection;
 import java.util.Optional;
 import java.util.Set;
 
+import net.minecraft.world.level.block.state.properties.Property;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
+
 public class GrapeProperty extends Property<GrapeType> {
+
     private final Set<GrapeType> values;
 
     protected GrapeProperty(String name) {
@@ -34,8 +37,7 @@ public class GrapeProperty extends Property<GrapeType> {
     @Override
     public @NotNull Optional<GrapeType> getValue(String string) {
         for (GrapeType grapeType : values) {
-            if (string.equals(grapeType.getSerializedName()))
-                return Optional.of(grapeType);
+            if (string.equals(grapeType.getSerializedName())) return Optional.of(grapeType);
         }
         return Optional.empty();
     }

@@ -1,5 +1,7 @@
 package com.mrfuzzihead.vinery.core.block;
 
+import java.util.List;
+
 import net.minecraft.ChatFormatting;
 import net.minecraft.core.Direction;
 import net.minecraft.network.chat.Component;
@@ -8,11 +10,9 @@ import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.TooltipFlag;
-import net.minecraft.world.level.BlockGetter;
+
 import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.TagRegistry;
-
-import java.util.List;
 
 public class FourBottleStorageBlock extends StorageBlock {
 
@@ -26,7 +26,7 @@ public class FourBottleStorageBlock extends StorageBlock {
     }
 
     @Override
-    public int size(){
+    public int size() {
         return 4;
     }
 
@@ -37,26 +37,22 @@ public class FourBottleStorageBlock extends StorageBlock {
 
     @Override
     public Direction[] unAllowedDirections() {
-        return new Direction[]{Direction.DOWN, Direction.UP};
+        return new Direction[] { Direction.DOWN, Direction.UP };
     }
-
 
     @Override
     public int getSection(Float x, Float y) {
 
         if (x > 0.375 && x < 0.625) {
-            if(y >= 0.55){
-                return  0;
-            }
-            else if(y <= 0.45) {
+            if (y >= 0.55) {
+                return 0;
+            } else if (y <= 0.45) {
                 return 3;
             }
-        }
-        else if(y > 0.35 && y < 0.65){
-            if(x < 0.4){
+        } else if (y > 0.35 && y < 0.65) {
+            if (x < 0.4) {
                 return 1;
-            }
-            else if(x > 0.65){
+            } else if (x > 0.65) {
                 return 2;
             }
         }
@@ -65,15 +61,21 @@ public class FourBottleStorageBlock extends StorageBlock {
     }
 
     @Override
-    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> tooltip, TooltipFlag tooltipFlag) {
+    public void appendHoverText(ItemStack itemStack, Item.TooltipContext tooltipContext, List<Component> tooltip,
+        TooltipFlag tooltipFlag) {
         MutableComponent allBold = Component.translatable("tooltip.vinery.small_bottle_first")
-                .withStyle(style -> style.withBold(true).withColor(ChatFormatting.GRAY));
+            .withStyle(
+                style -> style.withBold(true)
+                    .withColor(ChatFormatting.GRAY));
         MutableComponent allRest = Component.translatable("tooltip.vinery.small_bottle_rest")
-                .withStyle(ChatFormatting.GRAY);
+            .withStyle(ChatFormatting.GRAY);
 
-        MutableComponent combined = Component.empty().append(allBold).append(" ").append(allRest);
+        MutableComponent combined = Component.empty()
+            .append(allBold)
+            .append(" ")
+            .append(allRest);
         MutableComponent full = Component.translatable("tooltip.vinery.storage", combined)
-                .withStyle(ChatFormatting.GRAY);
+            .withStyle(ChatFormatting.GRAY);
 
         tooltip.add(full);
     }

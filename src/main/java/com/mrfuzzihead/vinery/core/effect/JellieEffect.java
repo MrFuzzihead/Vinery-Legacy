@@ -2,7 +2,6 @@ package com.mrfuzzihead.vinery.core.effect;
 
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffectCategory;
-import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.LivingEntity;
 
 public class JellieEffect extends MobEffect {
@@ -31,13 +30,13 @@ public class JellieEffect extends MobEffect {
 
     @Override
     public void onEffectStarted(LivingEntity entity, int amplifier) {
-        entity.setAbsorptionAmount(entity.getAbsorptionAmount() + (float)(4 * (amplifier + 1)));
+        entity.setAbsorptionAmount(entity.getAbsorptionAmount() + (float) (4 * (amplifier + 1)));
         super.onEffectStarted(entity, amplifier);
     }
 
     @Override
     public void onEffectAdded(LivingEntity entity, int amplifier) {
-        entity.setAbsorptionAmount(entity.getAbsorptionAmount() - (float)(4 * (amplifier + 1)));
+        entity.setAbsorptionAmount(entity.getAbsorptionAmount() - (float) (4 * (amplifier + 1)));
         super.onEffectAdded(entity, amplifier);
     }
 }

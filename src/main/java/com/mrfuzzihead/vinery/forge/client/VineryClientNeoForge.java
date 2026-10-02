@@ -1,5 +1,8 @@
 package com.mrfuzzihead.vinery.forge.client;
 
+import java.nio.file.Path;
+import java.util.Optional;
+
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
 import net.minecraft.client.model.geom.ModelLayerLocation;
@@ -22,6 +25,9 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
+
+import org.jetbrains.annotations.NotNull;
+
 import com.mrfuzzihead.vinery.client.VineryClient;
 import com.mrfuzzihead.vinery.client.gui.ApplePressGui;
 import com.mrfuzzihead.vinery.client.gui.FermentationBarrelGui;
@@ -30,10 +36,6 @@ import com.mrfuzzihead.vinery.core.block.state.properties.VineryWoodType;
 import com.mrfuzzihead.vinery.core.entity.DarkCherryBoatEntity;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
-import org.jetbrains.annotations.NotNull;
-
-import java.nio.file.Path;
-import java.util.Optional;
 
 @EventBusSubscriber(modid = Vinery.MOD_ID, value = Dist.CLIENT)
 public class VineryClientNeoForge {
@@ -55,19 +57,21 @@ public class VineryClientNeoForge {
     @SubscribeEvent
     public static void onAddPackFinders(AddPackFindersEvent event) {
         if (event.getPackType() == PackType.CLIENT_RESOURCES) {
-            Path packPath = ModList.get().getModFileById(Vinery.MOD_ID)
-                    .getFile()
-                    .findResource("resourcepacks/bushy_leaves");
+            Path packPath = ModList.get()
+                .getModFileById(Vinery.MOD_ID)
+                .getFile()
+                .findResource("resourcepacks/bushy_leaves");
 
             event.addRepositorySource(consumer -> {
                 PackLocationInfo packLocationInfo = new PackLocationInfo(
-                        ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "bushy_leaves").toString(),
-                        Component.literal("Bushy Leaves for Vinery"),
-                        PackSource.BUILT_IN,
-                        Optional.empty()
-                );
+                    ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "bushy_leaves")
+                        .toString(),
+                    Component.literal("Bushy Leaves for Vinery"),
+                    PackSource.BUILT_IN,
+                    Optional.empty());
 
                 Pack.ResourcesSupplier resourcesSupplier = new Pack.ResourcesSupplier() {
+
                     @Override
                     public @NotNull PathPackResources openPrimary(PackLocationInfo info) {
                         return new PathPackResources(info, packPath);
@@ -80,11 +84,10 @@ public class VineryClientNeoForge {
                 };
 
                 Pack pack = Pack.readMetaAndCreate(
-                        packLocationInfo,
-                        resourcesSupplier,
-                        PackType.CLIENT_RESOURCES,
-                        new PackSelectionConfig(false, Pack.Position.TOP, false)
-                );
+                    packLocationInfo,
+                    resourcesSupplier,
+                    PackType.CLIENT_RESOURCES,
+                    new PackSelectionConfig(false, Pack.Position.TOP, false));
 
                 if (pack != null) {
                     consumer.accept(pack);
@@ -93,12 +96,19 @@ public class VineryClientNeoForge {
         }
     }
 
-
     @SubscribeEvent
     public static void registerLayerDefinitions(EntityRenderersEvent.RegisterLayerDefinitions event) {
         for (DarkCherryBoatEntity.Type type : DarkCherryBoatEntity.Type.values()) {
-            event.registerLayerDefinition(new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, type.getModelLocation()), "main"), BoatModel::createBodyModel);
-            event.registerLayerDefinition(new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, type.getChestModelLocation()), "main"), ChestBoatModel::createBodyModel);
+            event.registerLayerDefinition(
+                new ModelLayerLocation(
+                    ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, type.getModelLocation()),
+                    "main"),
+                BoatModel::createBodyModel);
+            event.registerLayerDefinition(
+                new ModelLayerLocation(
+                    ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, type.getChestModelLocation()),
+                    "main"),
+                ChestBoatModel::createBodyModel);
         }
     }
 

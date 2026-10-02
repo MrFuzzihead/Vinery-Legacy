@@ -1,6 +1,5 @@
 package com.mrfuzzihead.vinery.client.gui;
 
-import com.mojang.blaze3d.systems.RenderSystem;
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
 import net.minecraft.client.gui.GuiGraphics;
@@ -9,11 +8,14 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
+
+import com.mojang.blaze3d.systems.RenderSystem;
 import com.mrfuzzihead.vinery.client.gui.handler.ApplePressGuiHandler;
 import com.mrfuzzihead.vinery.core.Vinery;
 
 @Environment(EnvType.CLIENT)
 public class ApplePressGui extends AbstractContainerScreen<ApplePressGuiHandler> {
+
     public static final ResourceLocation TEXTURE = Vinery.identifier("textures/gui/apple_press_gui.png");
 
     public static final int MASHING_BAR_X = 40;
@@ -63,13 +65,20 @@ public class ApplePressGui extends AbstractContainerScreen<ApplePressGuiHandler>
             int height = menu.getScaledProgress(1);
             int xPosition = x + FERMENTING_BAR_X;
             int yPosition = y + FERMENTING_BAR_Y + FERMENTING_BAR_HEIGHT - height;
-            guiGraphics.blit(TEXTURE, xPosition, yPosition, FERMENTING_BAR_U, FERMENTING_BAR_V + FERMENTING_BAR_HEIGHT - height, FERMENTING_BAR_WIDTH, height);
+            guiGraphics.blit(
+                TEXTURE,
+                xPosition,
+                yPosition,
+                FERMENTING_BAR_U,
+                FERMENTING_BAR_V + FERMENTING_BAR_HEIGHT - height,
+                FERMENTING_BAR_WIDTH,
+                height);
         }
     }
 
     @Override
     public void render(GuiGraphics guiGraphics, int mouseX, int mouseY, float delta) {
-        renderBackground(guiGraphics,mouseX,mouseY,delta);
+        renderBackground(guiGraphics, mouseX, mouseY, delta);
         super.render(guiGraphics, mouseX, mouseY, delta);
         renderTooltip(guiGraphics, mouseX, mouseY);
     }

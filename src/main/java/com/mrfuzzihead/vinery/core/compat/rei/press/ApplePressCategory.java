@@ -1,6 +1,12 @@
 package com.mrfuzzihead.vinery.core.compat.rei.press;
 
+import java.util.List;
+
+import net.minecraft.network.chat.Component;
+
 import com.google.common.collect.Lists;
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+
 import me.shedaniel.math.Point;
 import me.shedaniel.math.Rectangle;
 import me.shedaniel.rei.api.client.gui.Renderer;
@@ -9,10 +15,6 @@ import me.shedaniel.rei.api.client.gui.widgets.Widgets;
 import me.shedaniel.rei.api.client.registry.display.DisplayCategory;
 import me.shedaniel.rei.api.common.category.CategoryIdentifier;
 import me.shedaniel.rei.api.common.util.EntryStacks;
-import net.minecraft.network.chat.Component;
-import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-
-import java.util.List;
 
 public class ApplePressCategory implements DisplayCategory<ApplePressDisplay> {
 
@@ -38,14 +40,21 @@ public class ApplePressCategory implements DisplayCategory<ApplePressDisplay> {
         widgets.add(Widgets.createRecipeBase(bounds));
 
         widgets.add(Widgets.createResultSlotBackground(new Point(startPoint.x + 61, startPoint.y)));
-        widgets.add(Widgets.createArrow(new Point(startPoint.x + 24, startPoint.y))
+        widgets.add(
+            Widgets.createArrow(new Point(startPoint.x + 24, startPoint.y))
                 .animationDurationTicks(72));
-        widgets.add(Widgets.createSlot(new Point(startPoint.x + 61, startPoint.y + 1))
-                .entries(display.getOutputEntries().get(0))
+        widgets.add(
+            Widgets.createSlot(new Point(startPoint.x + 61, startPoint.y + 1))
+                .entries(
+                    display.getOutputEntries()
+                        .get(0))
                 .disableBackground()
                 .markOutput());
-        widgets.add(Widgets.createSlot(new Point(startPoint.x + 1, startPoint.y + 1))
-                .entries(display.getInputEntries().getFirst())
+        widgets.add(
+            Widgets.createSlot(new Point(startPoint.x + 1, startPoint.y + 1))
+                .entries(
+                    display.getInputEntries()
+                        .getFirst())
                 .markInput());
         return widgets;
     }

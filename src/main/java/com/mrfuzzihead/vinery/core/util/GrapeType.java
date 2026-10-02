@@ -1,23 +1,30 @@
 package com.mrfuzzihead.vinery.core.util;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.util.StringRepresentable;
-import net.minecraft.world.item.Item;
-import net.minecraft.world.item.Items;
-import org.jetbrains.annotations.NotNull;
+import static com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry.GRAPE_TYPE_TYPES;
 
 import java.util.Objects;
 import java.util.function.Supplier;
 
-import static com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry.GRAPE_TYPE_TYPES;
+import net.minecraft.util.StringRepresentable;
+import net.minecraft.world.item.Item;
+import net.minecraft.world.item.Items;
+
+import org.jetbrains.annotations.NotNull;
+
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
 public class GrapeType implements Comparable<GrapeType>, StringRepresentable {
-    public static final Codec<GrapeType> CODEC = RecordCodecBuilder.create(inst->inst.group(
-            Codec.STRING.fieldOf("id").forGetter(GrapeType::getId),
-            Codec.BOOL.fieldOf("lattice").forGetter(GrapeType::isLattice),
-            Codec.BOOL.fieldOf("red").forGetter(GrapeType::isRed)
-    ).apply(inst,GrapeType::new));
+
+    public static final Codec<GrapeType> CODEC = RecordCodecBuilder.create(
+        inst -> inst.group(
+            Codec.STRING.fieldOf("id")
+                .forGetter(GrapeType::getId),
+            Codec.BOOL.fieldOf("lattice")
+                .forGetter(GrapeType::isLattice),
+            Codec.BOOL.fieldOf("red")
+                .forGetter(GrapeType::isRed))
+            .apply(inst, GrapeType::new));
     private final String id;
     private final boolean lattice;
     private final boolean red;
@@ -29,7 +36,8 @@ public class GrapeType implements Comparable<GrapeType>, StringRepresentable {
         this(id, () -> Items.AIR, () -> Items.AIR, () -> Items.AIR, lattice, red);
     }
 
-    private GrapeType(String id, Supplier<Item> fruit, Supplier<Item> seeds, Supplier<Item> bottle, boolean lattice, boolean red) {
+    private GrapeType(String id, Supplier<Item> fruit, Supplier<Item> seeds, Supplier<Item> bottle, boolean lattice,
+        boolean red) {
         this.id = id;
         this.fruit = fruit;
         this.seeds = seeds;
@@ -40,7 +48,8 @@ public class GrapeType implements Comparable<GrapeType>, StringRepresentable {
 
     public static GrapeType fromString(String id) {
         for (GrapeType type : GRAPE_TYPE_TYPES) {
-            if (type.getSerializedName().equals(id)) {
+            if (type.getSerializedName()
+                .equals(id)) {
                 return type;
             }
         }

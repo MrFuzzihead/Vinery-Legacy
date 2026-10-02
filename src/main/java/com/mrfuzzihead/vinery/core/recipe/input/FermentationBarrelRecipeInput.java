@@ -1,22 +1,18 @@
 package com.mrfuzzihead.vinery.core.recipe.input;
 
-import com.mojang.serialization.Codec;
-import com.mojang.serialization.MapCodec;
-import com.mojang.serialization.codecs.RecordCodecBuilder;
-import net.minecraft.core.NonNullList;
+import java.util.List;
+
 import net.minecraft.network.RegistryFriendlyByteBuf;
 import net.minecraft.network.codec.StreamCodec;
 import net.minecraft.world.item.ItemStack;
-import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeInput;
 
-import java.util.List;
+import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 
-public record FermentationBarrelRecipeInput(
-        List<ItemStack> ingredientStacks,
-        ItemStack wineBottle,
-        JuiceData data
-) implements RecipeInput {
+public record FermentationBarrelRecipeInput(List<ItemStack> ingredientStacks, ItemStack wineBottle, JuiceData data)
+    implements RecipeInput {
 
     public static final int WINE_BOTTLE_SLOT = 0;
 
@@ -41,17 +37,20 @@ public record FermentationBarrelRecipeInput(
     }
 
     public record JuiceData(String type, int amount) {
-        public static final MapCodec<JuiceData> CODEC = RecordCodecBuilder.mapCodec(
-                instance -> instance.group(
-                        Codec.STRING.fieldOf("type").forGetter(JuiceData::type),
-                        Codec.INT.fieldOf("amount").forGetter(JuiceData::amount)
-                ).apply(instance, JuiceData::new)
-        );
 
-        public static final StreamCodec<RegistryFriendlyByteBuf,JuiceData> STREAM_CODEC = new StreamCodec<RegistryFriendlyByteBuf, JuiceData>() {
+        public static final MapCodec<JuiceData> CODEC = RecordCodecBuilder.mapCodec(
+            instance -> instance.group(
+                Codec.STRING.fieldOf("type")
+                    .forGetter(JuiceData::type),
+                Codec.INT.fieldOf("amount")
+                    .forGetter(JuiceData::amount))
+                .apply(instance, JuiceData::new));
+
+        public static final StreamCodec<RegistryFriendlyByteBuf, JuiceData> STREAM_CODEC = new StreamCodec<RegistryFriendlyByteBuf, JuiceData>() {
+
             @Override
             public JuiceData decode(RegistryFriendlyByteBuf buf) {
-                return new JuiceData(buf.readUtf(),buf.readInt());
+                return new JuiceData(buf.readUtf(), buf.readInt());
             }
 
             @Override
