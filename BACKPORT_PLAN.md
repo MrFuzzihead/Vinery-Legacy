@@ -279,7 +279,7 @@ com.mrfuzzihead.vinery.compat.CompatLoader                     // single entry p
 ### 4.16 Misc
 - 🔁 `ResourceLocation.fromNamespaceAndPath` → `new ResourceLocation(...)` (1.7.10 has `ResourceLocation` ✅).
 - ✅ `SoundEvent` registry → not needed; 1.7.10 `sounds.json` + `playSound` (already present in resources).
-- ❌ `AddPackFindersEvent` “bushy leaves” pack → no discovery mechanism in 1.7.10. The pack ships at `resourcepacks/bushy_leaves/` for manual copy; a config-gated texture swap via `IIconHandler`/ISBRH is a possible later enhancement.
+- ❌ `AddPackFindersEvent` “bushy leaves” pack → no discovery mechanism in 1.7.10, **and** its content is 1.21 model/blockstate JSON that 1.7.10 cannot read even if a player copies it into their resource packs. Parked in `src/port-holding/resources/` pending re-implementation as a config-gated texture swap (`IIconHandler`/ISBRH) on the leaves blocks.
 - 🔁 `commands` → 1.7.10 `ICommand` (`net.minecraft.command.CommandBase`).
 
 ### 4.17 Access widener → 1.7.10 access transformer translation
@@ -296,6 +296,29 @@ The 1.21 `vinery.accesswidener` was a useful checklist of encapsulation walls. A
 | `FireBlock.setFlammable`                               | 1.7.10 `Block#setFireResistance` + `BlockFlammable`                           | ❌ no      |
 
 **Conclusion: leave `accessTransformersFile` empty.** Revisit only if a compile error reports a genuinely inaccessible 1.7.10 field.
+
+### 4.18 1.7.10 traps learned the hard way (Phase 1)
+
+Every one of these was hit in a real `runServer` boot or caught by `tools/verify-registrations.mjs`, not inferred.
+
+**Why that tool exists:** a dedicated server loads classes, registries and NBT but *never* textures or
+lang files. A green `runServer` says nothing about whether
+`setBlockTextureName("vinery:dark_cherry_planks")` points at a file that exists — and 1.7.10 fails
+**silently** in both cases (placeholder texture / raw key, no log line).
+`tools/verify-registrations.mjs` cross-checks every registration against the real PNG and
+`en_US.json`, and should be re-run after any registry change.
+
+| Trap | Symptom | Correct handling |
+|---|---|---|
+| Texture directory names | Missing-texture placeholder, **no log line at all** | 1.7.10 uses plural directories: `textures/blocks/`, `textures/items/`, `textures/entities/`. 1.21 uses singular `block/`, `item/`, `entity/`. All three renamed. `mob_effect/` and `gui/` are unchanged. |
+| Lang locale filename case | Files silently ignored | Locale codes are matched case-sensitively: `en_us.json` -> `en_US.json`. Handled by `tools/convert-lang-1-7-10.mjs`. |
+| Slab item collision | `IllegalStateException: Can't free registry slot N occupied by ItemBlock` | Register the half slab with a `null` `ItemBlock` class so the single `ItemSlab` can take that slot — exactly what vanilla does for `stone_slab`. |
+| `requiredMods` in `mcmod.info` | `MissingModsException: UniMixins` | Mod ids are lower case: `unimixins`, not `UniMixins`. |
+| Mixin listed but not compiled | `InvalidMixinException: The specified mixin ... was not found` at mod construction | Only add a name to `Mixins` once its class compiles (§6). |
+| Empty `MixinBuilder` | `IllegalArgumentException: No mixin class registered for IMixins` | Placeholder entries are illegal; a group appears only when fully ported. |
+| `GameRegistry` return types | Compile errors | `registerBlock` returns erased `Block`; `registerItem` and `registerTileEntity` return `void`. Wrapped in `VineryRegistry`. |
+| `BlockRotatedPillar` API | Compile error | 1.7.10 splits icons into `getTopIcon(int)` / `getSideIcon(int)` rather than a side parameter. |
+| Registry names are not namespaced | FML "illegal extra prefix" warning | `GameData` prefixes with the mod id itself (`dark_cherry_planks` -> `vinery_dark_cherry_planks`). Never put a colon in a registry name; use explicit `vinery:<path>` texture names instead. |
 
 ---
 
@@ -439,9 +462,14 @@ Total ≈ **6–9 weeks** now that rendering is scoped (§5, ~2–3 weeks and mo
 
 ## 9. Immediate next steps (once questions answered)
 
-1. Phase 0 hygiene commit (package fix + `mcmod.info` + `pack_format: 1`).
-2. Enable mixins and get a UniMixins bootstrap compiling with the corrected mixin JSON.
-3. Build the `Registry` shim and port `ObjectRegistry` first — it's the dependency root for ~everything else.
+1. ✅ Phase 0 hygiene (package fix, `mcmod.info`, `pack_format: 1`, mixin wiring).
+2. ✅ Mixin bootstrap compiling and loading as a coremod at runtime.
+3. ✅ `VineryRegistry` + `VineryBlocks`/`VineryItems`, dark cherry planks/log/slab, lang conversion.
+4. **Next: Phase 2** — port `ObjectRegistry`'s 204 entries. `RegistrySupplier<X>` becomes a plain static
+   field on `VineryBlocks`/`VineryItems`; `registerBlock(...)`/`registerItem(...)` become `VineryRegistry`
+   calls. Start with the rest of the dark cherry wood set (leaves, stairs, fence, fence gate, door,
+   trapdoor, button, pressure plate) because those validate the whole Tier 1 rendering strategy before
+   any custom ISBRH work begins. Re-run `tools/verify-registrations.mjs` after each batch.
 
 ---
 
