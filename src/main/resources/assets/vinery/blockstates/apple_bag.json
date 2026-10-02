@@ -1,0 +1,19 @@
+{
+  "variants": {
+    "facing=east": {
+      "model": "vinery:block/apple_bag",
+      "y": 90
+    },
+    "facing=north": {
+      "model": "vinery:block/apple_bag"
+    },
+    "facing=south": {
+      "model": "vinery:block/apple_bag",
+      "y": 180
+    },
+    "facing=west": {
+      "model": "vinery:block/apple_bag",
+      "y": 270
+    }
+  }
+}

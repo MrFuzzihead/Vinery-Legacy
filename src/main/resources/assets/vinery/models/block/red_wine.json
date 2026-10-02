@@ -1,0 +1,7 @@
+{
+	"parent": "vinery:block/template_small_wine_bottle",
+	"textures": {
+		"small_wine_bottle": "vinery:block/wine/red_wine",
+		"particle": "vinery:block/wine/red_wine"
+	}
+}

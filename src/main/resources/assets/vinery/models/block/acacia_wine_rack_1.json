@@ -1,0 +1,9 @@
+{
+	"parent": "vinery:block/template_wine_rack_1",
+	"textures": {
+		"1": "vinery:block/acacia_drawer_side",
+		"2": "vinery:block/acacia_cabinet_top",
+		"3": "vinery:block/acacia_drawer_bottom",
+		"particle": "vinery:block/acacia_cabinet_top"
+	}
+}

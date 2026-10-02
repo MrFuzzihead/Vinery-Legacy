@@ -1,0 +1,7 @@
+{
+	"parent": "minecraft:block/door_bottom_right",
+	"textures": {
+		"top": "vinery:block/dark_cherry_door_bottom",
+		"bottom": "vinery:block/dark_cherry_door_bottom"
+	}
+}

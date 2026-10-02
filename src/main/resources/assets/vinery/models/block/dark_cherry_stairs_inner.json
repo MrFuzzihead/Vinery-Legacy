@@ -1,0 +1,9 @@
+{
+	"credit": "Made by Satisfy",
+	"parent": "minecraft:block/inner_stairs",
+	"textures": {
+		"bottom": "vinery:block/dark_cherry_planks",
+		"top": "vinery:block/dark_cherry_planks",
+		"side": "vinery:block/dark_cherry_planks"	}
+}
+

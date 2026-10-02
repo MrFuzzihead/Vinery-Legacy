@@ -1,0 +1,6 @@
+{
+	"parent": "vinery:block/template_small_wine_bottle",
+	"textures": {
+		"small_wine_bottle": "vinery:block/wine/noir_wine"
+	}
+}

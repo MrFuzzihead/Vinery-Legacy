@@ -1,0 +1,7 @@
+{
+	"parent": "vinery:block/template_lattice",
+	"textures": {
+		"0": "vinery:block/lattice/birch_lattice",
+		"particle": "vinery:block/lattice/birch_lattice"
+	}
+}

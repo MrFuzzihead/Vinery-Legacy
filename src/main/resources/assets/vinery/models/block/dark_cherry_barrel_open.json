@@ -1,0 +1,9 @@
+{
+	"parent": "minecraft:block/cube_bottom_top",
+	"textures": {
+		"bottom": "vinery:block/dark_cherry_drawer_top",
+		"side": "vinery:block/dark_cherry_cabinet_side",
+		"top": "vinery:block/dark_cherry_barrel_top_open",
+		"particle": "vinery:block/dark_cherry_cabinet_side"
+	}
+}
