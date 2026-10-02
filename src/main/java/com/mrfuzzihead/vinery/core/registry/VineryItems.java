@@ -1,6 +1,7 @@
 package com.mrfuzzihead.vinery.core.registry;
 
 import net.minecraft.item.Item;
+import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemSlab;
 
 import com.mrfuzzihead.vinery.core.block.DarkCherrySlabBlock;
@@ -33,6 +34,12 @@ public final class VineryItems {
     public static Item DARK_CHERRY_FENCE_GATE_ITEM;
     public static Item DARK_CHERRY_SLAB;
 
+    // -- Standalone items ------------------------------------------------------------------------
+
+    public static Item GRAPE_SEEDS;
+    public static Item RED_GRAPE;
+    public static Item WHITE_GRAPE;
+
     public static void register() {
         DARK_CHERRY_PLANKS_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_CHERRY_PLANKS);
         DARK_CHERRY_LOG_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_CHERRY_LOG);
@@ -51,5 +58,12 @@ public final class VineryItems {
                 (DarkCherrySlabBlock) VineryBlocks.DARK_CHERRY_DOUBLE_SLAB,
                 true),
             "dark_cherry_slab");
+        GRAPE_SEEDS = VineryRegistry
+            .item(new ItemSeeds(VineryBlocks.RED_GRAPE_BUSH, net.minecraft.init.Blocks.dirt), "grape_seeds");
+        GRAPE_SEEDS.setTextureName("vinery:red_grape_seeds");
+        RED_GRAPE = VineryRegistry.item(new Item(), "red_grape");
+        RED_GRAPE.setTextureName("vinery:red_grape");
+        WHITE_GRAPE = VineryRegistry.item(new Item(), "white_grape");
+        WHITE_GRAPE.setTextureName("vinery:white_grape");
     }
 }

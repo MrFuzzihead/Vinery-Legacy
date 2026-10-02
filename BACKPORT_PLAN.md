@@ -158,7 +158,8 @@ Legend: ✅ native 1.7.10 equivalent · 🔁 rewrite · ➕ new code needed · �
 - 🔁 `ModConfigSpec` → Forge 1.7.10 `Configuration` object (`new Configuration(event.getSuggestedConfigurationFile())`); ~25 config values.
 
 ### 4.2 Blocks & block states — **biggest mechanical change**
-- 🔁 `BlockBehaviour.Properties` + `BlockState`/`IBlockState` → 1.7.10 `Block` ctor args + `IProperty` (`PropertyInteger`, `PropertyDirection`, `PropertyEnum`), metadata ints.
+- 🔁 `BlockBehaviour.Properties` + `BlockState`/`IBlockState` → 1.7.10 `Block` constructor args and **plain metadata ints**.
+  > **Correction (Phase 2):** this project's 1.7.10 has **no block-property system at all** — verified against the compiled `patchedMc`: there is no `net.minecraft.block.properties` package, no `net.minecraftforge.common.property`, and `BlockFenceGate` exposes only raw metadata statics (`isFenceGateOpen(int)`). The `IProperty`/`PropertyInteger` system arrived in 1.8. **This is simpler than assumed** — no properties to port, only metadata integers, and `BlockBush.canPlaceBlockOn(Block)` covers the placement rule the 1.21 `PlantBlockMixin` needed.
 - 🔁 **139 blockstate JSONs** → metadata mapping table. Affected properties: `HORIZONTAL_FACING` (8 uses), `OPEN` (9), `AGE_2/3/4`, `SNOWY`, `ROTATION_16`, `ATTACHED`, `DOUBLE_BLOCK_HALF`, `BED_PART`, `WATERLOGGED`.
 - ❌ Properties with no 1.7.10 home: `WATERLOGGED` (drop), `SNOWY`/`SpreadingSnowyDirtBlock` (no snowy dirt), dirt-path blocks → use Et Futurum's `BlockDirtPath` (see §4.15) so `ShovelItemHooks.addFlattenable` keeps working.
 - 🔁 `Tags.can_not_connect` → 1.7.10 has no single "is exception for connection" method. The real hooks are **`BlockFence#canConnectFenceTo(IBlockAccess, x, y, z)`** and **`Block#canConnectRedstone(IBlockAccess, x, y, z, side)`** (line 2076) — both overridable, so `BlockMixin` becomes plain overrides in Vinery's own block classes (see §6).
@@ -320,6 +321,8 @@ lang files. A green `runServer` says nothing about whether
 | `BlockRotatedPillar` API | Compile error | 1.7.10 splits icons into `getTopIcon(int)` / `getSideIcon(int)` rather than a side parameter. |
 | Shaped recipe rows must match in width | `StringIndexOutOfBoundsException` at load | `CraftingManager.addRecipe` concatenates rows and indexes with the **last** row's length, so every row needs the same width (3 for vanilla-style shapes). |
 | `BlockFence` side textures are hardcoded | Fence sides render with vanilla's texture | 1.7.10 `RenderBlocks` uses `TextureBlocks.fence` directly, ignoring the block's icon. Mod fences need a custom ISBRH (Tier 4) — the dark cherry fence is deferred to that batch. |
+| `Block.canPlaceBlockOn` replaces a mixin | — | Where 1.21 needed `PlantBlockMixin`, 1.7.10's `BlockBush` exposes `canPlaceBlockOn(Block)`. Confirms the §6 removal. |
+| Blocks register before items | `NullPointerException` at load | A block that captures an `Item` in its constructor sees `null`, because `VineryItems` is initialised after `VineryBlocks`. Resolve the item lazily inside the method that uses it (`GrapeBushBlock.ripeDrop()`). |
 | Registry names are not namespaced | FML "illegal extra prefix" warning | `GameData` prefixes with the mod id itself (`dark_cherry_planks` -> `vinery_dark_cherry_planks`). Never put a colon in a registry name; use explicit `vinery:<path>` texture names instead. |
 
 ---
@@ -429,7 +432,7 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content** (in progress: dark cherry wood set done, 11/204 blocks) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: 26/204 blocks, 4 items) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |

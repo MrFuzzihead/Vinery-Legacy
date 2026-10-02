@@ -13,7 +13,7 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * Dark cherry leaves.
+ * Leaves, parameterised by the four textures that drive the decay stages.
  *
  * <p>
  * Extends {@link BlockLeaves} directly and implements the same three members vanilla's
@@ -23,18 +23,16 @@ import cpw.mods.fml.relauncher.SideOnly;
  *
  * <p>
  * 1.7.10 metadata carries the variant: 0 fast (decaying), 1 slow (permanent). The icon array is
- * indexed by {@code meta & 3}, so the four 1.21 stage textures map straight onto the decay stages
- * vanilla already tracks, giving progressive wear for free.
+ * indexed by {@code meta & 3}, so the four stage textures the 1.21 models use map straight onto the
+ * decay stages vanilla already tracks, giving progressive wear for free.
  */
-public class DarkCherryLeavesBlock extends BlockLeaves {
+public class FoliageBlock extends BlockLeaves {
 
-    /** Decay stage textures, indexed by metadata. */
-    private static final String[] TEXTURES = { "vinery:dark_cherry_leaves_0", // fresh / permanently decaying
-        "vinery:dark_cherry_leaves_1", // slow, fully grown
-        "vinery:dark_cherry_leaves_2", "vinery:dark_cherry_leaves_3", };
+    private final String[] textures;
 
-    public DarkCherryLeavesBlock() {
+    public FoliageBlock(String stage0, String stage1, String stage2, String stage3) {
         super();
+        this.textures = new String[] { stage0, stage1, stage2, stage3 };
         setStepSound(soundTypeGrass);
         setHardness(0.2F);
         setLightOpacity(1);
@@ -42,18 +40,18 @@ public class DarkCherryLeavesBlock extends BlockLeaves {
 
     @Override
     public String[] func_150125_e() {
-        return TEXTURES;
+        return textures;
     }
 
     @SideOnly(Side.CLIENT)
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        this.field_150129_M[0] = new IIcon[TEXTURES.length];
-        this.field_150129_M[1] = new IIcon[TEXTURES.length];
+        this.field_150129_M[0] = new IIcon[textures.length];
+        this.field_150129_M[1] = new IIcon[textures.length];
 
         for (int variant = 0; variant < 2; variant++) {
-            for (int stage = 0; stage < TEXTURES.length; stage++) {
-                this.field_150129_M[variant][stage] = iconRegister.registerIcon(TEXTURES[stage]);
+            for (int stage = 0; stage < textures.length; stage++) {
+                this.field_150129_M[variant][stage] = iconRegister.registerIcon(textures[stage]);
             }
         }
     }

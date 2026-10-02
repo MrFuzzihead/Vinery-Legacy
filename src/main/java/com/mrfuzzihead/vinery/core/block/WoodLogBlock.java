@@ -9,18 +9,21 @@ import cpw.mods.fml.relauncher.Side;
 import cpw.mods.fml.relauncher.SideOnly;
 
 /**
- * Dark cherry log.
+ * A wood log, parameterised by texture.
  *
  * <p>
- * A 1.7.10 {@link BlockRotatedPillar}, so all four axis rotations and the upright/wall facing
- * come for free with no custom renderer — see BACKPORT_PLAN.md section 5 tier 1.
+ * Vinery spans a dozen wood types, each with a log and a stripped log, so a single
+ * texture-parameterised class covers all of them instead of two dozen near-identical classes.
  *
  * <p>
  * 1.7.10's pillar API splits icon lookup into {@link #getTopIcon(int)} and
- * {@link #getSideIcon(int)} rather than taking a side parameter, so the two faces are registered
- * separately and the axis check is handled by the base class.
+ * {@link #getSideIcon(int)} rather than taking a side parameter, and the base class already handles
+ * the four axis rotations and the upright/wall facing.
  */
-public class DarkCherryLogBlock extends BlockRotatedPillar {
+public class WoodLogBlock extends BlockRotatedPillar {
+
+    private final String sideTexture;
+    private final String endTexture;
 
     @SideOnly(Side.CLIENT)
     private IIcon sideIcon;
@@ -28,8 +31,10 @@ public class DarkCherryLogBlock extends BlockRotatedPillar {
     @SideOnly(Side.CLIENT)
     private IIcon endIcon;
 
-    public DarkCherryLogBlock() {
+    public WoodLogBlock(String sideTexture, String endTexture) {
         super(Material.wood);
+        this.sideTexture = sideTexture;
+        this.endTexture = endTexture;
         setStepSound(soundTypeWood);
         setHardness(2.0F);
         setResistance(3.0F);
@@ -38,8 +43,8 @@ public class DarkCherryLogBlock extends BlockRotatedPillar {
     @SideOnly(Side.CLIENT)
     @Override
     public void registerBlockIcons(IIconRegister iconRegister) {
-        sideIcon = iconRegister.registerIcon("vinery:dark_cherry_log_side");
-        endIcon = iconRegister.registerIcon("vinery:dark_cherry_log_top");
+        sideIcon = iconRegister.registerIcon(sideTexture);
+        endIcon = iconRegister.registerIcon(endTexture);
     }
 
     @SideOnly(Side.CLIENT)
