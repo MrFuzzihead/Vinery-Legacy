@@ -318,6 +318,8 @@ lang files. A green `runServer` says nothing about whether
 | Empty `MixinBuilder` | `IllegalArgumentException: No mixin class registered for IMixins` | Placeholder entries are illegal; a group appears only when fully ported. |
 | `GameRegistry` return types | Compile errors | `registerBlock` returns erased `Block`; `registerItem` and `registerTileEntity` return `void`. Wrapped in `VineryRegistry`. |
 | `BlockRotatedPillar` API | Compile error | 1.7.10 splits icons into `getTopIcon(int)` / `getSideIcon(int)` rather than a side parameter. |
+| Shaped recipe rows must match in width | `StringIndexOutOfBoundsException` at load | `CraftingManager.addRecipe` concatenates rows and indexes with the **last** row's length, so every row needs the same width (3 for vanilla-style shapes). |
+| `BlockFence` side textures are hardcoded | Fence sides render with vanilla's texture | 1.7.10 `RenderBlocks` uses `TextureBlocks.fence` directly, ignoring the block's icon. Mod fences need a custom ISBRH (Tier 4) — the dark cherry fence is deferred to that batch. |
 | Registry names are not namespaced | FML "illegal extra prefix" warning | `GameData` prefixes with the mod id itself (`dark_cherry_planks` -> `vinery_dark_cherry_planks`). Never put a colon in a registry name; use explicit `vinery:<path>` texture names instead. |
 
 ---
@@ -427,7 +429,7 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content**      | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: dark cherry wood set done, 11/204 blocks) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |

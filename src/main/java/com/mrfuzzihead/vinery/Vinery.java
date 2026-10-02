@@ -8,6 +8,7 @@ import org.apache.logging.log4j.Logger;
 import com.mrfuzzihead.vinery.core.registry.VineryBlocks;
 import com.mrfuzzihead.vinery.core.registry.VineryItems;
 import com.mrfuzzihead.vinery.core.registry.VineryRegistry;
+import com.mrfuzzihead.vinery.creativetab.VineryCreativeTab;
 import com.mrfuzzihead.vinery.proxy.CommonProxy;
 
 import cpw.mods.fml.common.Mod;
@@ -41,11 +42,15 @@ public class Vinery {
 
     public static final Logger LOG = LogManager.getLogger("Vinery");
 
+    /** Vinery's creative tab. 1.7.10 has no static tab registry, so it is created and held here. */
+    public static VineryCreativeTab CREATIVE_TAB;
+
     @Mod.EventHandler
     public void preInit(FMLPreInitializationEvent event) {
         LOG.info("Vinery preInit");
         // 1.7.10 has no deferred registry: everything must be created here, before the game builds
         // the world. Order is explicit because items reference the blocks they belong to.
+        CREATIVE_TAB = new VineryCreativeTab("Vinery");
         VineryBlocks.register();
         VineryItems.register();
         proxy.preInit(event);
@@ -54,6 +59,7 @@ public class Vinery {
     @Mod.EventHandler
     public void init(FMLInitializationEvent event) {
         LOG.info("Vinery init");
+        VineryBlocks.registerRecipes();
         proxy.init(event);
     }
 

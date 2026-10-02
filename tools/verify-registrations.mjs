@@ -43,10 +43,11 @@ function javaFilesIn(dir, acc = []) {
 /**
  * Collects every texture reference a class makes.
  *
- * 1.7.10 offers three ways to name a texture, and all three have to be understood:
- *   - Block.setBlockTextureName("vinery:x")  — the block-icon path
- *   - IIconRegister.registerIcon("vinery:x") — used by pillar-style blocks with distinct faces
- *   - Item.setTextureName("vinery:x")        — item icons
+ * 1.7.10 offers four ways to name a texture, and all four have to be understood:
+ *   - Block.setBlockTextureName("vinery:x")    — the block-icon path
+ *   - IIconRegister.registerIcon("vinery:x")   — pillar-style blocks with distinct faces
+ *   - Item.setTextureName("vinery:x")          — item icons
+ *   - a String[] returned by a texture-name method — how BlockLeaves names its decay stages
  * An item extending ItemBlock (including ItemSlab) has no texture of its own: it borrows the
  * block's icon, so those classes legitimately declare nothing.
  */
@@ -54,13 +55,25 @@ function collectTextureNames() {
     const map = new Map();
     for (const file of javaFilesIn(SRC)) {
         const text = readFileSync(file, 'utf8');
-        const className = (text.match(/class\s+(\w+)/) || [])[1];
+        // Anchored to a declaration: a naive /class\s+(\w+)/ also matches prose such as
+        // "subclass is not an option" inside a javadoc.
+        const className = (text.match(/^\s*(?:public\s+|abstract\s+|final\s+|static\s+)*class\s+(\w+)/m) || [])[1];
         if (!className) continue;
         const icons = [
             ...[...text.matchAll(/set(?:Block)?TextureName\(\s*"([^"]+)"/g)].map((m) => m[1]),
             ...[...text.matchAll(/registerIcon\(\s*"([^"]+)"/g)].map((m) => m[1]),
+            // String[] constants holding texture names, e.g. BlockLeaves' decay stages.
+            ...[...text.matchAll(/"(vinery:[a-z0-9_]+)"/gi)].map((m) => m[1]),
         ];
-        map.set(className, { icons, extendsItemBlock: /extends\s+(?:\w+\.)?Item(?:Block|Slab)\b/.test(text) });
+        const unique = [...new Set(icons)];
+        map.set(className, {
+            icons: unique,
+            extendsItemBlock: /extends\s+(?:\w+\.)?Item(?:Block|Slab)\b/.test(text),
+            // BlockDoor derives <name>_upper / <name>_lower inside registerBlockIcons.
+            extendsDoor: /extends\s+(?:\w+\.)?BlockDoor\b/.test(text),
+            // BlockStairs delegates getIcon straight to the block passed to its constructor.
+            delegatesTexture: /extends\s+(?:\w+\.)?BlockStairs\b/.test(text),
+        });
     }
     return map;
 }
@@ -119,8 +132,21 @@ for (const { className, name, hasItem } of blocks) {
     seen.blocks++;
     if (name.includes(':')) problems.push(`block "${name}" contains a colon — illegal on 1.7.10`);
     const info = textureNames.get(className);
-    if (!info || info.icons.length === 0) {
+    if (!info) {
+        problems.push(`block "${name}" (${className}) not found in sources`);
+        continue;
+    }
+    if (info.delegatesTexture) {
+        // BlockStairs renders with the icon of the block given to its constructor (our planks
+        // block), so it has no texture name of its own — already verified via that block.
+    } else if (info.icons.length === 0) {
         problems.push(`block "${name}" (${className}) declares no texture name`);
+    } else if (info.extendsDoor) {
+        // BlockDoor never loads the base texture name: registerBlockIcons appends _upper/_lower.
+        for (const icon of info.icons) {
+            checkTexture(className, `${icon}_upper`);
+            checkTexture(className, `${icon}_lower`);
+        }
     } else {
         for (const icon of info.icons) checkTexture(className, icon);
     }
