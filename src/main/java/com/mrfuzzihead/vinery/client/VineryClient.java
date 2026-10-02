@@ -15,23 +15,23 @@ import net.minecraft.client.renderer.BiomeColors;
 import net.minecraft.client.renderer.RenderType;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.GrassColor;
-import net.satisfy.vinery.client.gui.ApplePressGui;
-import net.satisfy.vinery.client.gui.FermentationBarrelGui;
-import net.satisfy.vinery.client.model.*;
-import net.satisfy.vinery.client.render.block.CompletionistBannerRenderer;
-import net.satisfy.vinery.client.render.block.DarkCherryHangingSignRenderer;
-import net.satisfy.vinery.client.render.block.DarkCherrySignRenderer;
-import net.satisfy.vinery.client.render.block.LatticeRenderer;
-import net.satisfy.vinery.client.render.block.storage.*;
-import net.satisfy.vinery.client.render.entity.ChairRenderer;
-import net.satisfy.vinery.client.render.entity.DarkCherryBoatRenderer;
-import net.satisfy.vinery.client.render.entity.MuleRenderer;
-import net.satisfy.vinery.client.render.entity.WanderingWinemakerRenderer;
-import net.satisfy.vinery.core.registry.EntityTypeRegistry;
-import net.satisfy.vinery.core.registry.ScreenhandlerTypeRegistry;
-import net.satisfy.vinery.core.registry.StorageTypeRegistry;
+import com.mrfuzzihead.vinery.client.gui.ApplePressGui;
+import com.mrfuzzihead.vinery.client.gui.FermentationBarrelGui;
+import com.mrfuzzihead.vinery.client.model.*;
+import com.mrfuzzihead.vinery.client.render.block.CompletionistBannerRenderer;
+import com.mrfuzzihead.vinery.client.render.block.DarkCherryHangingSignRenderer;
+import com.mrfuzzihead.vinery.client.render.block.DarkCherrySignRenderer;
+import com.mrfuzzihead.vinery.client.render.block.LatticeRenderer;
+import com.mrfuzzihead.vinery.client.render.block.storage.*;
+import com.mrfuzzihead.vinery.client.render.entity.ChairRenderer;
+import com.mrfuzzihead.vinery.client.render.entity.DarkCherryBoatRenderer;
+import com.mrfuzzihead.vinery.client.render.entity.MuleRenderer;
+import com.mrfuzzihead.vinery.client.render.entity.WanderingWinemakerRenderer;
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
+import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 
-import static net.satisfy.vinery.core.registry.ObjectRegistry.*;
+import static com.mrfuzzihead.vinery.core.registry.ObjectRegistry.*;
 
 @Environment(EnvType.CLIENT)
 public class VineryClient {

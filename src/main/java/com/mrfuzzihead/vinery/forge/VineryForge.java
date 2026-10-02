@@ -8,12 +8,12 @@ import net.neoforged.fml.config.ModConfig;
 import net.neoforged.fml.event.lifecycle.FMLCommonSetupEvent;
 import net.neoforged.neoforge.common.NeoForge;
 import net.neoforged.neoforge.data.event.GatherDataEvent;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.registry.CompostableRegistry;
-import net.satisfy.vinery.neoforge.core.config.VineryForgeConfig;
-import net.satisfy.vinery.neoforge.core.datagen.ModAdvancementGen;
-import net.satisfy.vinery.neoforge.core.registry.VineryNeoForgeVillagers;
-import net.satisfy.vinery.platform.neoforge.PlatformHelperImpl;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.registry.CompostableRegistry;
+import com.mrfuzzihead.vinery.forge.core.config.VineryForgeConfig;
+import com.mrfuzzihead.vinery.forge.core.datagen.ModAdvancementGen;
+import com.mrfuzzihead.vinery.forge.core.registry.VineryNeoForgeVillagers;
+import com.mrfuzzihead.vinery.forge.PlatformHelperImpl;
 
 import java.util.List;
 

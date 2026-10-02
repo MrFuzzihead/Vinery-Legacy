@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.core.registry;
+package com.mrfuzzihead.vinery.forge.core.registry;
 
 import com.google.common.collect.ImmutableSet;
 import net.minecraft.core.registries.Registries;
@@ -8,8 +8,8 @@ import net.minecraft.world.entity.npc.VillagerProfession;
 import net.neoforged.bus.api.IEventBus;
 import net.neoforged.fml.util.ObfuscationReflectionHelper;
 import net.neoforged.neoforge.registries.DeferredRegister;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.registry.ObjectRegistry;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.function.Supplier;

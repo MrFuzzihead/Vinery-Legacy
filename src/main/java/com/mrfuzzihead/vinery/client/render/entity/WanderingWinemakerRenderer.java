@@ -6,7 +6,7 @@ import net.minecraft.client.renderer.entity.EntityRendererProvider;
 import net.minecraft.client.renderer.entity.WanderingTraderRenderer;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.npc.WanderingTrader;
-import net.satisfy.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.Vinery;
 import org.jetbrains.annotations.NotNull;
 
 @Environment(EnvType.CLIENT)

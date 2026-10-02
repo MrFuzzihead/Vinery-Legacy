@@ -7,7 +7,7 @@ import net.minecraft.core.component.DataComponentType;
 import net.minecraft.core.registries.Registries;
 import com.mrfuzzihead.vinery.Vinery;
 import com.mrfuzzihead.vinery.core.components.WineYearComponent;
-import net.satisfy.vinery.core.util.FoodComponent;
+import com.mrfuzzihead.vinery.core.util.FoodComponent;
 
 public class DataComponentRegistry
 {

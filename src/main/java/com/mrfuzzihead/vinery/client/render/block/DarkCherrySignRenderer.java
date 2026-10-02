@@ -37,7 +37,7 @@ import net.minecraft.world.level.block.entity.SignText;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.WoodType;
 import net.minecraft.world.phys.Vec3;
-import net.satisfy.vinery.core.block.entity.DarkCherrySignBlockEntity;
+import com.mrfuzzihead.vinery.core.block.entity.DarkCherrySignBlockEntity;
 
 import java.util.List;
 import java.util.Map;

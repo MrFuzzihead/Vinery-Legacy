@@ -26,10 +26,10 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import com.mrfuzzihead.vinery.Vinery;
-import net.satisfy.vinery.core.block.entity.CompletionistBannerEntity;
+import com.mrfuzzihead.vinery.core.block.entity.CompletionistBannerEntity;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.PlatformHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

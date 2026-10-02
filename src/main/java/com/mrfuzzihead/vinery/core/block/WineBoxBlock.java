@@ -25,7 +25,7 @@ import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
 import com.mrfuzzihead.vinery.core.registry.StorageTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.TagRegistry;
-import net.satisfy.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;

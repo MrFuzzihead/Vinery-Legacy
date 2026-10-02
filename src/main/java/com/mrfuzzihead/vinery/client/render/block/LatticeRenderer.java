@@ -17,17 +17,17 @@ import net.minecraft.util.Mth;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.state.BlockState;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.block.LatticeBlock;
-import net.satisfy.vinery.core.block.entity.LatticeBlockEntity;
-import net.satisfy.vinery.core.registry.GrapeTypeRegistry;
-import net.satisfy.vinery.core.util.GeneralUtil;
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.block.LatticeBlock;
+import com.mrfuzzihead.vinery.core.block.entity.LatticeBlockEntity;
+import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import static net.satisfy.vinery.core.registry.ObjectRegistry.*;
+import static com.mrfuzzihead.vinery.core.registry.ObjectRegistry.*;
 
 public class LatticeRenderer implements BlockEntityRenderer<LatticeBlockEntity> {
     private static Map<Block, ResourceLocation> textureMap;

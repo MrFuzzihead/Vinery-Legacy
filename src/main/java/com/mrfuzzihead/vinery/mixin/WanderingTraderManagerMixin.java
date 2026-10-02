@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.core.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -15,7 +15,7 @@ import net.minecraft.world.level.biome.Biomes;
 import net.minecraft.world.level.storage.ServerLevelData;
 import com.mrfuzzihead.vinery.core.entity.TraderMuleEntity;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.PlatformHelper;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;

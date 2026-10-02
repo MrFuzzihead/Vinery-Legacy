@@ -3,19 +3,19 @@
 	"modList": [{
 		"modid": "${modId}",
 		"name": "${modName}",
-		"description": "An example mod for Minecraft 1.7.10 with Forge focused on a stable setup.",
+		"description": "Fine wine and sophisticated decor. Reap the vines, press the grapes, ferment the wine, and let time age it for you. A 1.7.10 Forge port of Vinery, the mod that started the Let's Do collection.",
 		"version": "${modVersion}",
 		"mcversion": "${minecraftVersion}",
-		"url": "https://github.com/SinTh0r4s/MyMod",
+		"url": "https://github.com/Let-s-Do-Collection/Vinery",
 		"updateUrl": "",
-		"authorList": ["SinTho0r4s"],
-		"credits": "",
-		"logoFile": "",
+		"authorList": ["Satisfy", "mrfuzzihead"],
+		"credits": "Mojang Studios (Minecraft), and everyone who has supported Let's Do.",
+		"logoFile": "pack.png",
 		"screenshots": [],
 		"parent": "",
-		"requiredMods": [],
+		"requiredMods": ["UniMixins"],
 		"dependencies": [],
 		"dependants": [],
-		"useDependencyInformation": false
+		"useDependencyInformation": true
 	}]
 }

@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.core.datagen;
+package com.mrfuzzihead.vinery.forge.core.datagen;
 
 import net.minecraft.advancements.*;
 import net.minecraft.advancements.critereon.*;
@@ -24,7 +24,7 @@ import net.minecraft.world.level.biome.Biomes;
 import net.neoforged.neoforge.common.Tags;
 import net.neoforged.neoforge.common.data.AdvancementProvider;
 import net.neoforged.neoforge.common.data.ExistingFileHelper;
-import net.satisfy.vinery.core.registry.TagRegistry;
+import com.mrfuzzihead.vinery.core.registry.TagRegistry;
 
 import java.util.List;
 import java.util.Optional;

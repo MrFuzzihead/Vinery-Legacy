@@ -30,8 +30,8 @@ import net.minecraft.world.level.pathfinder.PathComputationType;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.satisfy.vinery.core.util.GrapeType;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.PlatformHelper;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;

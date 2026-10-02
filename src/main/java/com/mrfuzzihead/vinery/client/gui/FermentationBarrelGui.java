@@ -9,9 +9,9 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.satisfy.vinery.client.gui.handler.FermentationBarrelGuiHandler;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.client.gui.handler.FermentationBarrelGuiHandler;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.PlatformHelper;
 
 @Environment(EnvType.CLIENT)
 public class FermentationBarrelGui extends AbstractContainerScreen<FermentationBarrelGuiHandler> {

@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.core.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.InteractionResult;

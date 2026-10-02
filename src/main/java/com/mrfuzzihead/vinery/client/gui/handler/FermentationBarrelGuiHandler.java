@@ -10,12 +10,12 @@ import net.minecraft.world.inventory.SimpleContainerData;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
-import net.satisfy.vinery.client.gui.handler.slot.ExtendedSlot;
-import net.satisfy.vinery.client.gui.handler.slot.FermentationBarrelOutputSlot;
-import net.satisfy.vinery.core.registry.ObjectRegistry;
-import net.satisfy.vinery.core.registry.RecipeTypesRegistry;
-import net.satisfy.vinery.core.registry.ScreenhandlerTypeRegistry;
-import net.satisfy.vinery.core.util.JuiceUtil;
+import com.mrfuzzihead.vinery.client.gui.handler.slot.ExtendedSlot;
+import com.mrfuzzihead.vinery.client.gui.handler.slot.FermentationBarrelOutputSlot;
+import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
+import com.mrfuzzihead.vinery.core.registry.RecipeTypesRegistry;
+import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
+import com.mrfuzzihead.vinery.core.util.JuiceUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class FermentationBarrelGuiHandler extends AbstractContainerMenu {

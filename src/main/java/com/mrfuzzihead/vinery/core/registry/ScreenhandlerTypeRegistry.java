@@ -7,8 +7,8 @@ import net.minecraft.core.registries.Registries;
 import net.minecraft.world.flag.FeatureFlags;
 import net.minecraft.world.inventory.AbstractContainerMenu;
 import net.minecraft.world.inventory.MenuType;
-import net.satisfy.vinery.client.gui.handler.ApplePressGuiHandler;
-import net.satisfy.vinery.client.gui.handler.FermentationBarrelGuiHandler;
+import com.mrfuzzihead.vinery.client.gui.handler.ApplePressGuiHandler;
+import com.mrfuzzihead.vinery.client.gui.handler.FermentationBarrelGuiHandler;
 import com.mrfuzzihead.vinery.Vinery;
 
 import java.util.function.Supplier;

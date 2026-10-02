@@ -9,7 +9,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.AABB;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.PlatformHelper;
 
 import java.util.List;
 

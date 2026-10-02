@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.core.registry;
+package com.mrfuzzihead.vinery.forge.core.registry;
 
 import com.mojang.datafixers.util.Pair;
 import net.minecraft.world.level.block.Block;

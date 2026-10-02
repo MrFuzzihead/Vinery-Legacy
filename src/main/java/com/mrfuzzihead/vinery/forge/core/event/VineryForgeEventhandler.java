@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.core.event;
+package com.mrfuzzihead.vinery.forge.core.event;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -18,11 +18,11 @@ import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
 import net.neoforged.neoforge.event.village.VillagerTradesEvent;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.registry.MobEffectRegistry;
-import net.satisfy.vinery.core.util.VillagerUtil;
-import net.satisfy.vinery.neoforge.core.config.VineryForgeConfig;
-import net.satisfy.vinery.neoforge.core.registry.VineryNeoForgeVillagers;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
+import com.mrfuzzihead.vinery.core.util.VillagerUtil;
+import com.mrfuzzihead.vinery.forge.core.config.VineryForgeConfig;
+import com.mrfuzzihead.vinery.forge.core.registry.VineryNeoForgeVillagers;
 import org.lwjgl.glfw.GLFW;
 
 import java.util.*;

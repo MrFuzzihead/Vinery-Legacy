@@ -1,7 +1,7 @@
 package com.mrfuzzihead.vinery.core.registry;
 
 import com.mrfuzzihead.vinery.Vinery;
-import net.satisfy.vinery.core.effect.*;
+import com.mrfuzzihead.vinery.core.effect.*;
 import dev.architectury.registry.registries.DeferredRegister;
 import net.minecraft.core.Holder;
 import net.minecraft.core.registries.Registries;

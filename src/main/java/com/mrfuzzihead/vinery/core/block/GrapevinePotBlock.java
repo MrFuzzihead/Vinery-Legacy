@@ -20,11 +20,11 @@ import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.satisfy.vinery.core.item.GrapeItem;
+import com.mrfuzzihead.vinery.core.item.GrapeItem;
 import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
 import com.mrfuzzihead.vinery.core.registry.SoundEventRegistry;
-import net.satisfy.vinery.core.block.state.properties.GrapeProperty;
+import com.mrfuzzihead.vinery.core.block.state.properties.GrapeProperty;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")

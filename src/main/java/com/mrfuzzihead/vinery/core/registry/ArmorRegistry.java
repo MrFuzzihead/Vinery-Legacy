@@ -4,10 +4,10 @@ import net.minecraft.world.entity.EquipmentSlot;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
-import net.satisfy.vinery.core.item.WinemakerBootsItem;
-import net.satisfy.vinery.core.item.WinemakerChestItem;
-import net.satisfy.vinery.core.item.WinemakerHelmetItem;
-import net.satisfy.vinery.core.item.WinemakerLegsItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerBootsItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerChestItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerHelmetItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerLegsItem;
 
 public class ArmorRegistry {
     public static boolean setBonusActive = false;

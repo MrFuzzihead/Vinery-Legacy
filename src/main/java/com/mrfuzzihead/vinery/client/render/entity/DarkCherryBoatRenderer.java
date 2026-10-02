@@ -20,9 +20,9 @@ import net.minecraft.client.renderer.texture.OverlayTexture;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.vehicle.Boat;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.entity.DarkCherryBoatEntity;
-import net.satisfy.vinery.core.entity.DarkCherryChestBoatEntity;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.entity.DarkCherryBoatEntity;
+import com.mrfuzzihead.vinery.core.entity.DarkCherryChestBoatEntity;
 import org.jetbrains.annotations.NotNull;
 import org.joml.Quaternionf;
 

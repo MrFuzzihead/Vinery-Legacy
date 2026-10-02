@@ -16,10 +16,10 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.Mth;
 import net.minecraft.world.level.block.state.BlockState;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.block.CompletionistBannerBlock;
-import net.satisfy.vinery.core.block.CompletionistWallBannerBlock;
-import net.satisfy.vinery.core.block.entity.CompletionistBannerEntity;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.block.CompletionistBannerBlock;
+import com.mrfuzzihead.vinery.core.block.CompletionistWallBannerBlock;
+import com.mrfuzzihead.vinery.core.block.entity.CompletionistBannerEntity;
 
 public class CompletionistBannerRenderer implements BlockEntityRenderer<CompletionistBannerEntity> {
     public static final ModelLayerLocation LAYER_LOCATION = new ModelLayerLocation(ResourceLocation.fromNamespaceAndPath(Vinery.MOD_ID, "banner"), "main");

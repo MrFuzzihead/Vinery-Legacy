@@ -1,6 +1,6 @@
 package com.mrfuzzihead.vinery.core.registry;
 
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 
 import java.util.HashSet;
 import java.util.Set;

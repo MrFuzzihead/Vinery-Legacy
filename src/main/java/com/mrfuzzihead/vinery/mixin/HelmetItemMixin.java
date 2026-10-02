@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import net.minecraft.client.model.HumanoidModel;
 import net.minecraft.client.model.Model;
@@ -11,22 +11,23 @@ import net.minecraft.world.item.ArmorItem;
 import net.minecraft.world.item.ArmorMaterial;
 import net.minecraft.world.item.ItemStack;
 import net.neoforged.neoforge.client.extensions.common.IClientItemExtensions;
-import net.satisfy.vinery.core.item.WinemakerChestItem;
-import net.satisfy.vinery.core.registry.ArmorRegistryClient;
+import com.mrfuzzihead.vinery.core.item.WinemakerHelmetItem;
+import com.mrfuzzihead.vinery.core.registry.ArmorRegistryClient;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.injection.Inject;
 
 import java.util.function.Consumer;
 
 @SuppressWarnings("all")
-@Mixin(WinemakerChestItem.class)
-public abstract class ChestplateItemMixin extends ArmorItem {
+@Mixin(WinemakerHelmetItem.class)
+public abstract class HelmetItemMixin extends ArmorItem {
     @Shadow
     @Final
-    private ResourceLocation chestplateTexture;
+    private ResourceLocation hatTexture;
 
     @Override
     public void initializeClient(Consumer<IClientItemExtensions> consumer) {
@@ -34,7 +35,7 @@ public abstract class ChestplateItemMixin extends ArmorItem {
                 new IClientItemExtensions() {
                     @Override
                     public @NotNull Model getGenericArmorModel(LivingEntity livingEntity, ItemStack itemStack, EquipmentSlot equipmentSlot, HumanoidModel<?> original) {
-                        return ArmorRegistryClient.getChestplateModel(itemStack.getItem(), original.body, original.leftArm, original.rightArm, original.leftLeg, original.rightLeg);
+                        return ArmorRegistryClient.getHatModel(itemStack.getItem(), original.getHead());
                     }
                 }
         );
@@ -42,10 +43,10 @@ public abstract class ChestplateItemMixin extends ArmorItem {
 
     @Override
     public @Nullable ResourceLocation getArmorTexture(ItemStack stack, Entity entity, EquipmentSlot slot, ArmorMaterial.Layer layer, boolean innerModel) {
-        return chestplateTexture;
+        return hatTexture;
     }
 
-    private ChestplateItemMixin(Holder<ArmorMaterial> armorMaterial, Type armorType, Properties itemProperties) {
+    private HelmetItemMixin(Holder<ArmorMaterial> armorMaterial, Type armorType, Properties itemProperties) {
         super(armorMaterial, armorType, itemProperties);
     }
 }

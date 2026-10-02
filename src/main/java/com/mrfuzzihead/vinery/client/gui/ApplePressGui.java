@@ -9,8 +9,8 @@ import net.minecraft.client.renderer.GameRenderer;
 import net.minecraft.network.chat.Component;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.entity.player.Inventory;
-import net.satisfy.vinery.client.gui.handler.ApplePressGuiHandler;
-import net.satisfy.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.client.gui.handler.ApplePressGuiHandler;
+import com.mrfuzzihead.vinery.core.Vinery;
 
 @Environment(EnvType.CLIENT)
 public class ApplePressGui extends AbstractContainerScreen<ApplePressGuiHandler> {

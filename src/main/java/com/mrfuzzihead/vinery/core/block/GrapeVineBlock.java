@@ -25,7 +25,7 @@ import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("deprecation")

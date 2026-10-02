@@ -4,7 +4,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import com.mrfuzzihead.vinery.core.components.WineYearComponent;
 import com.mrfuzzihead.vinery.core.registry.DataComponentRegistry;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.PlatformHelper;
 
 public class WineYears {
     public static final int YEARS_START = 0;

@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.core.event;
+package com.mrfuzzihead.vinery.forge.core.event;
 
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.player.LocalPlayer;
@@ -13,8 +13,8 @@ import net.neoforged.api.distmarker.Dist;
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.common.EventBusSubscriber;
 import net.neoforged.neoforge.client.event.InputEvent;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.registry.MobEffectRegistry;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
 import org.lwjgl.glfw.GLFW;
 
 @EventBusSubscriber(modid = Vinery.MOD_ID, value = Dist.CLIENT)

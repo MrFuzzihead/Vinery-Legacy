@@ -16,7 +16,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.Property;
 import net.minecraft.world.phys.Vec3;
-import net.satisfy.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class ChairEntity extends Entity {

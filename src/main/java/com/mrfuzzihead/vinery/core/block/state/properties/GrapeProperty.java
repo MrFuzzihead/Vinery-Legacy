@@ -2,7 +2,7 @@ package com.mrfuzzihead.vinery.core.block.state.properties;
 
 import net.minecraft.world.level.block.state.properties.Property;
 import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Collection;

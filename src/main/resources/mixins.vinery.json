@@ -1,0 +1,21 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "com.mrfuzzihead.vinery.mixin",
+  "compatibilityLevel": "JAVA_8",
+  "refmap": "mixins.vinery.refmap.json",
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+    "ClientPlayerEntityMixin"
+  ],
+  "mixins": [
+    "BoneMealItemMixin",
+    "LivingEntityMixin",
+    "BootsItemMixin",
+    "ChestplateItemMixin",
+    "HelmetItemMixin",
+    "LeggingsItemMixin"
+  ]
+}

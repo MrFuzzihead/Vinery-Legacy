@@ -1,13 +1,13 @@
-package net.satisfy.vinery.platform.neoforge;
+package com.mrfuzzihead.vinery.forge;
 
 import dev.architectury.registry.registries.DeferredRegister;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.entity.Entity;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.MobCategory;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.neoforge.core.config.VineryForgeConfig;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.forge.core.config.VineryForgeConfig;
+import com.mrfuzzihead.vinery.PlatformHelper;
 
 import java.util.function.Supplier;
 

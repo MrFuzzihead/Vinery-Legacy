@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.core.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
@@ -12,8 +12,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import com.mrfuzzihead.vinery.core.registry.DataComponentRegistry;
 import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
-import net.satisfy.vinery.core.util.FoodComponent;
-import net.satisfy.vinery.core.util.WineYears;
+import com.mrfuzzihead.vinery.core.util.FoodComponent;
+import com.mrfuzzihead.vinery.core.util.WineYears;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;

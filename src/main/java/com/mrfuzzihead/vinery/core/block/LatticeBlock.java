@@ -31,10 +31,10 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.satisfy.vinery.core.block.entity.LatticeBlockEntity;
-import net.satisfy.vinery.core.item.GrapeBushSeedItem;
-import net.satisfy.vinery.core.util.GeneralUtil;
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.block.entity.LatticeBlockEntity;
+import com.mrfuzzihead.vinery.core.item.GrapeBushSeedItem;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

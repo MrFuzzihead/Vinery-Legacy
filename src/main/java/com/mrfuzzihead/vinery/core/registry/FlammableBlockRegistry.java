@@ -4,7 +4,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.FireBlock;
 
-import static net.satisfy.vinery.core.registry.ObjectRegistry.*;
+import static com.mrfuzzihead.vinery.core.registry.ObjectRegistry.*;
 
 public class FlammableBlockRegistry {
 

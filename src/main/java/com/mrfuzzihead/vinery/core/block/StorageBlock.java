@@ -22,8 +22,8 @@ import net.minecraft.world.level.block.state.BlockBehaviour;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
-import net.satisfy.vinery.core.block.entity.StorageBlockEntity;
-import net.satisfy.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.block.entity.StorageBlockEntity;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

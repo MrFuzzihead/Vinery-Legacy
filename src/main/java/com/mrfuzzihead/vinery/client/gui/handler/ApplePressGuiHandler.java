@@ -6,7 +6,7 @@ import net.minecraft.world.entity.player.Inventory;
 import net.minecraft.world.entity.player.Player;
 import net.minecraft.world.inventory.*;
 import net.minecraft.world.item.ItemStack;
-import net.satisfy.vinery.core.registry.ScreenhandlerTypeRegistry;
+import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
 import org.jetbrains.annotations.NotNull;
 
 public class ApplePressGuiHandler extends AbstractContainerMenu {

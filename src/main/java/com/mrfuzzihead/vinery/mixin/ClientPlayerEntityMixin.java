@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.core.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import com.mojang.authlib.GameProfile;
 import io.netty.buffer.Unpooled;

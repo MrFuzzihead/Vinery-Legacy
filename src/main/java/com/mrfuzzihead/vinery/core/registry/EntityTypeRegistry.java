@@ -12,18 +12,18 @@ import net.minecraft.world.entity.animal.horse.Llama;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.entity.BlockEntityType;
 import com.mrfuzzihead.vinery.Vinery;
-import net.satisfy.vinery.core.block.entity.*;
-import net.satisfy.vinery.core.entity.ChairEntity;
-import net.satisfy.vinery.core.entity.DarkCherryBoatEntity;
-import net.satisfy.vinery.core.entity.DarkCherryChestBoatEntity;
-import net.satisfy.vinery.core.entity.TraderMuleEntity;
-import net.satisfy.vinery.core.entity.WanderingWinemakerEntity;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.core.block.entity.*;
+import com.mrfuzzihead.vinery.core.entity.ChairEntity;
+import com.mrfuzzihead.vinery.core.entity.DarkCherryBoatEntity;
+import com.mrfuzzihead.vinery.core.entity.DarkCherryChestBoatEntity;
+import com.mrfuzzihead.vinery.core.entity.TraderMuleEntity;
+import com.mrfuzzihead.vinery.core.entity.WanderingWinemakerEntity;
+import com.mrfuzzihead.vinery.PlatformHelper;
 
 import java.util.HashSet;
 import java.util.function.Supplier;
 
-import static net.satisfy.vinery.core.registry.ObjectRegistry.*;
+import static com.mrfuzzihead.vinery.core.registry.ObjectRegistry.*;
 
 public class EntityTypeRegistry {
     public static final DeferredRegister<BlockEntityType<?>> BLOCK_ENTITY_TYPES = DeferredRegister.create(Vinery.MOD_ID, Registries.BLOCK_ENTITY_TYPE);

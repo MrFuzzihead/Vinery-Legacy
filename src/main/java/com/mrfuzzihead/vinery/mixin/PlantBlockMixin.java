@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.core.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.tags.BlockTags;
@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.BushBlock;
 import net.minecraft.world.level.block.SlabBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.SlabType;
-import net.satisfy.vinery.core.block.SpreadableGrassSlabBlock;
+import com.mrfuzzihead.vinery.core.block.SpreadableGrassSlabBlock;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

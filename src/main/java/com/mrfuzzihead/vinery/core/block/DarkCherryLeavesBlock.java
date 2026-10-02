@@ -26,7 +26,7 @@ import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.level.gameevent.GameEvent;
 import net.minecraft.world.phys.BlockHitResult;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.PlatformHelper;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

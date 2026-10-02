@@ -21,9 +21,9 @@ import net.minecraft.world.level.block.state.properties.BlockStateProperties;
 import net.minecraft.world.level.block.state.properties.IntegerProperty;
 import net.minecraft.world.phys.BlockHitResult;
 import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
-import net.satisfy.vinery.core.util.GeneralUtil;
-import net.satisfy.vinery.core.block.state.properties.GrapeProperty;
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.block.state.properties.GrapeProperty;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 import org.jetbrains.annotations.NotNull;
 
 public abstract class StemBlock extends Block implements BonemealableBlock {

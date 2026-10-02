@@ -42,6 +42,8 @@ Source of truth: `origin/main` (Vinery 1.21.1 NeoForge/Architectury).
 2. 🔴 **The tree does not compile for a non-API reason.** 170 files declare `package com.mrfuzzihead.vinery.*` but **102 files still `import net.satisfy.vinery.*`**. This must be fixed before any API work.
 3. 🟡 `mcmod.info` is still the RFG template placeholder, `pack.mcmeta` still says `pack_format: 34` (a 1.21 value — 1.7.10 wants `1`).
 
+> **Phase 0 status (done):** items 2 and 3 are fixed — 0 `net.satisfy` references remain, every package declaration matches its directory, mixins are consolidated into `com.mrfuzzihead.vinery.mixin`, `usesMixins = true` resolves UniMixins 0.2.1, `mcmod.info` and both `pack.mcmeta` files are 1.7.10-correct, and the dead 1.21-only files were removed (see §4.17 and the commit). The code itself still targets 1.21 APIs, which is Phase 1+ work.
+
 Asset inventory (now restored, for reference):
 
 | Asset class                  | Count                        | 1.7.10 usability                                                                                                                                          |
@@ -277,8 +279,23 @@ com.mrfuzzihead.vinery.compat.CompatLoader                     // single entry p
 ### 4.16 Misc
 - 🔁 `ResourceLocation.fromNamespaceAndPath` → `new ResourceLocation(...)` (1.7.10 has `ResourceLocation` ✅).
 - ✅ `SoundEvent` registry → not needed; 1.7.10 `sounds.json` + `playSound` (already present in resources).
-- ❌ `AddPackFindersEvent` "bushy leaves" pack → no discovery mechanism in 1.7.10. Options: (a) drop, (b) config-gated texture swap via `IIconHandler`/ISBRH.
+- ❌ `AddPackFindersEvent` “bushy leaves” pack → no discovery mechanism in 1.7.10. The pack ships at `resourcepacks/bushy_leaves/` for manual copy; a config-gated texture swap via `IIconHandler`/ISBRH is a possible later enhancement.
 - 🔁 `commands` → 1.7.10 `ICommand` (`net.minecraft.command.CommandBase`).
+
+### 4.17 Access widener → 1.7.10 access transformer translation
+
+The 1.21 `vinery.accesswidener` was a useful checklist of encapsulation walls. Access *transformers* (1.7.10's equivalent, via `accessTransformersFile`) are **almost certainly unnecessary**, because RFG's dev workspace is already MCP-named and 1.7.10's equivalents are public. Translation:
+
+| 1.21 access widener entry | 1.7.10 equivalent | AT needed? |
+|---|---|---|
+| `MobEffectInstance.amplifier` / `.duration` | `PotionEffect#getAmplifier()` / `#getDuration()` are public | ❌ no |
+| `PoiTypes.TYPE_BY_STATE` | 1.7.10 POI system is entirely different (`net.minecraft.entity.ai.village.*`) | ❌ n/a |
+| `VillagerTrades$EmeraldForItems` / `$ItemsForEmeralds` | 1.7.10 `MerchantRecipeList` | ❌ no |
+| `SpreadingSnowyDirtBlock.canBeGrass` | dropped (no snowy dirt) | ❌ n/a |
+| `WoodType.register` | 1.7.10 `BlockWood` enum, registered by FML | ❌ no |
+| `FireBlock.setFlammable` | 1.7.10 `Block#setFireResistance` + `BlockFlammable` | ❌ no |
+
+**Conclusion: leave `accessTransformersFile` empty.** Revisit only if a compile error reports a genuinely inaccessible 1.7.10 field.
 
 ---
 

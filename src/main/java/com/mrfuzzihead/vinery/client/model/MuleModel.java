@@ -10,7 +10,7 @@ import net.minecraft.client.model.geom.PartPose;
 import net.minecraft.client.model.geom.builders.*;
 import net.minecraft.util.Mth;
 import net.minecraft.world.entity.animal.horse.AbstractHorse;
-import net.satisfy.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.Vinery;
 import org.jetbrains.annotations.NotNull;
 
 @Environment(EnvType.CLIENT)

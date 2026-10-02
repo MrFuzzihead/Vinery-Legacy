@@ -12,12 +12,12 @@ import mezz.jei.api.recipe.category.IRecipeCategory;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.gui.GuiGraphics;
 import net.minecraft.network.chat.Component;
-import net.satisfy.vinery.client.gui.FermentationBarrelGui;
+import com.mrfuzzihead.vinery.client.gui.FermentationBarrelGui;
 import com.mrfuzzihead.vinery.Vinery;
 import com.mrfuzzihead.vinery.core.compat.jei.VineryJEIPlugin;
 import com.mrfuzzihead.vinery.core.recipe.FermentationBarrelRecipe;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.PlatformHelper;
 import org.jetbrains.annotations.NotNull;
 
 @SuppressWarnings("unused")

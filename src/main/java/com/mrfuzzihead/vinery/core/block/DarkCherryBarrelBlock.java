@@ -12,7 +12,7 @@ import net.minecraft.world.level.block.entity.BarrelBlockEntity;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.phys.BlockHitResult;
-import net.satisfy.vinery.core.block.entity.DarkCherryBarrelBlockEntity;
+import com.mrfuzzihead.vinery.core.block.entity.DarkCherryBarrelBlockEntity;
 import org.jetbrains.annotations.NotNull;
 
 public class DarkCherryBarrelBlock extends BarrelBlock {

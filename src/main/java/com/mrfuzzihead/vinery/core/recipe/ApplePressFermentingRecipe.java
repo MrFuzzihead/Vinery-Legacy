@@ -18,7 +18,7 @@ import net.minecraft.world.Container;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.crafting.*;
 import net.minecraft.world.level.Level;
-import net.satisfy.vinery.core.recipe.input.ApplePressFermentingRecipeInput;
+import com.mrfuzzihead.vinery.core.recipe.input.ApplePressFermentingRecipeInput;
 import com.mrfuzzihead.vinery.core.registry.RecipeTypesRegistry;
 import org.jetbrains.annotations.NotNull;
 

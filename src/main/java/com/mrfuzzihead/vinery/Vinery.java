@@ -5,11 +5,11 @@ import dev.architectury.hooks.item.tool.ShovelItemHooks;
 import dev.architectury.registry.fuel.FuelRegistry;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.block.Blocks;
-import net.satisfy.vinery.core.command.WineDebugCommands;
-import net.satisfy.vinery.core.event.EventHandler;
-import net.satisfy.vinery.core.registry.*;
-import net.satisfy.vinery.core.util.WineEffectSetup;
-import net.satisfy.vinery.core.world.feature.VineryFeatures;
+import com.mrfuzzihead.vinery.core.command.WineDebugCommands;
+import com.mrfuzzihead.vinery.core.event.EventHandler;
+import com.mrfuzzihead.vinery.core.registry.*;
+import com.mrfuzzihead.vinery.core.util.WineEffectSetup;
+import com.mrfuzzihead.vinery.core.world.feature.VineryFeatures;
 
 public class Vinery {
     public static final String MOD_ID = "vinery";

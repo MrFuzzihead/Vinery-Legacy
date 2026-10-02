@@ -3,7 +3,7 @@ package com.mrfuzzihead.vinery.core.util;
 import net.minecraft.core.Holder;
 import net.minecraft.world.effect.MobEffect;
 import net.minecraft.world.effect.MobEffects;
-import net.satisfy.vinery.core.item.DrinkBlockItem;
+import com.mrfuzzihead.vinery.core.item.DrinkBlockItem;
 import com.mrfuzzihead.vinery.core.registry.MobEffectRegistry;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
 

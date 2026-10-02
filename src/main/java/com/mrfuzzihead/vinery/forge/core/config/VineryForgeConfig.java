@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.core.config;
+package com.mrfuzzihead.vinery.forge.core.config;
 
 import net.neoforged.bus.api.SubscribeEvent;
 import net.neoforged.fml.event.config.ModConfigEvent;

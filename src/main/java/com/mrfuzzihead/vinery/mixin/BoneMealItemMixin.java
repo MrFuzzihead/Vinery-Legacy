@@ -1,4 +1,4 @@
-package com.mrfuzzihead.vinery.core.mixin;
+package com.mrfuzzihead.vinery.mixin;
 
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.InteractionHand;
@@ -9,10 +9,10 @@ import net.minecraft.world.item.BoneMealItem;
 import net.minecraft.world.item.Item;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.UseOnContext;
-import net.satisfy.vinery.core.item.WinemakerBootsItem;
-import net.satisfy.vinery.core.item.WinemakerChestItem;
-import net.satisfy.vinery.core.item.WinemakerHelmetItem;
-import net.satisfy.vinery.core.item.WinemakerLegsItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerBootsItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerChestItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerHelmetItem;
+import com.mrfuzzihead.vinery.core.item.WinemakerLegsItem;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;

@@ -7,7 +7,7 @@ import com.mrfuzzihead.vinery.Vinery;
 import java.util.List;
 import java.util.Set;
 
-import static net.satisfy.vinery.core.registry.ObjectRegistry.*;
+import static com.mrfuzzihead.vinery.core.registry.ObjectRegistry.*;
 
 public class StorageTypeRegistry {
     public static final ResourceLocation BIG_BOTTLE = Vinery.identifier("big_bottle");

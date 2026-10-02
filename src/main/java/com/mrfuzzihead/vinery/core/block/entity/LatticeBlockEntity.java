@@ -8,7 +8,7 @@ import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
 import com.mrfuzzihead.vinery.core.registry.GrapeTypeRegistry;
-import net.satisfy.vinery.core.util.GrapeType;
+import com.mrfuzzihead.vinery.core.util.GrapeType;
 import org.jetbrains.annotations.NotNull;
 
 public class LatticeBlockEntity extends BlockEntity {

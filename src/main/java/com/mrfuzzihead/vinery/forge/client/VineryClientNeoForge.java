@@ -1,4 +1,4 @@
-package net.satisfy.vinery.neoforge.client;
+package com.mrfuzzihead.vinery.forge.client;
 
 import net.minecraft.client.model.BoatModel;
 import net.minecraft.client.model.ChestBoatModel;
@@ -22,14 +22,14 @@ import net.neoforged.neoforge.client.event.EntityRenderersEvent;
 import net.neoforged.neoforge.client.event.RegisterMenuScreensEvent;
 import net.neoforged.neoforge.event.AddPackFindersEvent;
 import net.neoforged.neoforge.registries.RegisterEvent;
-import net.satisfy.vinery.client.VineryClient;
-import net.satisfy.vinery.client.gui.ApplePressGui;
-import net.satisfy.vinery.client.gui.FermentationBarrelGui;
-import net.satisfy.vinery.core.Vinery;
-import net.satisfy.vinery.core.block.state.properties.VineryWoodType;
-import net.satisfy.vinery.core.entity.DarkCherryBoatEntity;
-import net.satisfy.vinery.core.registry.EntityTypeRegistry;
-import net.satisfy.vinery.core.registry.ScreenhandlerTypeRegistry;
+import com.mrfuzzihead.vinery.client.VineryClient;
+import com.mrfuzzihead.vinery.client.gui.ApplePressGui;
+import com.mrfuzzihead.vinery.client.gui.FermentationBarrelGui;
+import com.mrfuzzihead.vinery.core.Vinery;
+import com.mrfuzzihead.vinery.core.block.state.properties.VineryWoodType;
+import com.mrfuzzihead.vinery.core.entity.DarkCherryBoatEntity;
+import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
+import com.mrfuzzihead.vinery.core.registry.ScreenhandlerTypeRegistry;
 import org.jetbrains.annotations.NotNull;
 
 import java.nio.file.Path;

@@ -14,7 +14,7 @@ import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.chat.Component;
 import net.minecraft.world.item.ItemStack;
 import com.mrfuzzihead.vinery.core.registry.ObjectRegistry;
-import net.satisfy.vinery.core.util.JuiceUtil;
+import com.mrfuzzihead.vinery.core.util.JuiceUtil;
 
 import java.util.List;
 import java.util.Optional;

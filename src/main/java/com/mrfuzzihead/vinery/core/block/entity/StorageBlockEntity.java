@@ -15,7 +15,7 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.state.BlockState;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import net.satisfy.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 import org.jetbrains.annotations.NotNull;
 
 public class StorageBlockEntity extends BlockEntity implements Clearable {

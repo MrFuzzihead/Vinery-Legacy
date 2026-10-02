@@ -10,8 +10,8 @@ import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.level.Level;
 import com.mrfuzzihead.vinery.core.components.WineYearComponent;
 import com.mrfuzzihead.vinery.core.registry.DataComponentRegistry;
-import net.satisfy.vinery.core.util.WineYears;
-import net.satisfy.vinery.platform.PlatformHelper;
+import com.mrfuzzihead.vinery.core.util.WineYears;
+import com.mrfuzzihead.vinery.PlatformHelper;
 
 public final class WineDebugCommands {
 

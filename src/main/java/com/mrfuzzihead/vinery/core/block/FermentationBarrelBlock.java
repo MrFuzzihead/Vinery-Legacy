@@ -27,9 +27,9 @@ import net.minecraft.world.phys.shapes.BooleanOp;
 import net.minecraft.world.phys.shapes.CollisionContext;
 import net.minecraft.world.phys.shapes.Shapes;
 import net.minecraft.world.phys.shapes.VoxelShape;
-import net.satisfy.vinery.core.block.entity.FermentationBarrelBlockEntity;
+import com.mrfuzzihead.vinery.core.block.entity.FermentationBarrelBlockEntity;
 import com.mrfuzzihead.vinery.core.registry.EntityTypeRegistry;
-import net.satisfy.vinery.core.util.GeneralUtil;
+import com.mrfuzzihead.vinery.core.util.GeneralUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 

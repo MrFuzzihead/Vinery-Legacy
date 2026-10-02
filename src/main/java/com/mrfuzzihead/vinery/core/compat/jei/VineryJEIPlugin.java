@@ -16,10 +16,10 @@ import net.minecraft.world.item.crafting.Ingredient;
 import net.minecraft.world.item.crafting.RecipeHolder;
 import net.minecraft.world.item.crafting.RecipeManager;
 import com.mrfuzzihead.vinery.Vinery;
-import net.satisfy.vinery.core.compat.jei.category.ApplePressMashingCategory;
-import net.satisfy.vinery.core.compat.jei.category.FermentationBarrelCategory;
-import net.satisfy.vinery.core.compat.jei.category.ApplePressFermentingCategory; // Import der neuen Kategorie
-import net.satisfy.vinery.core.compat.jei.transfer.FermentationTransferInfo;
+import com.mrfuzzihead.vinery.core.compat.jei.category.ApplePressMashingCategory;
+import com.mrfuzzihead.vinery.core.compat.jei.category.FermentationBarrelCategory;
+import com.mrfuzzihead.vinery.core.compat.jei.category.ApplePressFermentingCategory; // Import der neuen Kategorie
+import com.mrfuzzihead.vinery.core.compat.jei.transfer.FermentationTransferInfo;
 import com.mrfuzzihead.vinery.core.recipe.ApplePressMashingRecipe;
 import com.mrfuzzihead.vinery.core.recipe.FermentationBarrelRecipe;
 import com.mrfuzzihead.vinery.core.recipe.ApplePressFermentingRecipe; // Import der neuen Rezeptklasse
