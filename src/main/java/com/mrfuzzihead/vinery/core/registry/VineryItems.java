@@ -1,10 +1,12 @@
 package com.mrfuzzihead.vinery.core.registry;
 
+import net.minecraft.init.Blocks;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemSeeds;
 import net.minecraft.item.ItemSlab;
 
 import com.mrfuzzihead.vinery.core.block.DarkCherrySlabBlock;
+import com.mrfuzzihead.vinery.core.block.SoilSlabBlock;
 
 /**
  * Every item Vinery registers, plus handles for the items auto-created for blocks.
@@ -36,6 +38,10 @@ public final class VineryItems {
 
     // -- Standalone items ------------------------------------------------------------------------
 
+    public static Item GRASS_SLAB;
+    public static Item DIRT_SLAB;
+    public static Item COARSE_DIRT_SLAB;
+
     public static Item GRAPE_SEEDS;
     public static Item RED_GRAPE;
     public static Item WHITE_GRAPE;
@@ -58,8 +64,31 @@ public final class VineryItems {
                 (DarkCherrySlabBlock) VineryBlocks.DARK_CHERRY_DOUBLE_SLAB,
                 true),
             "dark_cherry_slab");
-        GRAPE_SEEDS = VineryRegistry
-            .item(new ItemSeeds(VineryBlocks.RED_GRAPE_BUSH, net.minecraft.init.Blocks.dirt), "grape_seeds");
+        // Soil slabs are registered with a null ItemBlock, so each pair needs its own ItemSlab or
+        // mining them would drop nothing at all.
+        GRASS_SLAB = VineryRegistry.item(
+            new ItemSlab(
+                VineryBlocks.GRASS_SLAB,
+                (SoilSlabBlock) VineryBlocks.GRASS_SLAB,
+                (SoilSlabBlock) VineryBlocks.GRASS_DOUBLE_SLAB,
+                false),
+            "grass_slab");
+        DIRT_SLAB = VineryRegistry.item(
+            new ItemSlab(
+                VineryBlocks.DIRT_SLAB,
+                (SoilSlabBlock) VineryBlocks.DIRT_SLAB,
+                (SoilSlabBlock) VineryBlocks.DIRT_DOUBLE_SLAB,
+                false),
+            "dirt_slab");
+        COARSE_DIRT_SLAB = VineryRegistry.item(
+            new ItemSlab(
+                VineryBlocks.COARSE_DIRT_SLAB,
+                (SoilSlabBlock) VineryBlocks.COARSE_DIRT_SLAB,
+                (SoilSlabBlock) VineryBlocks.COARSE_DIRT_DOUBLE_SLAB,
+                false),
+            "coarse_dirt_slab");
+
+        GRAPE_SEEDS = VineryRegistry.item(new ItemSeeds(VineryBlocks.RED_GRAPE_BUSH, Blocks.dirt), "grape_seeds");
         GRAPE_SEEDS.setTextureName("vinery:red_grape_seeds");
         RED_GRAPE = VineryRegistry.item(new Item(), "red_grape");
         RED_GRAPE.setTextureName("vinery:red_grape");

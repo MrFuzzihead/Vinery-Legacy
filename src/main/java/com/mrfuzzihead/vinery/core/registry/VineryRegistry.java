@@ -1,5 +1,9 @@
 package com.mrfuzzihead.vinery.core.registry;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+
 import net.minecraft.block.Block;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemBlock;
@@ -33,8 +37,20 @@ public final class VineryRegistry {
 
     private static int blockCount;
     private static int itemCount;
+    private static final List<Block> ALL_BLOCKS = new ArrayList<>();
+    private static final List<Item> ALL_ITEMS = new ArrayList<>();
 
     private VineryRegistry() {}
+
+    /** Every block registered so far, in registration order. Used by the self-test command. */
+    public static List<Block> blocks() {
+        return Collections.unmodifiableList(ALL_BLOCKS);
+    }
+
+    /** Every explicitly registered item, in registration order. */
+    public static List<Item> items() {
+        return Collections.unmodifiableList(ALL_ITEMS);
+    }
 
     /** How many blocks have been registered so far. Reported once during {@code postInit}. */
     public static int blockCount() {
@@ -66,6 +82,7 @@ public final class VineryRegistry {
             GameRegistry.registerBlock(block, itemClass, name);
         }
         blockCount++;
+        ALL_BLOCKS.add(block);
         return block;
     }
 
@@ -73,6 +90,7 @@ public final class VineryRegistry {
     public static <T extends Item> T item(T item, String name) {
         GameRegistry.registerItem(item, name);
         itemCount++;
+        ALL_ITEMS.add(item);
         return item;
     }
 

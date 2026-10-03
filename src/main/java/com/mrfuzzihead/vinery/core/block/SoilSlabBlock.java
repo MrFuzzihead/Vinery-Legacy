@@ -31,9 +31,12 @@ public class SoilSlabBlock extends BlockSlab {
 
     private static final Map<Block, Block> SIBLINGS = new HashMap<>();
 
-    /** Links the half and double instances of one soil so both can find the item form. */
+    /**
+     * Links a soil's half and double instances so the double variant can find the item form, which
+     * is always registered against the half block. Only the double is mapped: the half simply refers
+     * to itself, which keeps the item lookup on a single code path.
+     */
     public static void pair(Block half, Block doubled) {
-        SIBLINGS.put(half, doubled);
         SIBLINGS.put(doubled, half);
     }
 
@@ -52,7 +55,8 @@ public class SoilSlabBlock extends BlockSlab {
     @Override
     public Item getItemDropped(int meta, Random random, int fortune) {
         // The item form is the ItemSlab registered against the half-slab block for this soil.
-        return Item.getItemFromBlock(SIBLINGS.get(this));
+        Block half = SIBLINGS.get(this);
+        return Item.getItemFromBlock(half != null ? half : this);
     }
 
     @Override

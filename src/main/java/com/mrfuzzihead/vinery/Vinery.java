@@ -5,6 +5,7 @@ import net.minecraft.util.ResourceLocation;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.mrfuzzihead.vinery.core.command.SelfTestCommand;
 import com.mrfuzzihead.vinery.core.registry.VineryBlocks;
 import com.mrfuzzihead.vinery.core.registry.VineryItems;
 import com.mrfuzzihead.vinery.core.registry.VineryRegistry;
@@ -16,6 +17,7 @@ import cpw.mods.fml.common.SidedProxy;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import cpw.mods.fml.common.event.FMLServerStartingEvent;
 
 /**
  * Mod entry point.
@@ -61,6 +63,15 @@ public class Vinery {
         LOG.info("Vinery init");
         VineryBlocks.registerRecipes();
         proxy.init(event);
+    }
+
+    /**
+     * Server-only hook. The self-test command needs no client, so registering it here keeps it off
+     * the client entirely.
+     */
+    @Mod.EventHandler
+    public void serverStarting(FMLServerStartingEvent event) {
+        event.registerServerCommand(new SelfTestCommand());
     }
 
     @Mod.EventHandler
