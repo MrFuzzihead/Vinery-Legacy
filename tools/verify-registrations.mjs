@@ -124,6 +124,22 @@ function collectRegistrations() {
     return { blocks, items };
 }
 
+/** Registry names and field names differ only in case and underscores; compare them the same way. */
+const normalise = (name) => name.toLowerCase().replace(/_/g, '').trim();
+
+/** Blocks registered with a null ItemBlock, i.e. those with no item form at all. */
+function itemlessBlocks() {
+    const itemless = new Set();
+    const registries = javaFilesIn(join(SRC, 'com', 'mrfuzzihead', 'vinery'));
+    for (const file of registries) {
+        const text = readFileSync(file, 'utf8');
+        for (const m of text.matchAll(/VineryRegistry\.block\(\s*new\s+\w+\([^;]*?\)\s*,\s*null,\s*"([\w_]+)"/g)) {
+            itemless.add(normalise(m[1]));
+        }
+    }
+    return itemless;
+}
+
 const textureNames = collectTextureNames();
 const { blocks, items } = collectRegistrations();
 
@@ -226,6 +242,26 @@ for (const { className, name, siteTextures } of items) {
         for (const icon of icons) checkTexture(className, icon, 'item');
     }
     checkLang(`item.vinery.${name}.name`, 'item', name);
+}
+
+// Any code building an ItemStack straight from a block that has no item form produces a
+// null-item stack. This bit us once already, so it is enforced at the source level: the creative
+// tab is only reachable on a client, and displayAllReleventItems does not even exist on a dedicated
+// server (NoSuchMethodError), so it cannot be caught at runtime from the self-test.
+const itemless = itemlessBlocks();
+if (itemless.size) {
+    for (const file of javaFilesIn(SRC)) {
+        const text = readFileSync(file, 'utf8');
+        for (const m of text.matchAll(
+            /new ItemStack\(\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)*VineryBlocks\.([A-Z_]+)\s*\)/g
+        )) {
+            if (itemless.has(normalise(m[1]))) {
+                problems.push(
+                    `${file.replace(ROOT, '.')}: new ItemStack(${m[1]}) — ${m[1]} has no item form, so the stack would have a null item`
+                );
+            }
+        }
+    }
 }
 
 if (skipped.length) {
