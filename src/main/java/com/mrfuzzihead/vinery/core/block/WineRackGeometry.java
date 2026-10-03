@@ -6,120 +6,52 @@ import com.mrfuzzihead.vinery.client.render.BoxRenderer.Box;
  * Geometry transcribed from the 1.21 wine rack templates.
  *
  * <p>
- * Keeping it here rather than inside the block means the renderer, the collision box and any future
- * hit-box test all read the same numbers. Coordinates and UV rectangles are copied straight from the
- * model JSONs under {@code assets/vinery/models/block/}, so the original files stay the readable
- * reference and this is the 1.7.10 transcription.
+ * Kept apart from the block so the renderer and any future hit-box test read the same numbers,
+ * and so the original JSONs under {@code assets/vinery/models/block/} stay the readable reference.
  *
  * <p>
- * Face order is BoxRenderer's: up, down, north, south, west, east.
+ * Coordinates are converted from the model's 0-16 space to 0-1 block space by
+ * {@link com.mrfuzzihead.vinery.client.render.BoxRenderer.Box}.
+ *
+ * <p>
+ * Texture indices are {@link com.mrfuzzihead.vinery.core.block.NineBottleStorageBlock#SIDE_TEXTURE}
+ * and {@link #TOP_TEXTURE} — the cabinet side and cabinet top textures the 1.21 models use for the
+ * frame and the shelves respectively. 1.7.10's vanilla cube renderer draws one texture per box, so a
+ * box that mixed both in the original model picks its dominant face; per-face fidelity is tracked as
+ * a known simplification.
  */
 public final class WineRackGeometry {
 
     private WineRackGeometry() {}
 
+    /** Side texture index, matching NineBottleStorageBlock#faceIcons ordering. */
+    public static final int SIDE_TEXTURE = 2;
+
+    /** Top texture index. */
+    public static final int TOP_TEXTURE = 4;
+
     /**
-     * The big rack, from {@code template_wine_rack_1}: nine axis-aligned cuboids, no rotations.
-     * Two side posts, top/bottom/back panels, two vertical dividers, two horizontal shelves — a 3x3
-     * grid of cubbies, which is where the nine slots come from.
+     * The big rack, from {@code template_wine_rack_1}: nine axis-aligned cuboids with no rotations —
+     * two side posts, top, bottom and back panels, two vertical dividers and two horizontal shelves.
+     * Those form a 3x3 grid of cubbies, which is where the nine bottle slots come from.
      */
-    public static final Box[] BIG = {
+    public static final com.mrfuzzihead.vinery.client.render.BoxRenderer.Box[] BIG = {
         // Top panel
-        box(
-            1,
-            15,
-            0,
-            15,
-            16,
-            16,
-            new double[][] { uv(1, 0, 15, 1), uv(1, 0, 15, 1), uv(1, 0, 15, 16), uv(1, 0, 15, 16), uv(1, 0, 15, 16),
-                uv(1, 0, 15, 16), }),
+        new Box(1, 15, 0, 15, 16, 16, TOP_TEXTURE, true),
         // Back panel
-        box(
-            1,
-            1,
-            15,
-            15,
-            15,
-            16,
-            new double[][] { uv(1, 1, 15, 15), uv(1, 1, 15, 15), uv(0, 0, 0.5, 7.25), uv(0, 0, 0.5, 7.25),
-                uv(0, 0, 6.5, 0.5), uv(0, 0, 6.5, 0.5), }),
+        new Box(1, 1, 15, 15, 15, 16, SIDE_TEXTURE, true),
         // Left post
-        box(
-            0,
-            0,
-            0,
-            1,
-            16,
-            16,
-            new double[][] { uv(15, 0, 16, 16), uv(0, 0, 16, 16), uv(15, 0, 16, 16), uv(0, 0, 1, 16), uv(15, 0, 16, 16),
-                uv(16, 0, 15, 16), }),
+        new Box(0, 0, 0, 1, 16, 16, SIDE_TEXTURE, true),
         // Right post
-        box(
-            15,
-            0,
-            0,
-            16,
-            16,
-            16,
-            new double[][] { uv(15, 0, 16, 16), uv(15, 0, 16, 16), uv(0, 0, 16, 16), uv(0, 0, 16, 16), uv(0, 0, 1, 16),
-                uv(16, 0, 15, 16), }),
+        new Box(15, 0, 0, 16, 16, 16, SIDE_TEXTURE, true),
         // Bottom panel
-        box(
-            1,
-            0,
-            0,
-            15,
-            1,
-            16,
-            new double[][] { uv(1, 0, 15, 1), uv(1, 0, 15, 1), uv(0, 0, 0, 0), uv(0, 0, 0, 0), uv(1, 0, 15, 16),
-                uv(1, 0, 15, 16), }),
+        new Box(1, 0, 0, 15, 1, 16, SIDE_TEXTURE, true),
         // Vertical divider, left slot
-        box(
-            5,
-            1,
-            0.875,
-            6,
-            15,
-            15.875,
-            new double[][] { uv(15, 2, 16, 16), uv(0, 15, 15, 0), uv(1, 1, 15, 15), uv(1, 1, 15, 15), uv(0, 7, 16, 8),
-                uv(0, 4, 16, 5), }),
+        new Box(5, 1, 0.875, 6, 15, 15.875, SIDE_TEXTURE, true),
         // Vertical divider, right slot
-        box(
-            10,
-            1,
-            0.875,
-            11,
-            15,
-            15.875,
-            new double[][] { uv(15, 2, 16, 16), uv(0, 15, 15, 0), uv(1, 1, 15, 15), uv(1, 1, 15, 15), uv(0, 7, 16, 8),
-                uv(0, 4, 16, 5), }),
+        new Box(10, 1, 0.875, 11, 15, 15.875, SIDE_TEXTURE, true),
         // Horizontal shelf, upper
-        box(
-            1.001,
-            9.75,
-            1.375,
-            15.001,
-            10.75,
-            15.375,
-            new double[][] { uv(1, 1, 15, 2), uv(0, 13, 16, 14), uv(0, 4, 16, 5), uv(0, 7, 16, 8), uv(1, 1, 15, 15),
-                uv(1, 1, 15, 16), }),
+        new Box(1.001, 9.75, 1.375, 15.001, 10.75, 15.375, SIDE_TEXTURE, true),
         // Horizontal shelf, lower
-        box(
-            1.001,
-            5,
-            1.375,
-            15.001,
-            6,
-            15.375,
-            new double[][] { uv(1, 1, 15, 2), uv(0, 13, 16, 14), uv(0, 4, 16, 5), uv(0, 7, 16, 8), uv(1, 1, 15, 15),
-                uv(1, 1, 15, 16), }), };
-
-    private static Box box(double x1, double y1, double z1, double x2, double y2, double z2, double[][] uvs) {
-        return new Box(x1, y1, z1, x2, y2, z2, uvs);
-    }
-
-    private static double[] uv(double u1, double v1, double u2, double v2) {
-        return new double[] { u1, v1, u2, v2 };
-    }
+        new Box(1.001, 5, 1.375, 15.001, 6, 15.375, SIDE_TEXTURE, true), };
 }

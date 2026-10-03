@@ -34,6 +34,12 @@ public class NineBottleStorageBlock extends BlockDirectional implements VineryCh
 
     private static final String TEXTURE = "vinery:dark_cherry_cabinet_side";
 
+    /** Index into faceIcons for the cabinet side texture; used by WineRackGeometry. */
+    public static final int SIDE_TEXTURE = 2;
+
+    /** Index into faceIcons for the cabinet top texture. */
+    public static final int TOP_TEXTURE = 4;
+
     /**
      * Render id for the box renderer.
      *
@@ -75,6 +81,13 @@ public class NineBottleStorageBlock extends BlockDirectional implements VineryCh
     public void registerBlockIcons(IIconRegister iconRegister) {
         IIcon side = iconRegister.registerIcon("vinery:dark_cherry_cabinet_side");
         IIcon top = iconRegister.registerIcon("vinery:dark_cherry_cabinet_top");
+
+        // Block#registerBlockIcons normally assigns blockIcon here, and this override replaces it
+        // wholesale — so blockIcon has to be set by hand. Block#getIcon and
+        // getBlockTextureFromSide both resolve through blockIcon, which is what the vanilla cube
+        // renderer (and ItemBlock's own icon) use. Without this the block draws with a null icon:
+        // invisible in the world, missing-texture square in the inventory.
+        this.blockIcon = side;
 
         // BoxRenderer face order: up, down, north, south, west, east.
         this.faceIcons = new IIcon[] { top, top, side, side, side, side };
