@@ -331,6 +331,7 @@ lang files. A green `runServer` says nothing about whether
 | **`onBlockPlacedBy` also fires client-side** | A wrong facing for a frame | The client gets the callback with an unnormalised yaw and writes metadata the server then overwrites. Guard with `if (!world.isRemote)`. |
 | **A 180° rotation is its own inverse** | Rotation bug survives testing | 180° (`facing=2`) looks correct even when the 90° cases are swapped, so testing one direction proves nothing. Test a **quarter turn**. |
 | **Overriding `registerBlockIcons` loses `blockIcon`** | Block invisible in world *and* missing-texture in inventory | Vanilla's `Block#registerBlockIcons` assigns `this.blockIcon`; overriding it to fill a per-face table must set `blockIcon` too, because `getIcon` and `getBlockTextureFromSide` both resolve through it. A `null` icon draws nothing and renders as the missing-texture square. |
+| **Vanilla culls faces against the block, not the box** | Looking up into a rack from below shows sky through its interior ceiling | `renderStandardBlock(block, x, y, z)` is called once per box, but RenderBlocks culls a face by asking whether the neighbouring **block** at `(x, y±1, z)` is opaque — it never knows a box is not the whole block. So the top panel's underside is tested against the block *below the rack*: solid ground culls it and the cubbies have no ceiling. Fix is `renderer.renderAllFaces = true` around the loop, and restoring the previous value afterwards because RenderBlocks is shared with vanilla's own renderers. |
 | **Never early-return from a block renderer** | Block draws once, then vanishes | Chunks re-render on every block change, so a one-shot debug guard that returns early makes the block appear for one frame only. Log once, always render. |
 | **ISBRH runs inside an open Tessellator session** | `IllegalStateException: Already tesselating!` | Forge calls `renderWorldBlock` from `RenderBlocks#renderBlockByRenderType` **mid-batch**, so a renderer must only append vertices — calling `startDrawing` throws. The inventory path is the opposite: `RenderBlocks#renderInventoryBlock` runs after every vanilla `startDrawing/draw` pair has closed, so it owns its own session. |
 | **Vertices need explicit normals** | Garbage/blocky lighting | Even with per-face vertex colours, GL lighting is on during the block pass, so `Tessellator#setNormal` must be called per face as `RenderBlocks` does. |
@@ -409,9 +410,24 @@ Requirements and traps when using it (all learned the hard way):
 
 ### 5.4 What stays deferred: rotated elements
 
-Shapes containing elements rotated off-axis — the lattice's 45° braces, the small wine rack's
-angled supports — cannot be expressed as axis-aligned boxes. **Nothing in the port needs this yet**,
-so no OBJ converter is planned. When the first such shape arrives:
+Shapes containing elements rotated off-axis cannot be expressed as axis-aligned boxes, but they do not
+automatically need an OBJ converter.
+
+**Worked example — the small rack's braces.** `template_wine_rack_2` has two elements rotated -45°
+about z, a 1px-thick diagonal each, forming an X across the face. They are drawn as 15 unit boxes
+each, not as true rotated quads, because at 45° and 1px thick a staircase lands on exactly the
+pixels a true diagonal occupies — which is how a diagonal is drawn in pixel art anyway. Total cost:
+30 extra `renderStandardBlock` calls, no new rendering technology, no risk.
+
+**The pivot is `rotation.origin`, not the element centre.** Minecraft rotates an element about its
+`rotation.origin`, which these elements set explicitly. Rotating about the centre instead sends the
+brace to x -5.6..9.6 — mostly outside the block — and is the kind of error that looks like "the
+model is broken" rather than "the maths is wrong". With the correct pivot the braces run
+(0.75,0.93)-(15.25,15.42) and (0.93,15.42)-(15.42,0.93).
+
+Still no OBJ converter. It remains the fallback if a shape ever arrives that stepping cannot
+approximate — a thin diagonal is forgiving, an angled face or a sloped roof is not. When that
+happens:
 
 - Input: just that template (keep the other ~250 block models as the reference/intent source).
 - Must handle: `#texture` variable indirection, per-face `rotation: 90/180/270` (bake into UVs),
@@ -431,7 +447,7 @@ so no OBJ converter is planned. When the first such shape arrives:
 | Tier 1 vanilla block wiring (~20 blocks)                      | 2–3 days  | ~14 blocks done                           |
 | Tier 2/3 item wiring (~168 items)                             | 1 day     | ~11 items done                            |
 | Tier 4 box rendering via vanilla's cube renderer (~10 shapes) | 1–2 days  | 1 shape done (big wine rack, verified)    |
-| Tier 5 OBJ converter                                          | deferred  | not needed until a rotated shape appears   |
+| Tier 5 OBJ converter                                          | deferred  | not needed: the small rack's 45° braces step instead (§5.4) |
 | Entity models + renderers                                     | 2–3 days  | not started                               |
 | **Total**                                                     | **~2 wks**| |
 
@@ -479,7 +495,7 @@ so no OBJ converter is planned. When the first such shape arrives:
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content** (in progress: 36/204 blocks, 7 items; all 10 big wine racks done) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: 46/204 blocks, 7 items; big + small wine racks done, all 10 woods) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |
@@ -529,9 +545,16 @@ Total ≈ **6–9 weeks** now that rendering is scoped (§5, ~2–3 weeks and mo
    - *mid* → `template_wine_rack_3_closed` / `_3_open` (2 and 6 boxes, no rotations) — note
      `_3_closed` contains an element with **inverted bounds** (`from [15,1,0]` > `to [1,15,15]`), so
      confirm the intended shape before transcribing it.
-   - *small* → `template_wine_rack_2` (7 boxes, **two at 45°**) — the first case that genuinely
-     cannot be expressed as axis-aligned boxes (§5.4). Decide OBJ vs. approximation then.
-   Then the 11 remaining wood variants, which are texture-only repeats of whichever shapes exist.
+   - *small* → `template_wine_rack_2` — **done**, all ten woods. 5 axis-aligned boxes plus two 45°
+     braces stepped into 15 unit boxes each (§5.4).
+
+   The mid rack is the one open question, and it is not a porting problem but an asset problem:
+   `template_wine_rack_3_closed` and `_3_open` both contain a **full opaque cube**
+   `[0,0,0]→[16,16,16]` with all six faces textured, plus an element with inverted bounds. That is
+   what 1.21 renders — a solid cabinet in both the open and closed states, so the "open" state
+   reveals nothing. The interior is not recoverable from these files, and git history shows the
+   models were never valid here (they arrive broken in `e88bc18c`). Options: port the closed cube
+   faithfully, author a 6-bottle interior as new content, or drop mid. **Needs a decision.**
 
 ---
 
@@ -559,6 +582,7 @@ What was **verified** (checked against source/registry, not assumed):
 | DMod, not our code, aborts the dev launch | UniMixins' sanity-check error names `DMod-513764-4523625-deobf.jar`; with that dependency removed the identical launch reaches `Self-test: 36 block(s) 0 failure(s)` |
 | Wine racks need **no** Et Futurum API — cherry/mangrove/bamboo racks are self-contained blocks carrying their own textures | Every `vinery:block/*` reference in all ten `<wood>_wine_rack_1.json` models resolves to a file on disk (0 missing), and all ten `tile.vinery.*_wine_rack_big.name` translation keys already exist |
 | Box rendering via `RenderBlocks#setRenderBounds` + `renderStandardBlock` works | Confirmed in game: renders, textures, collides, and faces the placer in all four directions |
+| Interior faces need `renderAllFaces`, because RenderBlocks culls against the block coordinate | Bytecode: `renderStandardBlockWithAmbientOcclusionPartial` reads `renderAllFaces`, then calls `IBlockAccess.getBlock(x, y±1, z)` — the box position is never consulted |
 | Wine-rack rotation: 180° is its own inverse, so only a quarter turn exposes a swapped 90° mapping | Computing the back panel's rotated position for all four facings (`facing 1` must put it at `x≈0.03`, not `x≈0.97`) |
 | `BlockFurnace#onBlockPlacedBy` floors the yaw; a plain `(int)` cast breaks roughly half of all angles | Player yaw observed as `-177.6` / `-360.45` in the placement log; truncation yields `-1` where flooring yields `-2` |
 | `RenderingRegistry#renderWorldBlock` passes its own `modelId`, not metadata, into the handler's metadata slot | Bytecode: the same `iload_7` feeds both the map lookup and the interface call |

@@ -14,6 +14,7 @@ import com.mrfuzzihead.vinery.core.block.DarkCherrySlabBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryStairsBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryTrapDoorBlock;
 import com.mrfuzzihead.vinery.core.block.FoliageBlock;
+import com.mrfuzzihead.vinery.core.block.FourBottleStorageBlock;
 import com.mrfuzzihead.vinery.core.block.GrapeBushBlock;
 import com.mrfuzzihead.vinery.core.block.NineBottleStorageBlock;
 import com.mrfuzzihead.vinery.core.block.SoilSlabBlock;
@@ -81,6 +82,16 @@ public final class VineryBlocks {
     public static Block BAMBOO_WINE_RACK_BIG;
     public static Block CHERRY_WINE_RACK_BIG;
     public static Block MANGROVE_WINE_RACK_BIG;
+    public static Block DARK_CHERRY_WINE_RACK_SMALL;
+    public static Block OAK_WINE_RACK_SMALL;
+    public static Block SPRUCE_WINE_RACK_SMALL;
+    public static Block BIRCH_WINE_RACK_SMALL;
+    public static Block JUNGLE_WINE_RACK_SMALL;
+    public static Block ACACIA_WINE_RACK_SMALL;
+    public static Block DARK_OAK_WINE_RACK_SMALL;
+    public static Block BAMBOO_WINE_RACK_SMALL;
+    public static Block CHERRY_WINE_RACK_SMALL;
+    public static Block MANGROVE_WINE_RACK_SMALL;
 
     private static FoliageBlock darkCherryLeaves() {
         return new FoliageBlock(
@@ -154,6 +165,40 @@ public final class VineryBlocks {
         MANGROVE_WINE_RACK_BIG = VineryRegistry.block(
             new NineBottleStorageBlock("vinery:mangrove_cabinet_side", "vinery:mangrove_cabinet_top"),
             "mangrove_wine_rack_big");
+
+        // The ten small racks. Same texture pairs as the big racks: both shapes reference the same
+        // cabinet textures, and the diagonal braces draw with the cabinet top.
+        // Written out one per line so tools/verify-registrations.mjs keeps seeing all of them.
+        DARK_CHERRY_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:dark_cherry_cabinet_side", "vinery:dark_cherry_cabinet_top"),
+            "dark_cherry_wine_rack_small");
+        OAK_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:oak_cabinet_side", "vinery:oak_cabinet_top"),
+            "oak_wine_rack_small");
+        SPRUCE_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:spruce_cabinet_side", "vinery:spruce_cabinet_top"),
+            "spruce_wine_rack_small");
+        BIRCH_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:birch_cabinet_side", "vinery:birch_cabinet_top"),
+            "birch_wine_rack_small");
+        JUNGLE_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:jungle_cabinet_side", "vinery:jungle_cabinet_top"),
+            "jungle_wine_rack_small");
+        ACACIA_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:acacia_drawer_side", "vinery:acacia_cabinet_top"),
+            "acacia_wine_rack_small");
+        DARK_OAK_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:dark_oak_cabinet_side", "vinery:dark_oak_cabinet_top"),
+            "dark_oak_wine_rack_small");
+        BAMBOO_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:bamboo_cabinet_side", "vinery:bamboo_cabinet_top"),
+            "bamboo_wine_rack_small");
+        CHERRY_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:cherry_cabinet_side_pink", "vinery:cherry_cabinet_top_pink"),
+            "cherry_wine_rack_small");
+        MANGROVE_WINE_RACK_SMALL = VineryRegistry.block(
+            new FourBottleStorageBlock("vinery:mangrove_cabinet_side", "vinery:mangrove_cabinet_top"),
+            "mangrove_wine_rack_small");
 
         STRIPPED_DARK_CHERRY_LOG = VineryRegistry.block(
             new WoodLogBlock("vinery:stripped_dark_cherry_log_side", "vinery:stripped_dark_cherry_log_top"),

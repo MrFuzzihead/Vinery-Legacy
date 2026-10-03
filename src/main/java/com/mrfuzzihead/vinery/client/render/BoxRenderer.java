@@ -103,26 +103,40 @@ public final class BoxRenderer {
         // once and every facing reuses it.
         int facing = metadata & 3;
 
-        for (Box box : boxes) {
-            renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture ? textures[box.texture]
-                : null;
+        // Every face must be drawn. RenderBlocks culls a face when the neighbouring *block* at the
+        // block's own coordinates is opaque, and it has no idea a box is not the whole block: all
+        // nine boxes are submitted as `renderStandardBlock(block, x, y, z)`, so the top panel's
+        // underside is tested against the block *below the rack*. On the ground that is solid, the
+        // face is culled, and the rack's interior ceiling is missing — you look up into the cubbies
+        // and see the sky. renderAllFaces disables the culling entirely.
+        //
+        // RenderBlocks is shared with vanilla's own renderers, so the previous value is restored.
+        boolean previousRenderAllFaces = renderer.renderAllFaces;
+        renderer.renderAllFaces = true;
+        try {
+            for (Box box : boxes) {
+                renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture
+                    ? textures[box.texture]
+                    : null;
 
-            double minX = rotateX(box.minX, box.minZ, facing);
-            double maxX = rotateX(box.maxX, box.maxZ, facing);
-            double minZ = rotateZ(box.minX, box.minZ, facing);
-            double maxZ = rotateZ(box.maxX, box.maxZ, facing);
+                double minX = rotateX(box.minX, box.minZ, facing);
+                double maxX = rotateX(box.maxX, box.maxZ, facing);
+                double minZ = rotateZ(box.minX, box.minZ, facing);
+                double maxZ = rotateZ(box.maxX, box.maxZ, facing);
 
-            renderer.setRenderBounds(
-                Math.min(minX, maxX),
-                box.minY,
-                Math.min(minZ, maxZ),
-                Math.max(minX, maxX),
-                box.maxY,
-                Math.max(minZ, maxZ));
-            renderer.renderStandardBlock(block, x, y, z);
+                renderer.setRenderBounds(
+                    Math.min(minX, maxX),
+                    box.minY,
+                    Math.min(minZ, maxZ),
+                    Math.max(minX, maxX),
+                    box.maxY,
+                    Math.max(minZ, maxZ));
+                renderer.renderStandardBlock(block, x, y, z);
+            }
+        } finally {
+            renderer.renderAllFaces = previousRenderAllFaces;
+            renderer.clearOverrideBlockTexture();
         }
-
-        renderer.clearOverrideBlockTexture();
     }
 
     /**
@@ -140,13 +154,22 @@ public final class BoxRenderer {
             return;
         }
 
-        for (Box box : boxes) {
-            renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture ? textures[box.texture]
-                : null;
-            renderer.setRenderBounds(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
-            renderer.renderStandardBlock(block, 0, 0, 0);
+        // Same reasoning as renderWorld: the boxes are not the whole block, so vanilla's
+        // block-coordinate face culling would drop interior faces.
+        boolean previousRenderAllFaces = renderer.renderAllFaces;
+        renderer.renderAllFaces = true;
+        try {
+            for (Box box : boxes) {
+                renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture
+                    ? textures[box.texture]
+                    : null;
+                renderer.setRenderBounds(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+                renderer.renderStandardBlock(block, 0, 0, 0);
+            }
+        } finally {
+            renderer.renderAllFaces = previousRenderAllFaces;
+            renderer.clearOverrideBlockTexture();
         }
-        renderer.clearOverrideBlockTexture();
     }
 
     /** Resolves a block's icons, ordered up, down, north, south, west, east. */
