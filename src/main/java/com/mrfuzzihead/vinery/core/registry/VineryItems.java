@@ -38,6 +38,8 @@ public final class VineryItems {
 
     // -- Standalone items ------------------------------------------------------------------------
 
+    public static Item DARK_CHERRY_WINE_RACK_BIG_ITEM;
+
     public static Item GRASS_SLAB;
     public static Item DIRT_SLAB;
     public static Item COARSE_DIRT_SLAB;
@@ -66,6 +68,8 @@ public final class VineryItems {
             "dark_cherry_slab");
         // Soil slabs are registered with a null ItemBlock, so each pair needs its own ItemSlab or
         // mining them would drop nothing at all.
+        DARK_CHERRY_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_CHERRY_WINE_RACK_BIG);
+
         GRASS_SLAB = VineryRegistry.item(
             new ItemSlab(
                 VineryBlocks.GRASS_SLAB,

@@ -15,6 +15,7 @@ import com.mrfuzzihead.vinery.core.block.DarkCherryStairsBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryTrapDoorBlock;
 import com.mrfuzzihead.vinery.core.block.FoliageBlock;
 import com.mrfuzzihead.vinery.core.block.GrapeBushBlock;
+import com.mrfuzzihead.vinery.core.block.NineBottleStorageBlock;
 import com.mrfuzzihead.vinery.core.block.SoilSlabBlock;
 import com.mrfuzzihead.vinery.core.block.WoodLogBlock;
 
@@ -70,6 +71,7 @@ public final class VineryBlocks {
     public static Block GRASS_DOUBLE_SLAB;
     public static Block DIRT_DOUBLE_SLAB;
     public static Block COARSE_DIRT_DOUBLE_SLAB;
+    public static Block DARK_CHERRY_WINE_RACK_BIG;
 
     private static FoliageBlock darkCherryLeaves() {
         return new FoliageBlock(
@@ -104,6 +106,8 @@ public final class VineryBlocks {
         // slot before VineryItems.register() can create the ItemSlab in it.
         DARK_CHERRY_SLAB = VineryRegistry.block(new DarkCherrySlabBlock(false), null, "dark_cherry_slab");
         DARK_CHERRY_DOUBLE_SLAB = VineryRegistry.block(new DarkCherrySlabBlock(true), null, "dark_cherry_double_slab");
+
+        DARK_CHERRY_WINE_RACK_BIG = VineryRegistry.block(new NineBottleStorageBlock(), "dark_cherry_wine_rack_big");
 
         STRIPPED_DARK_CHERRY_LOG = VineryRegistry.block(
             new WoodLogBlock("vinery:stripped_dark_cherry_log_side", "vinery:stripped_dark_cherry_log_top"),
@@ -184,6 +188,10 @@ public final class VineryBlocks {
         GameRegistry.addRecipe(
             new ItemStack(DARK_CHERRY_TRAPDOOR, 2),
             new Object[] { "PPP", "PPP", "   ", 'P', Item.getItemFromBlock(DARK_CHERRY_PLANKS) });
+
+        GameRegistry.addRecipe(
+            new ItemStack(DARK_CHERRY_WINE_RACK_BIG, 1),
+            new Object[] { "PPP", "P P", "PPP", 'P', Item.getItemFromBlock(DARK_CHERRY_PLANKS) });
 
         GameRegistry.addRecipe(
             new ItemStack(DARK_CHERRY_FENCE_GATE, 1),

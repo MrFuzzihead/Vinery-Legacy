@@ -1,0 +1,123 @@
+package com.mrfuzzihead.vinery.core.block;
+
+import java.util.Random;
+
+import net.minecraft.block.BlockDirectional;
+import net.minecraft.block.material.Material;
+import net.minecraft.client.renderer.texture.IIconRegister;
+import net.minecraft.entity.EntityLivingBase;
+import net.minecraft.item.Item;
+import net.minecraft.item.ItemStack;
+import net.minecraft.util.AxisAlignedBB;
+import net.minecraft.util.IIcon;
+import net.minecraft.world.World;
+
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
+/**
+ * The big wine rack — nine bottle cubbies, taken from the 1.21
+ * {@code template_wine_rack_1} model.
+ *
+ * <p>
+ * That model is nine axis-aligned cuboids with no rotations: two side posts, top, bottom and back
+ * panels, two vertical dividers and two horizontal shelves. The box list lives in
+ * {@link WineRackGeometry#BIG} so the renderer and the collision box agree on one source of truth.
+ *
+ * <p>
+ * Facing is raw metadata — bits 0-1 hold the facing, matching 1.7.10's {@link BlockDirectional}
+ * convention. 1.7.10 has no block-property system (BACKPORT_PLAN.md section 4.2).
+ *
+ * <p>
+ * The nine bottle slots are Phase 3 work; this increment brings up the block and its geometry.
+ */
+public class NineBottleStorageBlock extends BlockDirectional {
+
+    @SideOnly(Side.CLIENT)
+    private IIcon[] faceIcons;
+
+    public NineBottleStorageBlock() {
+        super(Material.wood);
+        setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+        setHardness(2.0F);
+        setResistance(3.0F);
+        setStepSound(soundTypeWood);
+    }
+
+    /**
+     * The rack uses two textures — cabinet side for the frame, cabinet top for the shelves — so the
+     * per-face icons are held here. {@code Block.getIcon} can only return one icon for all sides,
+     * which is why this block owns the mapping the box renderer consumes.
+     */
+    @SideOnly(Side.CLIENT)
+    @Override
+    public void registerBlockIcons(IIconRegister iconRegister) {
+        IIcon side = iconRegister.registerIcon("vinery:dark_cherry_cabinet_side");
+        IIcon top = iconRegister.registerIcon("vinery:dark_cherry_cabinet_top");
+
+        // BoxRenderer face order: up, down, north, south, west, east.
+        this.faceIcons = new IIcon[] { top, top, side, side, side, side };
+    }
+
+    /** Per-face icons in BoxRenderer's order, or null on a server. */
+    @SideOnly(Side.CLIENT)
+    public IIcon[] faceIcons() {
+        return faceIcons;
+    }
+
+    /** Rendered through the custom box renderer, not the standard cube pipeline. **/
+    @Override
+    public int getRenderType() {
+        return -1;
+    }
+
+    @Override
+    public boolean isOpaqueCube() {
+        return false;
+    }
+
+    @Override
+    public boolean renderAsNormalBlock() {
+        return false;
+    }
+
+    @Override
+    public boolean getBlocksMovement(net.minecraft.world.IBlockAccess world, int x, int y, int z) {
+        return false;
+    }
+
+    @Override
+    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
+        return AxisAlignedBB.getBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
+    }
+
+    /** Racks are placed against whatever they were clicked on, like doors and furnaces. */
+    @Override
+    public void onBlockPlacedBy(World world, int x, int y, int z, EntityLivingBase placer, ItemStack stack) {
+        // 1.7.10 has no Facing enum, so the direction is derived from yaw the way BlockFurnace does.
+        int facing = ((int) (placer.rotationYaw * 4.0F / 360.0F + 0.5F)) & 3;
+        world.setBlockMetadataWithNotify(x, y, z, facing & 3, 2);
+    }
+
+    @Override
+    public int damageDropped(int meta) {
+        return 0;
+    }
+
+    @Override
+    public Item getItemDropped(int meta, Random random, int fortune) {
+        return Item.getItemFromBlock(this);
+    }
+
+    /** The whole block, ignoring metadata: the facing does not change the drop. */
+    @Override
+    public int quantityDropped(Random random) {
+        return 1;
+    }
+
+    @Override
+    public boolean canPlaceBlockAt(World world, int x, int y, int z) {
+        return world.getBlock(x, y - 1, z)
+            .isOpaqueCube();
+    }
+}
