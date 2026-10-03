@@ -15,6 +15,7 @@ import net.minecraft.util.EnumChatFormatting;
 import net.minecraft.world.World;
 
 import com.mrfuzzihead.vinery.Vinery;
+import com.mrfuzzihead.vinery.core.block.VineryCheckableBlock;
 import com.mrfuzzihead.vinery.core.registry.VineryRegistry;
 
 /**
@@ -131,6 +132,20 @@ public class SelfTestCommand extends CommandBase {
 
                 block.getCollisionBoundingBoxFromPool(world, x, y, TEST_Z);
                 block.getRenderType();
+
+                // Localisation: 1.7.10 leaves Block#unlocalizedName null unless the mod sets it,
+                // which makes everything look up "tile.null.name". Both the name and the
+                // translation are common code, so this is checkable server-side rather than in the GUI.
+                checkName(describe(block), block.getUnlocalizedName(), failures);
+
+                // A block with no icon renders as nothing in the creative inventory, which is
+                // invisible server-side, so blocks opt in to the check by exposing their texture name.
+                if (block instanceof VineryCheckableBlock checkable) {
+                    String textureName = checkable.textureNameForTest();
+                    if (textureName == null || textureName.isEmpty()) {
+                        failures.add(describe(block) + ": no block texture set, so it will not render");
+                    }
+                }
             } catch (Throwable t) {
                 failures.add(describe(block) + ": threw " + t);
             }
@@ -158,6 +173,20 @@ public class SelfTestCommand extends CommandBase {
         Vinery.LOG.info("Self-test: {} block(s) {} failure(s)", blocks.size(), failures.size());
         for (String failure : failures) {
             Vinery.LOG.warn("Self-test failure: {}", failure);
+        }
+    }
+
+    /**
+     * Verifies a block or item has a usable unlocalized name. 1.7.10 leaves Block#unlocalizedName
+     * null unless the mod calls setBlockName, which makes everything look up "tile.null.name";
+     * that half is common code and checkable anywhere.
+     */
+    private static void checkName(String label, String unlocalized, List<String> failures) {
+        if (unlocalized == null || unlocalized.endsWith("null")) {
+            failures.add(
+                label + ": unlocalized name is "
+                    + unlocalized
+                    + " (setBlockName / setUnlocalizedName was never called)");
         }
     }
 

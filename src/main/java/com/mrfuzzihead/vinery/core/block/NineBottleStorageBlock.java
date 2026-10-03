@@ -31,13 +31,24 @@ import cpw.mods.fml.relauncher.SideOnly;
  * <p>
  * The nine bottle slots are Phase 3 work; this increment brings up the block and its geometry.
  */
-public class NineBottleStorageBlock extends BlockDirectional {
+public class NineBottleStorageBlock extends BlockDirectional implements VineryCheckableBlock {
+
+    private static final String TEXTURE = "vinery:dark_cherry_cabinet_side";
+
+    @Override
+    public String textureNameForTest() {
+        return TEXTURE;
+    }
 
     @SideOnly(Side.CLIENT)
     private IIcon[] faceIcons;
 
     public NineBottleStorageBlock() {
         super(Material.wood);
+        // Block#getIcon returns blockIcon, which is what the ItemBlock uses for its inventory icon.
+        // The box renderer draws from the per-face table below, but the item form and the block
+        // particle still need a single texture, or the block renders as nothing at all.
+        setBlockTextureName(TEXTURE);
         setBlockBounds(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
         setHardness(2.0F);
         setResistance(3.0F);

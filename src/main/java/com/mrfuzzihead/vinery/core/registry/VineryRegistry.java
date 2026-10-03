@@ -76,6 +76,12 @@ public final class VineryRegistry {
      */
     @SuppressWarnings("unchecked")
     public static <T extends Block> T block(T block, Class<? extends ItemBlock> itemClass, String name) {
+        // 1.7.10 has no automatic unlocalized name: Block#getUnlocalizedName is
+        // "tile." + unlocalizedName, and FML never calls setBlockName. Without this every block
+        // looks up "tile.null.name". The namespaced form matches the keys the lang converter emits
+        // (tile.vinery.<name>.name), so the 1.21 translations carry over unchanged.
+        block.setBlockName(Vinery.MOD_ID + "." + name);
+
         if (itemClass == null) {
             GameRegistry.registerBlock(block, (Class<? extends ItemBlock>) null, name);
         } else {
@@ -88,6 +94,8 @@ public final class VineryRegistry {
 
     /** Registers an item. {@code GameRegistry.registerItem} returns void, so the item is returned as passed. */
     public static <T extends Item> T item(T item, String name) {
+        // Standalone items need the same treatment; ItemBlock-derived ones inherit the block's name.
+        item.setUnlocalizedName(Vinery.MOD_ID + "." + name);
         GameRegistry.registerItem(item, name);
         itemCount++;
         ALL_ITEMS.add(item);
