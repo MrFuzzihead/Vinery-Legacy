@@ -68,15 +68,57 @@ public final class BoxRenderer {
         }
     }
 
+    /**
+     * Rotates a point around the block centre by facing quarter-turns, clockwise seen from above.
+     *
+     * <p>
+     * Matches Minecraft blockstate `y` semantics: a 90-degree turn maps north to east, so
+     * facing 1 (east) turns the authored model, which opens toward north, by one quarter.
+     */
+    private static double rotateX(double x, double z, int facing) {
+        return switch (facing & 3) {
+            case 1 -> 1.0D - z;
+            case 2 -> 1.0D - x;
+            case 3 -> z;
+            default -> x;
+        };
+    }
+
+    private static double rotateZ(double x, double z, int facing) {
+        return switch (facing & 3) {
+            case 1 -> x;
+            case 2 -> 1.0D - z;
+            case 3 -> 1.0D - x;
+            default -> z;
+        };
+    }
+
     /** Draws a block's boxes in the world. */
     public static void renderWorld(IBlockAccess world, int x, int y, int z, Block block, int metadata, Box[] boxes,
         IIcon[] textures, RenderBlocks renderer) {
         // Icon order here is up, down, north, south, west, east. Boxes index it by face constant.
+        //
+        // renderStandardBlock only draws axis-aligned boxes from the render bounds, so facing is
+        // applied by rotating those bounds rather than the vertices — the box list stays authored
+        // once and every facing reuses it.
+        int facing = metadata & 3;
+
         for (Box box : boxes) {
             renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture ? textures[box.texture]
                 : null;
 
-            renderer.setRenderBounds(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+            double minX = rotateX(box.minX, box.minZ, facing);
+            double maxX = rotateX(box.maxX, box.maxZ, facing);
+            double minZ = rotateZ(box.minX, box.minZ, facing);
+            double maxZ = rotateZ(box.maxX, box.maxZ, facing);
+
+            renderer.setRenderBounds(
+                Math.min(minX, maxX),
+                box.minY,
+                Math.min(minZ, maxZ),
+                Math.max(minX, maxX),
+                box.maxY,
+                Math.max(minZ, maxZ));
             renderer.renderStandardBlock(block, x, y, z);
         }
 

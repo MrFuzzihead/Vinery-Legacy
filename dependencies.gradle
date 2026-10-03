@@ -35,4 +35,14 @@
  */
 dependencies {
     runtimeOnlyNonPublishable("com.github.GTNewHorizons:NotEnoughItems:2.8.155-GTNH:dev")
+    devOnlyNonPublishable("ganymedes01.etfuturum:Et-Futurum-Requiem:2.6.48-GTNH:dev")
+    // DMod is parked for now: its jar bundles its own Mixin, and because "DMod-513764..." sorts
+    // before "unimixins-...", UniMixins' sanity check aborts the launch with
+    //     java.lang.Error: A different version of Mixin (the one inside DMod-513764-4523625-deobf.jar)
+    //     is getting loaded instead of UniMixins's one
+    // and FML then fails with "An error occurred trying to configure the minecraft home".
+    // Nothing in the tree uses DMod yet — it is only needed for the planned fox / berry-bush
+    // integration — so it stays out until that work starts. Re-enable it then, and expect to settle
+    // the jar-ordering clash first (rename the artifact, or drop DMod's bundled Mixin).
+    // devOnlyNonPublishable(rfg.deobf("curse.maven:DMod-513764:4523625"))
 }

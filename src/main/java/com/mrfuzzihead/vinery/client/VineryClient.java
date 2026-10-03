@@ -6,9 +6,8 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
 import com.mrfuzzihead.vinery.client.render.BoxRenderer;
-import com.mrfuzzihead.vinery.core.block.NineBottleStorageBlock;
-import com.mrfuzzihead.vinery.core.block.WineRackGeometry;
-import com.mrfuzzihead.vinery.core.registry.VineryBlocks;
+import com.mrfuzzihead.vinery.core.block.WineRackBlock;
+import com.mrfuzzihead.vinery.core.registry.VineryRegistry;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
 import cpw.mods.fml.client.registry.RenderingRegistry;
@@ -30,7 +29,7 @@ public final class VineryClient {
      * avoids drawing nothing at all if that ever fails.
      */
     private static IIcon[] iconsFor(Block block, int metadata) {
-        if (block instanceof NineBottleStorageBlock rack) {
+        if (block instanceof WineRackBlock rack) {
             IIcon[] faceIcons = rack.faceIcons();
             if (faceIcons != null) {
                 return faceIcons;
@@ -40,53 +39,45 @@ public final class VineryClient {
     }
 
     public static void registerRenderers() {
-        // The big wine rack is the first block drawn through the box renderer; the rest of the rack
-        // and lattice families follow once this path is confirmed visually.
+        // The wine racks are drawn through the box renderer. Every rack — all ten woods, and later
+        // the other two sizes — shares one render id: Forge dispatches on Block#getRenderType but
+        // passes the actual Block to the handler, so one handler serves them all and each block
+        // supplies its own geometry. Adding a rack therefore needs no change here at all.
         //
         // The id must come from Forge rather than being -1: RenderBlocks returns false for -1 before
         // it ever consults the handler map, which renders the block as nothing at all.
         int renderId = RenderingRegistry.getNextAvailableRenderId();
-        NineBottleStorageBlock rack = (NineBottleStorageBlock) VineryBlocks.DARK_CHERRY_WINE_RACK_BIG;
-        rack.setRenderId(renderId);
-
-        com.mrfuzzihead.vinery.Vinery.LOG.info(
-            "[Vinery] registerRenderers: renderType(before)={} allocated renderId={}",
-            VineryBlocks.DARK_CHERRY_WINE_RACK_BIG.getRenderType(),
-            renderId);
+        for (Block block : VineryRegistry.blocks()) {
+            if (block instanceof WineRackBlock rack) {
+                rack.setRenderId(renderId);
+            }
+        }
 
         RenderingRegistry.registerBlockHandler(renderId, new ISimpleBlockRenderingHandler() {
 
             @Override
             public void renderInventoryBlock(Block block, int metadata, int renderPass, RenderBlocks renderer) {
-                BoxRenderer.renderInventory(block, metadata, WineRackGeometry.BIG, iconsFor(block, metadata), renderer);
+                if (!(block instanceof WineRackBlock rack)) {
+                    return;
+                }
+                BoxRenderer.renderInventory(block, metadata, rack.geometry(), iconsFor(block, metadata), renderer);
             }
 
             @Override
-            public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int metadata,
+            public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int renderId,
                 RenderBlocks renderer) {
-                // Log once, but always render. An early return here would make the block appear on
-                // the first chunk rebuild and then vanish, since chunks re-render on every change.
-                if (!loggedFirstDraw) {
-                    loggedFirstDraw = true;
-                    com.mrfuzzihead.vinery.Vinery.LOG.info(
-                        "[Vinery] renderWorld CALLED at x={} y={} z={} boxes={} icons={}",
-                        x,
-                        y,
-                        z,
-                        WineRackGeometry.BIG.length,
-                        iconsFor(block, metadata).length);
+                if (!(block instanceof WineRackBlock rack)) {
+                    return false;
                 }
 
-                BoxRenderer.renderWorld(
-                    world,
-                    x,
-                    y,
-                    z,
-                    block,
-                    metadata,
-                    WineRackGeometry.BIG,
-                    iconsFor(block, metadata),
-                    renderer);
+                // The sixth argument is NOT the block metadata. Forge's
+                // RenderingRegistry#renderWorldBlock passes its own `modelId` through in that slot
+                // (it is the key it just looked the handler up with), so the render id arrives here
+                // instead. Reading the facing from it makes the block permanently face one way.
+                int metadata = world.getBlockMetadata(x, y, z);
+
+                BoxRenderer
+                    .renderWorld(world, x, y, z, block, metadata, rack.geometry(), iconsFor(block, metadata), renderer);
                 return true;
             }
 
@@ -108,5 +99,4 @@ public final class VineryClient {
         });
     }
 
-    private static boolean loggedFirstDraw;
 }

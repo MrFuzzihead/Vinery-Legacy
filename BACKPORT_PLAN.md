@@ -14,7 +14,7 @@ Source of truth: `origin/main` (Vinery 1.21.1 NeoForge/Architectury).
 | Architectury API   | **Removed** — no 1.7.10 build exists; replace with Forge natives                           | High (verified)                          |
 | Model system       | **Vanilla-path blocks + flat items + targeted OBJ converter for decorative geometry** (§5) | High — recommended, see §5               |
 | Mod identity       | Keep `modId = vinery`; finish package migration to `com.mrfuzzihead.vinery`                | Needs your call                          |
-| Et Futurum Requiem | **Optional integration** — banners, composter, dirt paths, stripped logs, chest boats      | High (API verified)                      |
+| Et Futurum Requiem | **Optional integration** (dev-only in `dependencies.gradle`) — banners, composter, dirt paths, stripped logs, chest boats, cherry/mangrove/bamboo wood sets | High (API verified) |
 | D-Mod (makamys)    | **Optional integration** — foxes eat Vinery grape bushes via its public API                | High (API verified)                      |
 | Hanging signs      | **Stubbed/TODO** — absent from 1.7.10 *and* the GTNH Et Futurum fork                       | Decided                                  |
 
@@ -326,6 +326,10 @@ lang files. A green `runServer` says nothing about whether
 | **Forge 1.7.10 only loads `.lang` files** | Names stayed untranslated even with correct keys | `LanguageRegistry` scans jar entries with `assets/(.*)/lang/([w_-]+).lang` — an `en_US.json` in the jar is silently ignored. The converter now emits `.lang`. |
 | **`getLightBrightnessForSkyBlocks` is packed** | Every face rendered at full white | It returns `(sky << 20) | (block << 4)` — not a 0-15 or 0-240 brightness. Unpack `>> 20 & 15` and `& 15` and divide each by 15 before shading. |
 | **`getCollisionBoundingBoxFromPool` already offsets** | Blocks had no collision | Vanilla builds the box as `x + minX, y + minY, z + minZ ...`, and `addCollisionBoxesToList` compares it against the entity mask *without* offsetting again. An override returning an unoffset `0,0,0-1,1,1` puts the volume at the world origin. Do not override it. |
+| **The 6th `renderWorldBlock` argument is not the block metadata** | Block always faces one direction | Forge's `RenderingRegistry#renderWorldBlock` looks the handler up by its `modelId` and then passes that same id into the metadata slot. Read the real value with `world.getBlockMetadata(x, y, z)`. The interface parameter name says `metadata`, which is what makes it a trap. |
+| **Player yaw is negative** | Facing wrong for roughly half of all angles | `placer.rotationYaw` is routinely `-177.6`, `-360.45`. `(int)` **truncates toward zero** where vanilla uses `MathHelper.floor_double`, so `-1.473` becomes `-1` instead of `-2` — and `-1 & 3 == 3`. Copy `BlockFurnace#onBlockPlacedBy` exactly. |
+| **`onBlockPlacedBy` also fires client-side** | A wrong facing for a frame | The client gets the callback with an unnormalised yaw and writes metadata the server then overwrites. Guard with `if (!world.isRemote)`. |
+| **A 180° rotation is its own inverse** | Rotation bug survives testing | 180° (`facing=2`) looks correct even when the 90° cases are swapped, so testing one direction proves nothing. Test a **quarter turn**. |
 | **Overriding `registerBlockIcons` loses `blockIcon`** | Block invisible in world *and* missing-texture in inventory | Vanilla's `Block#registerBlockIcons` assigns `this.blockIcon`; overriding it to fill a per-face table must set `blockIcon` too, because `getIcon` and `getBlockTextureFromSide` both resolve through it. A `null` icon draws nothing and renders as the missing-texture square. |
 | **Never early-return from a block renderer** | Block draws once, then vanishes | Chunks re-render on every block change, so a one-shot debug guard that returns early makes the block appear for one frame only. Log once, always render. |
 | **ISBRH runs inside an open Tessellator session** | `IllegalStateException: Already tesselating!` | Forge calls `renderWorldBlock` from `RenderBlocks#renderBlockByRenderType` **mid-batch**, so a renderer must only append vertices — calling `startDrawing` throws. The inventory path is the opposite: `RenderBlocks#renderInventoryBlock` runs after every vanilla `startDrawing/draw` pair has closed, so it owns its own session. |
@@ -336,11 +340,15 @@ lang files. A green `runServer` says nothing about whether
 | Mod translations cannot be resolved server-side | False positives in the self-test | Mod languages load into StatCollector's locale-dependent translator, which a dedicated server never populates; its fallback reads only minecraft's hardcoded `en_US.lang`. Key coverage stays in `tools/verify-registrations.mjs`. |
 | `CreativeTabs.displayAllReleventItems` does not exist server-side | `NoSuchMethodError` on a dedicated server | Client-only despite living in common code. Creative-tab contents therefore <b>cannot</b> be checked by the self-test — the verifier does it at source level instead. |
 | Blocks register before items | `NullPointerException` at load | A block that captures an `Item` in its constructor sees `null`, because `VineryItems` is initialised after `VineryBlocks`. Resolve the item lazily inside the method that uses it (`GrapeBushBlock.ripeDrop()`). |
+| **A dev dependency can break the launch, not the code** | `runServer` fails with `An error occurred trying to configure the minecraft home` — which reads like a mod-registration bug, but is not | A dependency that **bundles its own Mixin** (DMod) sorts before `unimixins-*.jar` alphabetically, so UniMixins' sanity check throws `java.lang.Error: A different version of Mixin …` and FML aborts before any mod code runs. Read the *first* stack trace in the log, not the Gradle failure at the end. |
+| **A wood's texture names are not derivable from the wood** | Missing or magenta textures when batching variants | The 1.21 models disagree with the obvious naming: acacia's rack frame uses `acacia_drawer_side` rather than a cabinet texture, and cherry's carry a `_pink` suffix. Read each model's `textures` block instead of constructing names. |
+| **Ten variants of one shape need no renderer work** | Tempting to register ten render ids | Forge dispatches on `getRenderType()` but passes the real `Block` to the handler, so every rack shares one id and one handler and selects geometry through `WineRackBlock#geometry()`. |
+| **A loop in the registry file silently escapes verification** | Fewer checks than you think | `tools/verify-registrations.mjs` finds registrations by regex over the source. A `for` loop registering ten blocks drops all ten out of checking, which is why the ten big racks are written out one call per line. |
 | Registry names are not namespaced | FML "illegal extra prefix" warning | `GameData` prefixes with the mod id itself (`dark_cherry_planks` -> `vinery_dark_cherry_planks`). Never put a colon in a registry name; use explicit `vinery:<path>` texture names instead. |
 
 ---
 
-## 5. Rendering — **vanilla-path first, generated OBJ for decorative geometry**
+## 5. Rendering — **vanilla path first, then vanilla's own cube renderer for boxes**
 
 ### 5.1 What the assets actually contain (measured, not assumed)
 
@@ -349,8 +357,8 @@ lang files. A green `runServer` says nothing about whether
 | Vanilla geometry families (`cube_all`, `cube_column`, `cube_column_horizontal`, `cube_bottom_top`, `slab`, `slab_top`, `stairs`/`inner`/`outer`, `fence_post`, `template_fence_gate*`, `door_*` ×8, `template_trapdoor_*`, `button*`, `pressure_plate_*`, `template_glass_pane_*`, `cross`, `flower_pot_cross`) | ~70 of 139 blockstates              | ✅ **subclass the vanilla 1.7.10 block class, swap textures**    |
 | Flat item sprites (`item/generated`)                                                                                                                                                                                                                                                                            | 82 of 168 item models               | ✅ plain `Item` + `setTextureName`                               |
 | Item models that are really *block* models (lattice, wine racks, bags, slabs, stairs, barrel, chair…)                                                                                                                                                                                                           | 86 of 168 item models               | ✅ `ItemBlock` renders via the block's own renderer              |
-| Reusable decorative templates (`template_lattice` ×10, `template_wine_rack_{1,2,3_closed,3_open}` ×40, `template_small_wine_bottle` ×6)                                                                                                                                                                         | 56 models, **6 shapes**             | 🟡 generated OBJ (see §5.3)                                      |
-| Hand-shaped block models (apple press, barrel, cabinet, drawer, table, shelf, chair, window, storage pot, stackable log, wine box, signs)                                                                                                                                                                       | 82 distinct inline geometries total | 🔁 simple ones → hand-written ISBRH; fiddly ones → generated OBJ |
+| Reusable decorative templates (`template_lattice` ×10, `template_wine_rack_{1,2,3_closed,3_open}` ×40, `template_small_wine_bottle` ×6)                                                                                                                                                                         | 56 models, **6 shapes**             | ✅ axis-aligned shapes → §5.3 cube path                             |
+| Hand-shaped block models (apple press, barrel, cabinet, drawer, table, shelf, chair, window, storage pot, stackable log, wine box, signs)                                                                                                                                                                       | 82 distinct inline geometries total | 🔁 axis-aligned → §5.3; rotated elements → §5.4 |
 | Entity models (mule, winemaker, 4 armour layers, straw hat, boat)                                                                                                                                                                                                                                               | ~6                                  | 🔁 hand-written `ModelBase`/`ModelRenderer` cuboid models        |
 | Wine bottle shapes (one per wine, 2–3 textures each)                                                                                                                                                                                                                                                            | ~20                                 | 🟡 generated OBJ, or one parameterised bottle renderer           |
 
@@ -369,37 +377,63 @@ lang files. A green `runServer` says nothing about whether
 | **5 — Decorative/rotated geometry** | `template_lattice` (has 45° braces), 4 wine-rack shapes, wine bottles                                                                                                                 | **Generated OBJ** from the existing JSON (exact geometry, mechanical conversion — no eyeballing) + **one** shared renderer.                                                                                                                                                                                                                                                                                                                                                |
 | **6 — Entities**                    | ~6 models                                                                                                                                                                             | Hand-written `ModelBase`/`ModelRenderer`.                                                                                                                                                                                                                                                                                                                                                                                                                                  |
 
-Why this is the *portable* choice: 70 of 139 blockstates never touch a custom renderer; the rest use only vanilla Forge APIs (`ISBRH`, `IItemRenderer`, `AdvancedModelLoader`, `Tessellator`) — nothing that breaks under Fast Render, OptiFine/shaders, FTB texture packs, or NEI/JEI item rendering.
+Why this is the *portable* choice: 70 of 139 blockstates never touch a custom renderer, and tier 4 delegates rendering back to vanilla rather than hand-issuing GL. Nothing that breaks under Fast Render, OptiFine/shaders, FTB texture packs, or NEI/JEI item rendering.
 
-### 5.3 The one gotcha that decides Tier 5's implementation
+**Revised after the wine rack (2026-10-02):** the original recommendation put rotated and decorative geometry on a generated-OBJ renderer and assumed a hand-rolled `ISBRH` for tier 4. The wine rack showed the hand-rolled version needs no fewer than four preconditions to be correct (open Tessellator batch, block position baked into vertex coordinates, explicit atlas bind, unpacked light value) — each of which fails silently. Delegating to `renderStandardBlock` removes all four. **The OBJ tier is now deferred until a shape genuinely cannot be expressed as axis-aligned boxes**, which may never happen for the racks and lattice; the small rack's 45° braces are the first known case.
 
-Forge 1.7.10's `WavefrontObject` OBJ parser **ignores `mtllib` and `usemtl`** (verified in the patched sources) — `GroupObject` has no texture field, so the stock loader is single-texture. Multi-texture is still possible because `WavefrontObject` exposes:
+### 5.3 Drawing axis-aligned boxes (proven — the wine rack)
+
+**Render through vanilla's own cube renderer. Do not hand-issue quads.**
 
 ```java
-void tessellateOnly(Tessellator tessellator, String... groupNames);
+for (Box box : boxes) {
+    renderer.overrideBlockTexture = iconFor(box);          // per-box texture, may be null
+    renderer.setRenderBounds(box.minX, box.minY, box.minZ, box.maxX, box.maxY, box.maxZ);
+    renderer.renderStandardBlock(block, x, y, z);
+}
+renderer.clearOverrideBlockTexture();
 ```
 
-So the converter must emit **one `g <textureKey>` group per texture**, and the shared renderer binds `textureKey` then calls `tessellateOnly(...)` per group. This keeps every texture individually named `vinery:block/...` (so texture packs still override them) instead of baking an atlas.
+That is the whole custom renderer. It is what TFC's `RenderPottery` does, and it hands
+coordinates, lighting, ambient occlusion, mipmapping and atlas binding back to vanilla.
 
-**Renderer footprint: ~1 class** for all Tier 5 models, plus one thin `ISBRH` adapter to draw the same models in-world.
+Requirements and traps when using it (all learned the hard way):
 
-### 5.4 Converter scope (small and bounded)
+| Requirement | Why |
+|---|---|
+| **Set `blockIcon` in `registerBlockIcons`** | Vanilla's version does `this.blockIcon = reg.registerIcon(getTextureName())`. Overriding it to fill a per-face table silently leaves `blockIcon` null, and both `getIcon` and `getBlockTextureFromSide` resolve through it — a null icon draws nothing and renders as the missing-texture square. |
+| **Get facing from `world.getBlockMetadata(x, y, z)`** | Forge's `RenderingRegistry#renderWorldBlock` passes its own `modelId` into the interface's `metadata` slot, because that is the key it just looked the handler up with. |
+| **`shouldRender3DInInventory` must return false** | `renderStandardBlock` resolves lighting from `RenderBlocks#blockAccess`, which is only set during world rendering. Calling it from a GUI throws `NullPointerException` in `getMixedBrightnessForBlock`. The item uses its flat icon instead. |
+| **Apply facing by rotating the render bounds** | `renderStandardBlock` only draws axis-aligned boxes, so rotate the bounds, not the vertices. Clockwise 90° seen from above maps `(x, z) → (1 - z, x)`; 180° is its own inverse, so it looks correct even when the 90° cases are wrong — test a quarter turn, not a half turn. |
+| **Never early-return from the handler** | Chunks re-render on every block change, so a one-shot debug guard that returns early makes the block appear for one frame and then vanish. |
 
-- Input: only the ~6 `template_*` models + the wine-bottle models (keep the other 250 block models in the repo as the reference/intent source).
-- Must handle: `#texture` variable indirection, per-face `rotation: 90/180/270` (bake into UVs), `from`/`to`/`rotation` → OBJ verts, group-per-texture emission, UV scaling for non-16px textures (`texture_size: [80,80]` on the lattice).
-- Run it as an offline dev tool (or a Gradle task for reproducibility); commit the generated `.obj` + `.mtl`.
-- Keep the original 1.21 JSONs in the repo, but **exclude them from the released jar** (~1.5 MB) via RFG's `jar { exclude }`.
+### 5.4 What stays deferred: rotated elements
+
+Shapes containing elements rotated off-axis — the lattice's 45° braces, the small wine rack's
+angled supports — cannot be expressed as axis-aligned boxes. **Nothing in the port needs this yet**,
+so no OBJ converter is planned. When the first such shape arrives:
+
+- Input: just that template (keep the other ~250 block models as the reference/intent source).
+- Must handle: `#texture` variable indirection, per-face `rotation: 90/180/270` (bake into UVs),
+  `from`/`to`/`rotation` → OBJ verts, UV scaling for non-16px textures (`texture_size: [80,80]` on
+  the lattice).
+- The stock OBJ loader **ignores `mtllib` and `usemtl`** — `GroupObject` has no texture field — so
+  multi-texture models need one `g <textureKey>` group per texture plus a small `ICustomRenderer`
+  that binds each group via `WavefrontObject#tessellateOnly(Tessellator, String...)`.
+- Run it as an offline dev tool (or a Gradle task); commit the generated `.obj`/`.mtl`.
+- The 1.21 JSONs stay in the repo as reference but are excluded from the released jar (~2.5 MB)
+  via `jar { exclude }` in `build.gradle.kts`.
 
 ### 5.5 Revised effort
 
-| Work                                     | Estimate                                                                                |
-|------------------------------------------|-----------------------------------------------------------------------------------------|
-| Tier 1 vanilla block wiring (~20 blocks) | 2–3 days                                                                                |
-| Tier 2/3 item wiring (~168 items)        | 1 day                                                                                   |
-| Tier 4 ISBRH (~10 renderers)             | 3–5 days                                                                                |
-| Tier 5 converter + shared renderer       | 3–5 days                                                                                |
-| Entity models + renderers                | 2–3 days                                                                                |
-| **Total**                                | **~2–3 weeks**, mostly mechanical (down from the 1–3 week "unknown" with far less risk) |
+| Work                                                          | Estimate  | Status                                    |
+|---------------------------------------------------------------|-----------|-------------------------------------------|
+| Tier 1 vanilla block wiring (~20 blocks)                      | 2–3 days  | ~14 blocks done                           |
+| Tier 2/3 item wiring (~168 items)                             | 1 day     | ~11 items done                            |
+| Tier 4 box rendering via vanilla's cube renderer (~10 shapes) | 1–2 days  | 1 shape done (big wine rack, verified)    |
+| Tier 5 OBJ converter                                          | deferred  | not needed until a rotated shape appears   |
+| Entity models + renderers                                     | 2–3 days  | not started                               |
+| **Total**                                                     | **~2 wks**| |
 
 ---
 
@@ -445,7 +479,7 @@ So the converter must emit **one `g <textureKey>` group per texture**, and the s
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content** (in progress: 26/204 blocks, 4 items) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: 36/204 blocks, 7 items; all 10 big wine racks done) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |
@@ -488,6 +522,16 @@ Total ≈ **6–9 weeks** now that rendering is scoped (§5, ~2–3 weeks and mo
    calls. Start with the rest of the dark cherry wood set (leaves, stairs, fence, fence gate, door,
    trapdoor, button, pressure plate) because those validate the whole Tier 1 rendering strategy before
    any custom ISBRH work begins. Re-run `tools/verify-registrations.mjs` after each batch.
+5. **Next: the remaining wine rack shapes.** The big rack (9 axis-aligned boxes) renders correctly in
+   all four facings, and now exists in all ten woods (one shape, ten texture pairs — no extra renderer
+   work, because every rack shares a single render id and supplies its own geometry via
+   `WineRackBlock#geometry()`). Two shapes remain:
+   - *mid* → `template_wine_rack_3_closed` / `_3_open` (2 and 6 boxes, no rotations) — note
+     `_3_closed` contains an element with **inverted bounds** (`from [15,1,0]` > `to [1,15,15]`), so
+     confirm the intended shape before transcribing it.
+   - *small* → `template_wine_rack_2` (7 boxes, **two at 45°**) — the first case that genuinely
+     cannot be expressed as axis-aligned boxes (§5.4). Decide OBJ vs. approximation then.
+   Then the 11 remaining wood variants, which are texture-only repeats of whichever shapes exist.
 
 ---
 
@@ -512,6 +556,12 @@ What was **verified** (checked against source/registry, not assumed):
 | D-Mod `Compat.registerBerryBushHandler(IBerryBushHandler)`; `EntityFox.AIEatSweetBerries` uses it                                   | Read from `makamys/DMod` source                                                                           |
 | Model/asset composition (82 flat items, 86 block-items, ~70 vanilla blockstates, 82 distinct inline geometries, 6 templates)        | Parsed all 418 model + 139 blockstate JSONs                                                               |
 | Mixin count is 14 (10 core + 4 forge)                                                                                               | `find` over the working tree                                                                              |
+| DMod, not our code, aborts the dev launch | UniMixins' sanity-check error names `DMod-513764-4523625-deobf.jar`; with that dependency removed the identical launch reaches `Self-test: 36 block(s) 0 failure(s)` |
+| Wine racks need **no** Et Futurum API — cherry/mangrove/bamboo racks are self-contained blocks carrying their own textures | Every `vinery:block/*` reference in all ten `<wood>_wine_rack_1.json` models resolves to a file on disk (0 missing), and all ten `tile.vinery.*_wine_rack_big.name` translation keys already exist |
+| Box rendering via `RenderBlocks#setRenderBounds` + `renderStandardBlock` works | Confirmed in game: renders, textures, collides, and faces the placer in all four directions |
+| Wine-rack rotation: 180° is its own inverse, so only a quarter turn exposes a swapped 90° mapping | Computing the back panel's rotated position for all four facings (`facing 1` must put it at `x≈0.03`, not `x≈0.97`) |
+| `BlockFurnace#onBlockPlacedBy` floors the yaw; a plain `(int)` cast breaks roughly half of all angles | Player yaw observed as `-177.6` / `-360.45` in the placement log; truncation yields `-1` where flooring yields `-2` |
+| `RenderingRegistry#renderWorldBlock` passes its own `modelId`, not metadata, into the handler's metadata slot | Bytecode: the same `iload_7` feeds both the map lookup and the interface call |
 
 What is still **assumed** (verify during implementation):
 - JEI 1.7.10 API shape (exact artifact coordinates still to be pinned).

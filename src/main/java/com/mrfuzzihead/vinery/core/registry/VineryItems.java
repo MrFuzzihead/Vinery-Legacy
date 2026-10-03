@@ -39,6 +39,15 @@ public final class VineryItems {
     // -- Standalone items ------------------------------------------------------------------------
 
     public static Item DARK_CHERRY_WINE_RACK_BIG_ITEM;
+    public static Item OAK_WINE_RACK_BIG_ITEM;
+    public static Item SPRUCE_WINE_RACK_BIG_ITEM;
+    public static Item BIRCH_WINE_RACK_BIG_ITEM;
+    public static Item JUNGLE_WINE_RACK_BIG_ITEM;
+    public static Item ACACIA_WINE_RACK_BIG_ITEM;
+    public static Item DARK_OAK_WINE_RACK_BIG_ITEM;
+    public static Item BAMBOO_WINE_RACK_BIG_ITEM;
+    public static Item CHERRY_WINE_RACK_BIG_ITEM;
+    public static Item MANGROVE_WINE_RACK_BIG_ITEM;
 
     public static Item GRASS_SLAB;
     public static Item DIRT_SLAB;
@@ -69,6 +78,15 @@ public final class VineryItems {
         // Soil slabs are registered with a null ItemBlock, so each pair needs its own ItemSlab or
         // mining them would drop nothing at all.
         DARK_CHERRY_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_CHERRY_WINE_RACK_BIG);
+        OAK_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.OAK_WINE_RACK_BIG);
+        SPRUCE_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.SPRUCE_WINE_RACK_BIG);
+        BIRCH_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.BIRCH_WINE_RACK_BIG);
+        JUNGLE_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.JUNGLE_WINE_RACK_BIG);
+        ACACIA_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.ACACIA_WINE_RACK_BIG);
+        DARK_OAK_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_OAK_WINE_RACK_BIG);
+        BAMBOO_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.BAMBOO_WINE_RACK_BIG);
+        CHERRY_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.CHERRY_WINE_RACK_BIG);
+        MANGROVE_WINE_RACK_BIG_ITEM = Item.getItemFromBlock(VineryBlocks.MANGROVE_WINE_RACK_BIG);
 
         GRASS_SLAB = VineryRegistry.item(
             new ItemSlab(

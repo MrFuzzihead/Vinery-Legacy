@@ -72,6 +72,15 @@ public final class VineryBlocks {
     public static Block DIRT_DOUBLE_SLAB;
     public static Block COARSE_DIRT_DOUBLE_SLAB;
     public static Block DARK_CHERRY_WINE_RACK_BIG;
+    public static Block OAK_WINE_RACK_BIG;
+    public static Block SPRUCE_WINE_RACK_BIG;
+    public static Block BIRCH_WINE_RACK_BIG;
+    public static Block JUNGLE_WINE_RACK_BIG;
+    public static Block ACACIA_WINE_RACK_BIG;
+    public static Block DARK_OAK_WINE_RACK_BIG;
+    public static Block BAMBOO_WINE_RACK_BIG;
+    public static Block CHERRY_WINE_RACK_BIG;
+    public static Block MANGROVE_WINE_RACK_BIG;
 
     private static FoliageBlock darkCherryLeaves() {
         return new FoliageBlock(
@@ -107,7 +116,44 @@ public final class VineryBlocks {
         DARK_CHERRY_SLAB = VineryRegistry.block(new DarkCherrySlabBlock(false), null, "dark_cherry_slab");
         DARK_CHERRY_DOUBLE_SLAB = VineryRegistry.block(new DarkCherrySlabBlock(true), null, "dark_cherry_double_slab");
 
-        DARK_CHERRY_WINE_RACK_BIG = VineryRegistry.block(new NineBottleStorageBlock(), "dark_cherry_wine_rack_big");
+        // The ten big racks are one shape in ten woods. They are written out rather than built in a
+        // loop so that tools/verify-registrations.mjs — which reads registrations out of this file
+        // with a regex — keeps seeing every one of them; a loop would silently drop them from
+        // checking. The texture names are not derivable from the wood either: acacia's model uses
+        // acacia_drawer_side, and cherry's are suffixed _pink.
+        DARK_CHERRY_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:dark_cherry_cabinet_side", "vinery:dark_cherry_cabinet_top"),
+            "dark_cherry_wine_rack_big");
+        OAK_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:oak_cabinet_side", "vinery:oak_cabinet_top"),
+            "oak_wine_rack_big");
+        SPRUCE_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:spruce_cabinet_side", "vinery:spruce_cabinet_top"),
+            "spruce_wine_rack_big");
+        BIRCH_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:birch_cabinet_side", "vinery:birch_cabinet_top"),
+            "birch_wine_rack_big");
+        JUNGLE_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:jungle_cabinet_side", "vinery:jungle_cabinet_top"),
+            "jungle_wine_rack_big");
+        // Acacia is the odd one out: its rack model points the frame at acacia_drawer_side rather
+        // than a cabinet texture, and has a third texture for the bottom panel's underside.
+        ACACIA_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:acacia_drawer_side", "vinery:acacia_cabinet_top"),
+            "acacia_wine_rack_big");
+        DARK_OAK_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:dark_oak_cabinet_side", "vinery:dark_oak_cabinet_top"),
+            "dark_oak_wine_rack_big");
+        BAMBOO_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:bamboo_cabinet_side", "vinery:bamboo_cabinet_top"),
+            "bamboo_wine_rack_big");
+        // Cherry's cabinet textures carry a _pink suffix upstream.
+        CHERRY_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:cherry_cabinet_side_pink", "vinery:cherry_cabinet_top_pink"),
+            "cherry_wine_rack_big");
+        MANGROVE_WINE_RACK_BIG = VineryRegistry.block(
+            new NineBottleStorageBlock("vinery:mangrove_cabinet_side", "vinery:mangrove_cabinet_top"),
+            "mangrove_wine_rack_big");
 
         STRIPPED_DARK_CHERRY_LOG = VineryRegistry.block(
             new WoodLogBlock("vinery:stripped_dark_cherry_log_side", "vinery:stripped_dark_cherry_log_top"),
