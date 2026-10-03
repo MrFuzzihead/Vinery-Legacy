@@ -39,6 +39,10 @@ public final class BoxRenderer {
     /** Vanilla's cube shading for each face, so custom geometry sits in the same tonal range. */
     private static final float[] FACE_SHADE = { 1.0F, 0.5F, 0.8F, 0.8F, 0.6F, 0.6F };
 
+    /** Outward normals per face, same order as {@link #FACE_SHADE}. */
+    private static final float[][] FACE_NORMAL = { { 0, 1, 0 }, { 0, -1, 0 }, { 0, 0, -1 }, { 0, 0, 1 }, { -1, 0, 0 },
+        { 1, 0, 0 }, };
+
     private BoxRenderer() {}
 
     /** An axis-aligned box in 0-16 block space with a UV rectangle per face. */
@@ -90,8 +94,11 @@ public final class BoxRenderer {
         GL11.glPushMatrix();
         // The atlas is already bound by RenderBlocks before this runs; our icons come from it too.
         GL11.glDisable(GL11.GL_CULL_FACE);
-        tessellator.startDrawing(3); // GL_QUADS
 
+        // No startDrawing/draw here: Forge calls this from inside an already open Tessellator
+        // session (RenderBlocks#renderBlockByRenderType is invoked mid-batch), and starting a
+        // second one throws IllegalStateException("Already tesselating!"). A renderer just appends
+        // its vertices and lets the enclosing session flush them.
         GL11.glTranslatef(x + 0.5F, y, z + 0.5F);
         if (rotateY != 0) {
             GL11.glRotatef(rotateY * 90.0F, 0.0F, 1.0F, 0.0F);
@@ -103,7 +110,6 @@ public final class BoxRenderer {
             addBox(tessellator, box, textures, light);
         }
 
-        tessellator.draw();
         GL11.glEnable(GL11.GL_CULL_FACE);
         GL11.glPopMatrix();
     }
@@ -119,8 +125,10 @@ public final class BoxRenderer {
         GL11.glScalef(0.625F, -0.625F, 0.625F);
         GL11.glTranslatef(-0.5F, -0.5F, -0.5F);
 
+        // Unlike the world path, the inventory path runs after every vanilla startDrawing/draw pair
+        // has closed, so this one owns its session.
         Tessellator tessellator = Tessellator.instance;
-        tessellator.startDrawing(3);
+        tessellator.startDrawing(3); // GL_QUADS
         for (Box box : boxes) {
             addBox(tessellator, box, textures, 1.0F);
         }
@@ -141,6 +149,12 @@ public final class BoxRenderer {
             float v1 = icon.getInterpolatedV(uv[1]);
             float u2 = icon.getInterpolatedU(uv[2]);
             float v2 = icon.getInterpolatedV(uv[3]);
+
+            // Normals matter even though shading is done with vertex colours: GL lighting is on
+            // during the block pass, so vertices without a normal are lit against garbage. This is
+            // the same call RenderBlocks makes per face.
+            float[] normal = FACE_NORMAL[face];
+            tessellator.setNormal(normal[0], normal[1], normal[2]);
 
             float shade = FACE_SHADE[face] * light;
             tessellator.setColorRGBA_F(shade, shade, shade, 1.0F);
