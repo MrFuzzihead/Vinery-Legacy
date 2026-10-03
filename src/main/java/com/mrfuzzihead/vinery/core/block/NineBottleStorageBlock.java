@@ -35,6 +35,17 @@ public class NineBottleStorageBlock extends BlockDirectional implements VineryCh
 
     private static final String TEXTURE = "vinery:dark_cherry_cabinet_side";
 
+    /**
+     * Render id for the box renderer.
+     *
+     * <p>
+     * 1.7.10 does not use -1 for "custom handler": RenderBlocks#renderBlockByRenderType returns
+     * false immediately for -1 and never reaches Forge's handler lookup, so the block draws nothing.
+     * A real id from RenderingRegistry#getNextAvailableRenderId is required, and it can only be
+     * allocated on the client — hence the setter rather than a constructor argument.
+     */
+    private int renderId = -1;
+
     @Override
     public String textureNameForTest() {
         return TEXTURE;
@@ -76,10 +87,26 @@ public class NineBottleStorageBlock extends BlockDirectional implements VineryCh
         return faceIcons;
     }
 
-    /** Rendered through the custom box renderer, not the standard cube pipeline. **/
+    /**
+     * Allocates this block's custom render id. Client-side only; called from the client proxy.
+     *
+     * <p>
+     * 1.7.10 does not use -1 for "custom handler": RenderBlocks#renderBlockByRenderType returns
+     * false immediately for -1 and never reaches Forge's handler lookup, so the block draws nothing.
+     * A real id from RenderingRegistry#getNextAvailableRenderId is required, and that id can only be
+     * allocated on a client, hence a setter rather than a constructor argument.
+     */
+    public void setRenderId(int renderId) {
+        this.renderId = renderId;
+    }
+
+    /**
+     * Rendered through the custom box renderer, not the standard cube pipeline. Returns -1 on a
+     * dedicated server, where nothing is rendered anyway.
+     */
     @Override
     public int getRenderType() {
-        return -1;
+        return renderId;
     }
 
     @Override
@@ -92,9 +119,10 @@ public class NineBottleStorageBlock extends BlockDirectional implements VineryCh
         return false;
     }
 
+    /** Solid: players and mobs walk into the rack rather than through it. */
     @Override
     public boolean getBlocksMovement(net.minecraft.world.IBlockAccess world, int x, int y, int z) {
-        return false;
+        return true;
     }
 
     @Override

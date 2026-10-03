@@ -12,6 +12,7 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.StatCollector;
 import net.minecraft.world.World;
 
 import com.mrfuzzihead.vinery.Vinery;
@@ -136,7 +137,10 @@ public class SelfTestCommand extends CommandBase {
                 // Localisation: 1.7.10 leaves Block#unlocalizedName null unless the mod sets it,
                 // which makes everything look up "tile.null.name". Both the name and the
                 // translation are common code, so this is checkable server-side rather than in the GUI.
-                checkName(describe(block), block.getUnlocalizedName(), failures);
+                // Whether a name is ever displayed depends on an item referencing the block, not
+                // on what it drops: a double slab drops two slabs but is never held, so it needs no
+                // translation — vanilla ships none for double_stone_slab either.
+                checkName(describe(block), block.getUnlocalizedName(), Item.getItemFromBlock(block) != null, failures);
 
                 // A block with no icon renders as nothing in the creative inventory, which is
                 // invisible server-side, so blocks opt in to the check by exposing their texture name.
@@ -181,12 +185,29 @@ public class SelfTestCommand extends CommandBase {
      * null unless the mod calls setBlockName, which makes everything look up "tile.null.name";
      * that half is common code and checkable anywhere.
      */
-    private static void checkName(String label, String unlocalized, List<String> failures) {
+    private static void checkName(String label, String unlocalized, boolean obtainable, List<String> failures) {
         if (unlocalized == null || unlocalized.endsWith("null")) {
             failures.add(
                 label + ": unlocalized name is "
                     + unlocalized
                     + " (setBlockName / setUnlocalizedName was never called)");
+            return;
+        }
+
+        // Translation lookup does work on a dedicated server: Forge injects every en_US.lang it
+        // finds in a mod jar into StringTranslate server-side. It did not while the files were
+        // .json, because LanguageRegistry only scans assets/<ns>/lang/*.lang.
+        //
+        // Only blocks that are actually obtainable are checked. A block registered without an
+        // ItemBlock — every double slab here — can never be held or named, and vanilla likewise
+        // ships no translation for double_stone_slab.
+        if (!obtainable) {
+            return;
+        }
+
+        String key = unlocalized + ".name";
+        if (!StatCollector.canTranslate(key)) {
+            failures.add(label + ": no translation for " + key);
         }
     }
 

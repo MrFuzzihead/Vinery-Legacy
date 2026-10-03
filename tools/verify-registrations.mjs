@@ -25,9 +25,18 @@ import { fileURLToPath } from 'node:url';
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const SRC = join(ROOT, 'src', 'main', 'java');
 const ASSETS = join(ROOT, 'src', 'main', 'resources', 'assets', 'vinery');
-const LANG = join(ASSETS, 'lang', 'en_US.json');
+const LANG = join(ASSETS, 'lang', 'en_US.lang');
 
-const lang = JSON.parse(readFileSync(LANG, 'utf8'));
+// 1.7.10 loads .lang (properties format), not .json — see tools/convert-lang-1-7-10.mjs.
+const lang = Object.fromEntries(
+    readFileSync(LANG, 'utf8')
+        .split('\n')
+        .filter((line) => line.includes('='))
+        .map((line) => {
+            const i = line.indexOf('=');
+            return [line.slice(0, i), line.slice(i + 1)];
+        })
+);
 const problems = [];
 const skipped = [];
 let vanilla = 0;

@@ -21,9 +21,15 @@ public final class VineryClient {
     public static void registerRenderers() {
         // The big wine rack is the first block drawn through the box renderer; the rest of the rack
         // and lattice families follow once this path is confirmed visually.
-        RenderingRegistry.registerBlockHandler(
-            VineryBlocks.DARK_CHERRY_WINE_RACK_BIG.getRenderType(),
-            new cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler() {
+        //
+        // The id must come from Forge rather than being -1: RenderBlocks returns false for -1 before
+        // it ever consults the handler map, which renders the block as nothing at all.
+        int renderId = RenderingRegistry.getNextAvailableRenderId();
+        NineBottleStorageBlock rack = (NineBottleStorageBlock) VineryBlocks.DARK_CHERRY_WINE_RACK_BIG;
+        rack.setRenderId(renderId);
+
+        RenderingRegistry
+            .registerBlockHandler(renderId, new cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler() {
 
                 @Override
                 public void renderInventoryBlock(net.minecraft.block.Block block, int metadata, int renderPass,
@@ -54,7 +60,7 @@ public final class VineryClient {
 
                 @Override
                 public int getRenderId() {
-                    return VineryBlocks.DARK_CHERRY_WINE_RACK_BIG.getRenderType();
+                    return renderId;
                 }
             });
     }
