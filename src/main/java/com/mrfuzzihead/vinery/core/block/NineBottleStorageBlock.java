@@ -8,7 +8,6 @@ import net.minecraft.client.renderer.texture.IIconRegister;
 import net.minecraft.entity.EntityLivingBase;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
-import net.minecraft.util.AxisAlignedBB;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.World;
 
@@ -125,10 +124,15 @@ public class NineBottleStorageBlock extends BlockDirectional implements VineryCh
         return true;
     }
 
-    @Override
-    public AxisAlignedBB getCollisionBoundingBoxFromPool(World world, int x, int y, int z) {
-        return AxisAlignedBB.getBoundingBox(0.0F, 0.0F, 0.0F, 1.0F, 1.0F, 1.0F);
-    }
+    /**
+     * Collision deliberately uses the inherited implementation.
+     *
+     * <p>
+     * Block#getCollisionBoundingBoxFromPool already builds the box in world coordinates
+     * (x + minX, y + minY, z + minZ ...), and addCollisionBoxesToList compares that against the
+     * entity's mask without offsetting again. An override returning an unoffset 0,0,0-1,1,1 box puts
+     * the collision volume at the world origin, which is why the rack had none.
+     */
 
     /** Racks are placed against whatever they were clicked on, like doors and furnaces. */
     @Override

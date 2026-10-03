@@ -1,15 +1,10 @@
 package com.mrfuzzihead.vinery.client.render;
 
 import net.minecraft.block.Block;
-import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.client.renderer.Tessellator;
 import net.minecraft.util.IIcon;
-import net.minecraft.world.IBlockAccess;
 
 import org.lwjgl.opengl.GL11;
-
-import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
-import cpw.mods.fml.client.registry.RenderingRegistry;
 
 /**
  * Draws axis-aligned boxes with explicit texture UVs — the rendering primitive behind Vinery's
@@ -105,7 +100,12 @@ public final class BoxRenderer {
             GL11.glTranslatef(-0.5F, 0.0F, -0.5F);
         }
 
-        float light = brightness / 240.0F;
+        // IBlockAccess#getLightBrightnessForSkyBlocks returns a *packed* value — sky light in
+        // bits 20-23 and block light in bits 4-7 — not a 0-15 or 0-240 brightness. Dividing it
+        // blindly makes every face saturate to full white.
+        float sky = (brightness >> 20 & 15) / 15.0F;
+        float blockLight = (brightness & 15) / 15.0F;
+        float light = Math.max(sky, blockLight);
         for (Box box : boxes) {
             addBox(tessellator, box, textures, light);
         }
@@ -317,45 +317,5 @@ public final class BoxRenderer {
             result[face] = block.getIcon(sides[face], metadata);
         }
         return result;
-    }
-
-    /**
-     * Registers a renderer for one block id.
-     *
-     * <p>
-     * Icons are resolved on demand rather than at registration time: the block's icon list is not
-     * populated until texture stitching, which happens after the renderer is registered.
-     */
-    public static void register(Block block, Box[] boxes, IIcon[] textures) {
-        int id = block.getRenderType();
-
-        RenderingRegistry.registerBlockHandler(id, new ISimpleBlockRenderingHandler() {
-
-            @Override
-            public void renderInventoryBlock(Block b, int metadata, int renderPass, RenderBlocks renderBlocks) {
-                BoxRenderer.renderInventory(boxes, iconsOf(b, metadata));
-            }
-
-            @Override
-            public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block b, int metadata,
-                RenderBlocks renderBlocks) {
-                // IBlockAccess only exposes the combined sky+block brightness; RenderBlocks has already
-                // bound the atlas by this point.
-                int brightness = world.getLightBrightnessForSkyBlocks(x, y, z, 0);
-                BoxRenderer.renderWorld(x, y, z, boxes, iconsOf(b, metadata), brightness, metadata & 3);
-                return true;
-            }
-
-            @Override
-            public boolean shouldRender3DInInventory(int metadata) {
-                return true;
-            }
-
-            @Override
-            public int getRenderId() {
-                return id;
-            }
-
-        });
     }
 }

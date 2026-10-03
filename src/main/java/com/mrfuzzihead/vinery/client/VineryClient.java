@@ -18,6 +18,21 @@ public final class VineryClient {
     private VineryClient() {}
 
     /** Called from {@code ClientProxy} during client setup. */
+    /**
+     * The rack's per-face icons, falling back to the block's own icons if the table was never filled.
+     * registerBlockIcons only runs for blocks that own a stitched icon, so a defensive path here
+     * avoids rendering literally nothing if that ever fails.
+     */
+    private static net.minecraft.util.IIcon[] iconsFor(net.minecraft.block.Block block, int metadata) {
+        if (block instanceof NineBottleStorageBlock rack) {
+            net.minecraft.util.IIcon[] faceIcons = rack.faceIcons();
+            if (faceIcons != null) {
+                return faceIcons;
+            }
+        }
+        return com.mrfuzzihead.vinery.client.render.BoxRenderer.iconsOf(block, metadata);
+    }
+
     public static void registerRenderers() {
         // The big wine rack is the first block drawn through the box renderer; the rest of the rack
         // and lattice families follow once this path is confirmed visually.
@@ -35,7 +50,7 @@ public final class VineryClient {
                 public void renderInventoryBlock(net.minecraft.block.Block block, int metadata, int renderPass,
                     net.minecraft.client.renderer.RenderBlocks renderBlocks) {
                     com.mrfuzzihead.vinery.client.render.BoxRenderer
-                        .renderInventory(WineRackGeometry.BIG, ((NineBottleStorageBlock) block).faceIcons());
+                        .renderInventory(WineRackGeometry.BIG, VineryClient.iconsFor(block, metadata));
                 }
 
                 @Override
@@ -47,7 +62,7 @@ public final class VineryClient {
                         y,
                         z,
                         WineRackGeometry.BIG,
-                        ((NineBottleStorageBlock) block).faceIcons(),
+                        VineryClient.iconsFor(block, metadata),
                         world.getLightBrightnessForSkyBlocks(x, y, z, 0),
                         metadata & 3);
                     return true;
