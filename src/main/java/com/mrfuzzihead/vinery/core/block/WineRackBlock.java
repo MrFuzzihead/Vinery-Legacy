@@ -41,6 +41,9 @@ public abstract class WineRackBlock extends BlockDirectional implements VineryCh
     /** Cabinet top texture — the flat surfaces (top panel, shelf tops). */
     private final String topTexture;
 
+    /** Cabinet front texture, or null when the shape has no distinct front. */
+    private final String frontTexture;
+
     /**
      * Render id for the box renderer.
      *
@@ -58,9 +61,18 @@ public abstract class WineRackBlock extends BlockDirectional implements VineryCh
     private int renderId = -1;
 
     protected WineRackBlock(String sideTexture, String topTexture) {
+        this(sideTexture, topTexture, null);
+    }
+
+    /**
+     * @param frontTexture the door texture, or null for a shape that is the same wood front to back
+     *                     (the big and small racks). Only the cabinet needs a distinct one.
+     */
+    protected WineRackBlock(String sideTexture, String topTexture, String frontTexture) {
         super(Material.wood);
         this.sideTexture = sideTexture;
         this.topTexture = topTexture;
+        this.frontTexture = frontTexture;
         // Block#getIcon returns blockIcon, which is what the ItemBlock uses for its inventory icon.
         // The box renderer draws from the per-face table below, but the item form and the block
         // particle still need a single texture, or the block renders as nothing at all.
@@ -103,8 +115,17 @@ public abstract class WineRackBlock extends BlockDirectional implements VineryCh
         // invisible in the world, missing-texture square in the inventory.
         this.blockIcon = side;
 
+        IIcon front = frontTexture != null ? iconRegister.registerIcon(frontTexture) : side;
+
         // BoxRenderer face order: up, down, north, south, west, east.
-        this.faceIcons = new IIcon[] { top, top, side, side, side, side };
+        //
+        // Two layouts exist because each shape's geometry names its own indices. The big and small
+        // racks are one wood front to back and keep the original order, leaving their verified
+        // SIDE_TEXTURE / TOP_TEXTURE constants untouched. The cabinet needs a distinct front, so it
+        // puts the door on north and shifts the side texture along — see WineRackGeometry's
+        // CABINET_* constants, which match this second layout.
+        this.faceIcons = frontTexture != null ? new IIcon[] { top, top, front, side, side, side }
+            : new IIcon[] { top, top, side, side, side, side };
     }
 
     @SideOnly(Side.CLIENT)

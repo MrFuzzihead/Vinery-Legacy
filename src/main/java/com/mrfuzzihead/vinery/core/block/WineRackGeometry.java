@@ -121,4 +121,47 @@ public final class WineRackGeometry {
         new Box(12.93, 2.42, 0.75, 13.93, 3.42, 15.75, TOP_TEXTURE, true),
         new Box(13.93, 1.42, 0.75, 14.93, 2.42, 15.75, TOP_TEXTURE, true),
         new Box(14.93, 0.42, 0.75, 15.93, 1.42, 15.75, TOP_TEXTURE, true), };
+    /**
+     * Texture indices for the cabinet, matching the second faceIcons layout in
+     * {@link WineRackBlock}: {@code {top, top, front, side, side, side}}.
+     */
+    public static final int CABINET_TOP_TEXTURE = 0;
+
+    public static final int CABINET_FRONT_TEXTURE = 2;
+
+    public static final int CABINET_SIDE_TEXTURE = 3;
+
+    /**
+     * The mid rack, from `template_wine_rack_3_closed`: a closed cabinet.
+     *
+     * <p>
+     * That model is a single full cube, which is correct rather than broken — a closed cabinet is a
+     * solid cube. It is drawn as six slabs rather than one because 1.7.10's cube renderer applies a
+     * single texture per box, and this cabinet needs three: `cabinet_front` on the door,
+     * `cabinet_top` on top, `cabinet_side` everywhere else.
+     *
+     * <p>
+     * The slabs meet edge to edge with no two same-facing faces coplanar, which is what stops them
+     * z-fighting. The bottom spans the full block and the four side panels sit above it (y 1..15) so
+     * their downward faces never overlap the bottom's; the top sits above all of them. Where panels
+     * merely touch, the faces point in opposite directions and neither is ever visible.
+     *
+     * <p>
+     * `template_wine_rack_3_open` is unusable and is not transcribed: it still contains the same
+     * full cube, so opening it reveals nothing. The door and the open/close behaviour are Phase 3
+     * work.
+     */
+    public static final com.mrfuzzihead.vinery.client.render.BoxRenderer.Box[] CABINET = {
+        // Door, facing north — the direction the block faces
+        new Box(0, 1, 15, 16, 15, 16, CABINET_FRONT_TEXTURE, true),
+        // Back
+        new Box(0, 1, 0, 16, 15, 1, CABINET_SIDE_TEXTURE, true),
+        // Left panel
+        new Box(0, 1, 1, 1, 15, 15, CABINET_SIDE_TEXTURE, true),
+        // Right panel
+        new Box(15, 1, 1, 16, 15, 15, CABINET_SIDE_TEXTURE, true),
+        // Top
+        new Box(0, 15, 0, 16, 16, 16, CABINET_TOP_TEXTURE, true),
+        // Bottom, full width
+        new Box(0, 0, 0, 16, 1, 16, CABINET_SIDE_TEXTURE, true), };
 }

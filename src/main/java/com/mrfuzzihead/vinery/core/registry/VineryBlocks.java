@@ -5,6 +5,7 @@ import net.minecraft.block.material.Material;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
+import com.mrfuzzihead.vinery.core.block.BigBottleStorageBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryButtonBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryDoorBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryFenceGateBlock;
@@ -92,6 +93,16 @@ public final class VineryBlocks {
     public static Block BAMBOO_WINE_RACK_SMALL;
     public static Block CHERRY_WINE_RACK_SMALL;
     public static Block MANGROVE_WINE_RACK_SMALL;
+    public static Block DARK_CHERRY_WINE_RACK_MID;
+    public static Block OAK_WINE_RACK_MID;
+    public static Block SPRUCE_WINE_RACK_MID;
+    public static Block BIRCH_WINE_RACK_MID;
+    public static Block JUNGLE_WINE_RACK_MID;
+    public static Block ACACIA_WINE_RACK_MID;
+    public static Block DARK_OAK_WINE_RACK_MID;
+    public static Block BAMBOO_WINE_RACK_MID;
+    public static Block CHERRY_WINE_RACK_MID;
+    public static Block MANGROVE_WINE_RACK_MID;
 
     private static FoliageBlock darkCherryLeaves() {
         return new FoliageBlock(
@@ -199,6 +210,67 @@ public final class VineryBlocks {
         MANGROVE_WINE_RACK_SMALL = VineryRegistry.block(
             new FourBottleStorageBlock("vinery:mangrove_cabinet_side", "vinery:mangrove_cabinet_top"),
             "mangrove_wine_rack_small");
+
+        // The ten mid racks — closed cabinets for a single large bottle. Three textures each, since
+        // the door, top and sides differ; see BigBottleStorageBlock for why this is not a rack
+        // with more slots. Written out one per line so tools/verify-registrations.mjs sees them all.
+        DARK_CHERRY_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:dark_cherry_cabinet_side",
+                "vinery:dark_cherry_cabinet_top",
+                "vinery:dark_cherry_cabinet_front"),
+            "dark_cherry_wine_rack_mid");
+        OAK_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock("vinery:oak_cabinet_side", "vinery:oak_cabinet_top", "vinery:oak_cabinet_front"),
+            "oak_wine_rack_mid");
+        SPRUCE_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:spruce_cabinet_side",
+                "vinery:spruce_cabinet_top",
+                "vinery:spruce_cabinet_front"),
+            "spruce_wine_rack_mid");
+        BIRCH_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:birch_cabinet_side",
+                "vinery:birch_cabinet_top",
+                "vinery:birch_cabinet_front"),
+            "birch_wine_rack_mid");
+        JUNGLE_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:jungle_cabinet_side",
+                "vinery:jungle_cabinet_top",
+                "vinery:jungle_cabinet_front"),
+            "jungle_wine_rack_mid");
+        ACACIA_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:acacia_drawer_side",
+                "vinery:acacia_cabinet_top",
+                "vinery:acacia_cabinet_front"),
+            "acacia_wine_rack_mid");
+        DARK_OAK_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:dark_oak_cabinet_side",
+                "vinery:dark_oak_cabinet_top",
+                "vinery:dark_oak_cabinet_front"),
+            "dark_oak_wine_rack_mid");
+        BAMBOO_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:bamboo_cabinet_side",
+                "vinery:bamboo_cabinet_top",
+                "vinery:bamboo_cabinet_front"),
+            "bamboo_wine_rack_mid");
+        CHERRY_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:cherry_cabinet_side_pink",
+                "vinery:cherry_cabinet_top_pink",
+                "vinery:cherry_cabinet_front_pink"),
+            "cherry_wine_rack_mid");
+        MANGROVE_WINE_RACK_MID = VineryRegistry.block(
+            new BigBottleStorageBlock(
+                "vinery:mangrove_cabinet_side",
+                "vinery:mangrove_cabinet_top",
+                "vinery:mangrove_cabinet_front"),
+            "mangrove_wine_rack_mid");
 
         STRIPPED_DARK_CHERRY_LOG = VineryRegistry.block(
             new WoodLogBlock("vinery:stripped_dark_cherry_log_side", "vinery:stripped_dark_cherry_log_top"),

@@ -58,6 +58,16 @@ public final class VineryItems {
     public static Item BAMBOO_WINE_RACK_SMALL_ITEM;
     public static Item CHERRY_WINE_RACK_SMALL_ITEM;
     public static Item MANGROVE_WINE_RACK_SMALL_ITEM;
+    public static Item DARK_CHERRY_WINE_RACK_MID_ITEM;
+    public static Item OAK_WINE_RACK_MID_ITEM;
+    public static Item SPRUCE_WINE_RACK_MID_ITEM;
+    public static Item BIRCH_WINE_RACK_MID_ITEM;
+    public static Item JUNGLE_WINE_RACK_MID_ITEM;
+    public static Item ACACIA_WINE_RACK_MID_ITEM;
+    public static Item DARK_OAK_WINE_RACK_MID_ITEM;
+    public static Item BAMBOO_WINE_RACK_MID_ITEM;
+    public static Item CHERRY_WINE_RACK_MID_ITEM;
+    public static Item MANGROVE_WINE_RACK_MID_ITEM;
 
     public static Item GRASS_SLAB;
     public static Item DIRT_SLAB;
@@ -107,6 +117,16 @@ public final class VineryItems {
         BAMBOO_WINE_RACK_SMALL_ITEM = Item.getItemFromBlock(VineryBlocks.BAMBOO_WINE_RACK_SMALL);
         CHERRY_WINE_RACK_SMALL_ITEM = Item.getItemFromBlock(VineryBlocks.CHERRY_WINE_RACK_SMALL);
         MANGROVE_WINE_RACK_SMALL_ITEM = Item.getItemFromBlock(VineryBlocks.MANGROVE_WINE_RACK_SMALL);
+        DARK_CHERRY_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_CHERRY_WINE_RACK_MID);
+        OAK_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.OAK_WINE_RACK_MID);
+        SPRUCE_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.SPRUCE_WINE_RACK_MID);
+        BIRCH_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.BIRCH_WINE_RACK_MID);
+        JUNGLE_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.JUNGLE_WINE_RACK_MID);
+        ACACIA_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.ACACIA_WINE_RACK_MID);
+        DARK_OAK_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_OAK_WINE_RACK_MID);
+        BAMBOO_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.BAMBOO_WINE_RACK_MID);
+        CHERRY_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.CHERRY_WINE_RACK_MID);
+        MANGROVE_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.MANGROVE_WINE_RACK_MID);
         GRASS_SLAB = VineryRegistry.item(
             new ItemSlab(
                 VineryBlocks.GRASS_SLAB,

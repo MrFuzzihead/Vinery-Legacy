@@ -313,8 +313,12 @@ lang files. A green `runServer` says nothing about whether
 cut-out textures, `shouldSideBeRendered`, and a stale graphics flag — each of which looked right in the
 bytecode and each of which was disproved by one glance in game. The cause sat in a method nobody had
 read: `BlockLeaves#isOpaqueCube` returns the **negation** of a flag only ever updated for two hardcoded
-vanilla blocks. Two habits that would have found it immediately:
+vanilla blocks. Three habits that would have found it immediately:
 
+- **A "broken asset" is a diagnosis, not an observation.** The mid rack's full cube was written up
+  twice as a failed Blockbench export before someone read `BigBottleStorageBlock` and found
+  `size() == 1`. The model was right and the reasoning was wrong. Check the code that *uses* an
+  asset before blaming the asset.
 - **Read the inherited method, not just the override.** `FoliageBlock` never mentioned
   `isOpaqueCube`, so it never looked wrong.
 - **When a fix is disproved in game, re-read the code before proposing a fourth.** Two of the three
@@ -538,7 +542,7 @@ Option 1 is the default; 2 is right for chairs and tables, where the silhouette 
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content** (in progress: 46/204 blocks, 7 items; big + small wine racks in all 10 woods; leaves fixed) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: 56/204 blocks, 7 items; all three wine rack shapes in all 10 woods; leaves fixed) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |
@@ -591,13 +595,17 @@ Total ≈ **6–9 weeks** now that rendering is scoped (§5, ~2–3 weeks and mo
    - *small* → `template_wine_rack_2` — **done**, all ten woods. 5 axis-aligned boxes plus two 45°
      braces stepped into 15 unit boxes each (§5.4).
 
-   The mid rack is the one open question, and it is not a porting problem but an asset problem:
-   `template_wine_rack_3_closed` and `_3_open` both contain a **full opaque cube**
-   `[0,0,0]→[16,16,16]` with all six faces textured, plus an element with inverted bounds. That is
-   what 1.21 renders — a solid cabinet in both the open and closed states, so the "open" state
-   reveals nothing. The interior is not recoverable from these files, and git history shows the
-   models were never valid here (they arrive broken in `e88bc18c`). Options: port the closed cube
-   faithfully, author a 6-bottle interior as new content, or drop mid. **Needs a decision.**
+   The mid rack turned out **not** to be the broken-asset problem it was first read as.
+   `BigBottleStorageBlock` holds **one large bottle**, not six (its `size()` returns 1 and it is the
+   only one accepting `LARGE_BOTTLE`), opens on shift-right-click with a bamboo-door sound, and its
+   translation key reads "Acacia Wine Rack" rather than "Mid … Wine Bottle Storage". So
+   `template_wine_rack_3_closed` being a **full opaque cube is correct** — a closed cabinet is a
+   solid cube. Only `_3_open` is unusable, because it still contains that cube and so reveals
+   nothing when open.
+   **Decided and done:** port the closed cabinet, defer the door. With no block entity and no GUI the
+   `open` state would be pure decoration, so it belongs in Phase 3 alongside the inventory.
+   All ten woods ship; the cube is drawn as six slabs because one box can carry only one texture
+   and the cabinet needs door, top and side. 56 blocks registered.
 
 ---
 
