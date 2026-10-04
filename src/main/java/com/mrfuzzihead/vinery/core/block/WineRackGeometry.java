@@ -147,15 +147,23 @@ public final class WineRackGeometry {
      * merely touch, the faces point in opposite directions and neither is ever visible.
      *
      * <p>
+     * The door is the -Z face, matching the direction the big and small racks open toward and the
+     * face \`template_wine_rack_3_closed\` gives \`#front\`. The 1.21 model also puts \`#top\` on the
+     * underside; here the bottom shares the side texture, which is one of the documented
+     * single-texture-per-box simplifications.
+     *
+     * <p>
      * `template_wine_rack_3_open` is unusable and is not transcribed: it still contains the same
      * full cube, so opening it reveals nothing. The door and the open/close behaviour are Phase 3
      * work.
      */
     public static final com.mrfuzzihead.vinery.client.render.BoxRenderer.Box[] CABINET = {
-        // Door, facing north — the direction the block faces
-        new Box(0, 1, 15, 16, 15, 16, CABINET_FRONT_TEXTURE, true),
+        // Door on the north face, which is the direction this block faces when its metadata is 0 —
+        // the same convention the big and small racks use, and what template_wine_rack_3_closed
+        // assigns #front to. It is a -Z face: z 0..1, not 15..16.
+        new Box(0, 1, 0, 16, 15, 1, CABINET_FRONT_TEXTURE, true),
         // Back
-        new Box(0, 1, 0, 16, 15, 1, CABINET_SIDE_TEXTURE, true),
+        new Box(0, 1, 15, 16, 15, 16, CABINET_SIDE_TEXTURE, true),
         // Left panel
         new Box(0, 1, 1, 1, 15, 15, CABINET_SIDE_TEXTURE, true),
         // Right panel
