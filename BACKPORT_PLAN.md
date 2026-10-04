@@ -309,6 +309,20 @@ lang files. A green `runServer` says nothing about whether
 `tools/verify-registrations.mjs` cross-checks every registration against the real PNG and
 `en_US.json`, and should be re-run after any registry change.
 
+**Lesson worth keeping (the expensive one):** the leaf see-through took three wrong fixes —
+cut-out textures, `shouldSideBeRendered`, and a stale graphics flag — each of which looked right in the
+bytecode and each of which was disproved by one glance in game. The cause sat in a method nobody had
+read: `BlockLeaves#isOpaqueCube` returns the **negation** of a flag only ever updated for two hardcoded
+vanilla blocks. Two habits that would have found it immediately:
+
+- **Read the inherited method, not just the override.** `FoliageBlock` never mentioned
+  `isOpaqueCube`, so it never looked wrong.
+- **When a fix is disproved in game, re-read the code before proposing a fourth.** Two of the three
+  attempts were reasoned from bytecode already misread once. The tools also lied twice that night — a
+  PNG checker that ignored PNG filters, and a scan that died silently on an unsupported file and
+  reported "0 of 144" — so every number recorded here was re-derived after the first answer was
+  wrong.
+
 | Trap | Symptom | Correct handling |
 |---|---|---|
 | Texture directory names | Missing-texture placeholder, **no log line at all** | 1.7.10 uses plural directories: `textures/blocks/`, `textures/items/`, `textures/entities/`. 1.21 uses singular `block/`, `item/`, `entity/`. All three renamed. `mob_effect/` and `gui/` are unchanged. |
@@ -331,6 +345,12 @@ lang files. A green `runServer` says nothing about whether
 | **`onBlockPlacedBy` also fires client-side** | A wrong facing for a frame | The client gets the callback with an unnormalised yaw and writes metadata the server then overwrites. Guard with `if (!world.isRemote)`. |
 | **A 180° rotation is its own inverse** | Rotation bug survives testing | 180° (`facing=2`) looks correct even when the 90° cases are swapped, so testing one direction proves nothing. Test a **quarter turn**. |
 | **Overriding `registerBlockIcons` loses `blockIcon`** | Block invisible in world *and* missing-texture in inventory | Vanilla's `Block#registerBlockIcons` assigns `this.blockIcon`; overriding it to fill a per-face table must set `blockIcon` too, because `getIcon` and `getBlockTextureFromSide` both resolve through it. A `null` icon draws nothing and renders as the missing-texture square. |
+| **`BlockLeaves#isOpaqueCube` returns the *negation* of its own flag** | Leaves are see-through from above and below, and no amount of texture work fixes it | The body is `return this.field_150121_P ? false : true`, and `BlockLeaves()` stores `false` — so an un-updated leaves block claims to be an **opaque cube**. Neighbours then cull their faces against it: the grass below loses its top face and anything above loses its bottom face, so the leaf's own face is drawn with gaps over empty space. This cost three wrong theories (cut-out textures, `shouldSideBeRendered`, a stale flag) before the real cause was read out of the bytecode. |
+| **Vanilla updates that flag for two hardcoded blocks only** | Fixing the above is not enough on its own | `RenderGlobal` calls `setGraphicsLevel(fancyGraphics)` on `Blocks.leaves` and `Blocks.leaves2` and nothing else, so a modded leaves block is never updated. Drive it yourself from a client tick — `ClientProxy#onClientTick` calls `FoliageBlock#updateGraphicsLevel`, which also makes a mid-session graphics change take effect without a world reload. `isOpaqueCube()` itself must not read `GameSettings`: it is called from common code and would throw on a dedicated server. |
+| **Fast and Fancy leaves mean the opposite of what you expect** | Fixing the opacity flag "inverts" leaves | `setGraphicsLevel(f)` sets `field_150121_P = f`, and `isOpaqueCube()` negates it. So **Fast ⇒ opaque cube** (the cheap thing to draw) and **Fancy ⇒ non-opaque**, which is what lets cut-out art show sky. Thinking Fancy means "see-through" here is wrong, and it is what 1.8+ calls Fast. |
+| **Reference implementation: Et Futurum's `BaseLeaves`** | Re-deriving this from scratch cost several wrong turns | `BaseLeaves` (2.6.48-GTNH) is a working 1.7.10 mod that adds cherry/mangrove/modern leaves. It `extends BlockLeaves`, delegates `isOpaqueCube()` and `shouldSideBeRendered()` **to vanilla's leaves** (which *are* updated, so its flag stays correct), ships both `<name>.png` and `<name>_opaque.png`, and selects between them in `getIcon`. Following it verbatim is the fast route; copying only its `getIcon` is what produced the bug here. |
+| **Cut-out leaf textures need an opaque sibling** | Fancy mode either looks wrong or shows holes | 1.7.10 has no alpha testing, so a cut-out texture on a cube is drawn with GL blending. Ship both variants and pick per graphics setting: `tools/make-leaf-texture-pairs.mjs` regenerates the 1.21 cut-out art unchanged plus a generated `_opaque` sibling. |
+| **1.7.10 has no cut-out rendering for cube blocks** | See straight through a leaf block to the sky, worst from below | Vanilla 1.7.10 leaves are an **opaque cube with an opaque texture**. RenderBlocks does not alpha-test standard block faces and GL blending is on during the block pass, so a 1.21 "fancy" cut-out texture (dark cherry/apple leaves ship with 55-85 fully transparent pixels of 256) renders as holes, not as foliage. The cut-out art is shipped unchanged for Fancy Graphics and a generated `_opaque` sibling covers Fast Graphics; originals live in `src/port-holding/textures-1.21/leaves`. Cut-outs are still correct for cross/plant blocks (grape bushes, grapevine) and for fences — those render alpha-tested. |
 | **Vanilla culls faces against the block, not the box** | Looking up into a rack from below shows sky through its interior ceiling | `renderStandardBlock(block, x, y, z)` is called once per box, but RenderBlocks culls a face by asking whether the neighbouring **block** at `(x, y±1, z)` is opaque — it never knows a box is not the whole block. So the top panel's underside is tested against the block *below the rack*: solid ground culls it and the cubbies have no ceiling. Fix is `renderer.renderAllFaces = true` around the loop, and restoring the previous value afterwards because RenderBlocks is shared with vanilla's own renderers. |
 | **Never early-return from a block renderer** | Block draws once, then vanishes | Chunks re-render on every block change, so a one-shot debug guard that returns early makes the block appear for one frame only. Log once, always render. |
 | **ISBRH runs inside an open Tessellator session** | `IllegalStateException: Already tesselating!` | Forge calls `renderWorldBlock` from `RenderBlocks#renderBlockByRenderType` **mid-batch**, so a renderer must only append vertices — calling `startDrawing` throws. The inventory path is the opposite: `RenderBlocks#renderInventoryBlock` runs after every vanilla `startDrawing/draw` pair has closed, so it owns its own session. |
@@ -341,7 +361,7 @@ lang files. A green `runServer` says nothing about whether
 | Mod translations cannot be resolved server-side | False positives in the self-test | Mod languages load into StatCollector's locale-dependent translator, which a dedicated server never populates; its fallback reads only minecraft's hardcoded `en_US.lang`. Key coverage stays in `tools/verify-registrations.mjs`. |
 | `CreativeTabs.displayAllReleventItems` does not exist server-side | `NoSuchMethodError` on a dedicated server | Client-only despite living in common code. Creative-tab contents therefore <b>cannot</b> be checked by the self-test — the verifier does it at source level instead. |
 | Blocks register before items | `NullPointerException` at load | A block that captures an `Item` in its constructor sees `null`, because `VineryItems` is initialised after `VineryBlocks`. Resolve the item lazily inside the method that uses it (`GrapeBushBlock.ripeDrop()`). |
-| **A dev dependency can break the launch, not the code** | `runServer` fails with `An error occurred trying to configure the minecraft home` — which reads like a mod-registration bug, but is not | A dependency that **bundles its own Mixin** (DMod) sorts before `unimixins-*.jar` alphabetically, so UniMixins' sanity check throws `java.lang.Error: A different version of Mixin …` and FML aborts before any mod code runs. Read the *first* stack trace in the log, not the Gradle failure at the end. |
+| **A dev dependency can break the launch, not the code** | `runServer` fails with `An error occurred trying to configure the minecraft home` — which reads like a mod-registration bug, but is not | A dependency that **bundles its own Mixin** sorts before `unimixins-*.jar` alphabetically, so UniMixins' sanity check throws `java.lang.Error: A different version of Mixin …` and FML aborts before any mod code runs. Read the *first* stack trace in the log, not the Gradle failure at the end. Hit this with DMod `4523625`; `4523626` loads cleanly, so the clash was fixed upstream rather than worked around. |
 | **A wood's texture names are not derivable from the wood** | Missing or magenta textures when batching variants | The 1.21 models disagree with the obvious naming: acacia's rack frame uses `acacia_drawer_side` rather than a cabinet texture, and cherry's carry a `_pink` suffix. Read each model's `textures` block instead of constructing names. |
 | **Ten variants of one shape need no renderer work** | Tempting to register ten render ids | Forge dispatches on `getRenderType()` but passes the real `Block` to the handler, so every rack shares one id and one handler and selects geometry through `WineRackBlock#geometry()`. |
 | **A loop in the registry file silently escapes verification** | Fewer checks than you think | `tools/verify-registrations.mjs` finds registrations by regex over the source. A `for` loop registering ten blocks drops all ten out of checking, which is why the ten big racks are written out one call per line. |
@@ -440,6 +460,29 @@ happens:
 - The 1.21 JSONs stay in the repo as reference but are excluded from the released jar (~2.5 MB)
   via `jar { exclude }` in `build.gradle.kts`.
 
+### 5.4a Cut-out textures on cube blocks — an open decision
+
+`tools/check-opaque.mjs` reports the current state: **56 of 144 block textures are still cut-out**.
+Most are harmless, because cut-outs are correct for cross/plant blocks and for fences:
+
+| Cut-out and fine | Cut-out on a cube block — needs a decision |
+|---|---|
+| grape bushes, grapevine, grass bushes (`BlockBush`, alpha-tested cross sprites) | `*_cabinet_front` (all 10 woods) |
+| `dark_cherry_fence` (vanilla fences are alpha-tested too) | `dark_cherry_table`, `dark_cherry_chair_base`, `dark_cherry_chair_top` |
+| item textures (`*_grapejuice`), `air` | `fermentation_barrel_*`, `wine_box`, `apple_press_bracket`, `dark_cherry_wine_rack_front`, `window_*` |
+
+None of these are registered yet, so nothing ships broken today. When they are ported there are
+three options, and this is worth deciding once rather than per block:
+
+1. **Flatten**, as the leaves now are — cheapest, portable, but loses the cut-out look that makes
+   furniture read as furniture.
+2. **Alpha-tested custom renderer** — keeps the art, but reintroduces the hand-issued-quad path
+   that §5.3 documents as failing silently in four ways (alpha test state, blend state, Tessellator
+   batch, atlas bind). It is a single well-tested helper now that the pattern is understood.
+3. **Keep 1.7.10 fidelity** — treat them as opaque like vanilla cabinets, and accept the change.
+
+Option 1 is the default; 2 is right for chairs and tables, where the silhouette is the point.
+
 ### 5.5 Revised effort
 
 | Work                                                          | Estimate  | Status                                    |
@@ -495,7 +538,7 @@ happens:
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content** (in progress: 46/204 blocks, 7 items; big + small wine racks done, all 10 woods) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: 46/204 blocks, 7 items; big + small wine racks in all 10 woods; leaves fixed) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |
@@ -580,6 +623,12 @@ What was **verified** (checked against source/registry, not assumed):
 | Model/asset composition (82 flat items, 86 block-items, ~70 vanilla blockstates, 82 distinct inline geometries, 6 templates)        | Parsed all 418 model + 139 blockstate JSONs                                                               |
 | Mixin count is 14 (10 core + 4 forge)                                                                                               | `find` over the working tree                                                                              |
 | DMod, not our code, aborts the dev launch | UniMixins' sanity-check error names `DMod-513764-4523625-deobf.jar`; with that dependency removed the identical launch reaches `Self-test: 36 block(s) 0 failure(s)` |
+| `BlockLeaves#isOpaqueCube()` returns the negation of `field_150121_P` | Bytecode: `getfield field_150121_P; ifne 11; iconst_1; goto 12; iconst_0; ireturn` — and the constructor stores `false`, so an un-updated leaves block reports opaque |
+| `RenderGlobal` calls `setGraphicsLevel` on exactly two blocks | Bytecode shows `Blocks.leaves` then `Blocks.leaves2`, with no loop over the registry |
+| 1.7.10 has no alpha testing | `grep -rl "alphaFunc"` and `grep -rl "AlphaTest"` over every patched Minecraft class return **zero** files; `drawCrossedSquares` emits textured vertices with no alpha handling |
+| Cut-out leaves need an opaque sibling texture | Et Futurum ships `cherry_leaves.png` (339 B, cut-out) alongside `cherry_leaves_opaque.png` (6688 B); `BaseLeaves.registerBlockIcons` registers both and `getIcon` picks `isOpaqueCube() ? 1 : 0` |
+| 1.7.10 has no alpha testing anywhere | `grep -rl "alphaFunc"` and `grep -rl "AlphaTest"` across every patched Minecraft class return **zero** files; `drawCrossedSquares` emits textured vertices with no alpha handling |
+| 1.7.10 has no alpha testing anywhere | Et Futurum ships `cherry_leaves.png` (339 B, cut-out) alongside `cherry_leaves_opaque.png` (6688 B) and registers both in `registerBlockIcons` |
 | Wine racks need **no** Et Futurum API — cherry/mangrove/bamboo racks are self-contained blocks carrying their own textures | Every `vinery:block/*` reference in all ten `<wood>_wine_rack_1.json` models resolves to a file on disk (0 missing), and all ten `tile.vinery.*_wine_rack_big.name` translation keys already exist |
 | Box rendering via `RenderBlocks#setRenderBounds` + `renderStandardBlock` works | Confirmed in game: renders, textures, collides, and faces the placer in all four directions |
 | Interior faces need `renderAllFaces`, because RenderBlocks culls against the block coordinate | Bytecode: `renderStandardBlockWithAmbientOcclusionPartial` reads `renderAllFaces`, then calls `IBlockAccess.getBlock(x, y±1, z)` — the box position is never consulted |
