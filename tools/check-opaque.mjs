@@ -1,71 +1,111 @@
-// Verify PNGs really are fully opaque, decoding correctly (PNG filters undone).
+// Report PNG header fields and whether the image has any transparency.
+//
+// Handles every PNG variant Minecraft accepts, including 4-bit palette images: a large share of
+// Vinery's textures are depth-4 PALETTE, and an earlier version of this tool only read depth 8,
+// which silently skipped 47 of 144 files and made a cut-out audit look clean when it was not.
 import fs from 'fs';
 import zlib from 'zlib';
 
-function decode(file) {
+const CT = { 0: 'GREY', 2: 'RGB', 3: 'PALETTE', 4: 'GREY+ALPHA', 6: 'RGBA' };
+
+function chunks(file) {
   const buf = fs.readFileSync(file);
-  let off = 8, w = 0, h = 0, depth = 0, colorType = 0, interlace = 0, plte = null, trns = null;
+  let off = 8;
+  const out = {};
   const idat = [];
   while (off < buf.length) {
     const len = buf.readUInt32BE(off);
     const type = buf.toString('ascii', off + 4, off + 8);
     const d = buf.subarray(off + 8, off + 8 + len);
-    if (type === 'IHDR') { w = d.readUInt32BE(0); h = d.readUInt32BE(4); depth = d[8]; colorType = d[9]; interlace = d[12]; }
-    else if (type === 'PLTE') plte = d;
-    else if (type === 'tRNS') trns = d;
+    if (type === 'IHDR') {
+      out.w = d.readUInt32BE(0); out.h = d.readUInt32BE(4);
+      out.depth = d[8]; out.colorType = d[9]; out.interlace = d[12];
+    } else if (type === 'PLTE') out.plte = d;
+    else if (type === 'tRNS') out.trns = d;
     else if (type === 'IDAT') idat.push(d);
     else if (type === 'IEND') break;
     off += 12 + len;
   }
-  if (depth !== 8 || interlace) throw new Error('unsupported depth/interlace');
-  const srcCh = { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[colorType];
-  const raw = zlib.inflateSync(Buffer.concat(idat));
-  const stride = w * srcCh;
-  const lines = Buffer.alloc(h * stride);
+  out.idat = idat;
+  return out;
+}
+
+// Alpha per pixel, or null if the format cannot express transparency at all.
+function alphas(h) {
+  const { w, h: height, depth, colorType, interlace, plte, trns } = h;
+  if (interlace) throw new Error('interlaced');
+  if (depth !== 1 && depth !== 2 && depth !== 4 && depth !== 8) throw new Error('depth ' + depth);
+
+  const samplesPerByte = 8 / depth;
+  const bytesPerRow = depth === 8 ? w * ({ 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[colorType]) : Math.ceil((w * depth) / 8);
+  const filterUnit = depth === 8 ? { 0: 1, 2: 3, 3: 1, 4: 2, 6: 4 }[colorType] : 1;
+
+  const raw = zlib.inflateSync(Buffer.concat(h.idat));
+  const rows = Buffer.alloc(height * bytesPerRow);
   let pos = 0;
-  for (let y = 0; y < h; y++) {
+  for (let y = 0; y < height; y++) {
     const f = raw[pos++];
-    const line = raw.subarray(pos, pos + stride); pos += stride;
-    const cur = lines.subarray(y * stride, (y + 1) * stride);
-    const prev = y > 0 ? lines.subarray((y - 1) * stride, y * stride) : Buffer.alloc(stride);
-    for (let i = 0; i < stride; i++) {
-      const a = i >= srcCh ? cur[i - srcCh] : 0, b = prev[i], c = i >= srcCh ? prev[i - srcCh] : 0;
+    const line = raw.subarray(pos, pos + bytesPerRow); pos += bytesPerRow;
+    const cur = rows.subarray(y * bytesPerRow, (y + 1) * bytesPerRow);
+    const prev = y > 0 ? rows.subarray((y - 1) * bytesPerRow, y * bytesPerRow) : Buffer.alloc(bytesPerRow);
+    for (let i = 0; i < bytesPerRow; i++) {
+      const a = i >= filterUnit ? cur[i - filterUnit] : 0;
+      const b = prev[i];
+      const c = i >= filterUnit ? prev[i - filterUnit] : 0;
       let v = line[i];
-      if (f === 1) v += a; else if (f === 2) v += b; else if (f === 3) v += (a + b) >> 1;
-      else if (f === 4) { const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c); v += (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c); }
+      if (f === 1) v += a;
+      else if (f === 2) v += b;
+      else if (f === 3) v += (a + b) >> 1;
+      else if (f === 4) {
+        const p = a + b - c, pa = Math.abs(p - a), pb = Math.abs(p - b), pc = Math.abs(p - c);
+        v += (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c);
+      }
       cur[i] = v & 255;
     }
   }
-  let minAlpha = 255, transparent = 0, partial = 0;
-  for (let i = 0; i < w * h; i++) {
-    let a = 255;
-    if (colorType === 3) { const idx = lines[i]; a = trns && idx < trns.length ? trns[idx] : 255; }
-    else if (colorType === 4) a = lines[i * 2 + 1];
-    else if (colorType === 6) a = lines[i * 4 + 3];
-    if (a < minAlpha) minAlpha = a;
-    if (a === 0) transparent++; else if (a < 255) partial++;
+
+  // Returns the palette index (or grey/alpha value) for each pixel.
+  const sample = (x, y) => {
+    if (depth === 8) return rows[y * bytesPerRow + x * filterUnit];
+    const byte = rows[y * bytesPerRow + Math.floor((x * depth) / 8)];
+    const shift = 8 - depth - (x % samplesPerByte) * depth;
+    return (byte >> shift) & ((1 << depth) - 1);
+  };
+
+  const out = [];
+  for (let y = 0; y < height; y++) {
+    for (let x = 0; x < w; x++) {
+      if (colorType === 3) { const k = sample(x, y); out.push(trns && k < trns.length ? trns[k] : 255); }
+      else if (colorType === 0) out.push(255);
+      else if (colorType === 2) out.push(255);
+      else if (colorType === 4) out.push(rows[y * bytesPerRow + x * 2 + 1]);
+      else out.push(rows[y * bytesPerRow + x * 4 + 3]);
+    }
   }
-  return { w, h, colorType, plte: !!plte, trns: !!trns, minAlpha, transparent, partial };
+  return out;
 }
 
-let bad = 0, skipped = 0;
+let cutout = 0, skipped = 0, opaque = 0;
+const rows = [];
 for (const f of process.argv.slice(2)) {
-  let r;
-  try {
-    r = decode(f);
-  } catch (e) {
-    // A texture this tool cannot decode is not evidence of anything; report and move on rather
-    // than dying part-way and silently under-reporting the rest of the directory.
-    skipped++;
-    console.log(`${f.split(/[\\/]/).pop().padEnd(30)} SKIPPED (${e.message})`);
-    continue;
-  }
-  const ok = r.transparent === 0 && r.partial === 0;
-  if (!ok) bad++;
-  console.log(
-    `${f.split(/[\\/]/).pop().padEnd(30)} ${r.w}x${r.h} type=${r.colorType}` +
-    `${r.plte ? ' PLTE' : ''}${r.trns ? ' tRNS' : ''}  ` +
-    `minAlpha=${String(r.minAlpha).padStart(3)} transparent=${r.transparent} partial=${r.partial}  ${ok ? 'OPAQUE ok' : 'NOT OPAQUE'}`);
+  const h = chunks(f);
+  let a;
+  try { a = alphas(h); }
+  catch (e) { skipped++; rows.push([f, `${h.w}x${h.h} depth=${h.depth} ${CT[h.colorType]}`, 'SKIPPED ' + e.message]); continue; }
+  const transparent = a.filter(v => v === 0).length;
+  const partial = a.filter(v => v > 0 && v < 255).length;
+  const canExpressAlpha = h.colorType === 3 ? !!h.trns : (h.colorType === 4 || h.colorType === 6);
+  const ok = !canExpressAlpha || (transparent === 0 && partial === 0);
+  ok ? opaque++ : cutout++;
+  rows.push([f, `${h.w}x${h.h} depth=${h.depth} ${CT[h.colorType]}${h.plte ? ' PLTE' : ''}${h.trns ? ' tRNS' : ''}`,
+    `transparent=${transparent} partial=${partial}`, ok]);
 }
-console.log(`\n${bad} cut-out, ${skipped} skipped, ${process.argv.length - 2 - skipped} fully opaque`);
-process.exit(bad ? 1 : 0);
+
+const filter = process.env.FILTER;
+for (const [f, info, res, ok] of rows) {
+  if (filter === 'cutout' && ok !== false) continue;
+  const verdict = ok === false ? 'CUT-OUT' : ok === 'SKIPPED' ? 'SKIPPED' : 'opaque';
+  console.log(`${f.split(/[\\/]/).pop().padEnd(34)} ${info.padEnd(34)} ${res.padEnd(28)} ${verdict}`);
+}
+console.log(`\n${cutout} cut-out, ${opaque} fully opaque, ${skipped} unreadable, ${rows.length} total`);
+process.exit(cutout || skipped ? 1 : 0);

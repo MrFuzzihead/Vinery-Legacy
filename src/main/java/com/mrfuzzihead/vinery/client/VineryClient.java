@@ -76,8 +76,17 @@ public final class VineryClient {
                 // instead. Reading the facing from it makes the block permanently face one way.
                 int metadata = world.getBlockMetadata(x, y, z);
 
-                BoxRenderer
-                    .renderWorld(world, x, y, z, block, metadata, rack.geometry(), iconsFor(block, metadata), renderer);
+                BoxRenderer.renderWorld(
+                    world,
+                    x,
+                    y,
+                    z,
+                    block,
+                    metadata,
+                    rack.geometry(),
+                    iconsFor(block, metadata),
+                    rack.usesAlphaTest(),
+                    renderer);
                 return true;
             }
 

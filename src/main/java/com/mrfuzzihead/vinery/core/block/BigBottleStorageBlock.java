@@ -40,4 +40,14 @@ public class BigBottleStorageBlock extends WineRackBlock {
     public Box[] geometry() {
         return WineRackGeometry.CABINET;
     }
+
+    /**
+     * The door is cut out as open slats — nine of the ten woods ship a \`cabinet_front\` with 36–95
+     * fully transparent pixels out of 256 — so it needs alpha testing or the slats blend through to
+     * whatever is behind the block.
+     */
+    @Override
+    public boolean usesAlphaTest() {
+        return true;
+    }
 }

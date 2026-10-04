@@ -86,6 +86,18 @@ public abstract class WineRackBlock extends BlockDirectional implements VineryCh
     /** The boxes this rack draws, in 0-1 block space. */
     public abstract Box[] geometry();
 
+    /**
+     * Whether this rack's textures need alpha testing.
+     *
+     * <p>
+     * False by default, which is correct for the big and small racks: their textures
+     * (\`cabinet_side\`, \`cabinet_top\`) are fully opaque, so alpha testing would change nothing.
+     * Only blocks whose art is cut out need it, and they override this.
+     */
+    public boolean usesAlphaTest() {
+        return false;
+    }
+
     @Override
     public String textureNameForTest() {
         return sideTexture;

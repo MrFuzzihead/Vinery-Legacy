@@ -365,6 +365,8 @@ vanilla blocks. Three habits that would have found it immediately:
 | Mod translations cannot be resolved server-side | False positives in the self-test | Mod languages load into StatCollector's locale-dependent translator, which a dedicated server never populates; its fallback reads only minecraft's hardcoded `en_US.lang`. Key coverage stays in `tools/verify-registrations.mjs`. |
 | `CreativeTabs.displayAllReleventItems` does not exist server-side | `NoSuchMethodError` on a dedicated server | Client-only despite living in common code. Creative-tab contents therefore <b>cannot</b> be checked by the self-test — the verifier does it at source level instead. |
 | Blocks register before items | `NullPointerException` at load | A block that captures an `Item` in its constructor sees `null`, because `VineryItems` is initialised after `VineryBlocks`. Resolve the item lazily inside the method that uses it (`GrapeBushBlock.ripeDrop()`). |
+| **An audit tool that skips files reports a false clean** | "56 of 144 cut-out" when 86 of 152 were | `check-opaque.mjs` read only 8-bit PNGs; 47 of Vinery's textures are **4-bit palette**, so they were dropped without a word. It now reads every depth and prints an unreadable count. Same failure shape as the two PNG tools that lied earlier: a silent skip looks exactly like a clean result. |
+| **Vanilla 1.8's cut-out GL line does not compile on LWJGL 2** | `cannot find symbol: GL_FALSLF` | 1.7.10 ships LWJGL 2, which has no `GL_FALSLF`; vanilla 1.8 is on LWJGL 3. Use `GL_GEQUAL` with the same reference — and note that `GL_LESS` would invert the test and discard the *solid* pixels. |
 | **A dev dependency can break the launch, not the code** | `runServer` fails with `An error occurred trying to configure the minecraft home` — which reads like a mod-registration bug, but is not | A dependency that **bundles its own Mixin** sorts before `unimixins-*.jar` alphabetically, so UniMixins' sanity check throws `java.lang.Error: A different version of Mixin …` and FML aborts before any mod code runs. Read the *first* stack trace in the log, not the Gradle failure at the end. Hit this with DMod `4523625`; `4523626` loads cleanly, so the clash was fixed upstream rather than worked around. |
 | **A wood's texture names are not derivable from the wood** | Missing or magenta textures when batching variants | The 1.21 models disagree with the obvious naming: acacia's rack frame uses `acacia_drawer_side` rather than a cabinet texture, and cherry's carry a `_pink` suffix. Read each model's `textures` block instead of constructing names. |
 | **Ten variants of one shape need no renderer work** | Tempting to register ten render ids | Forge dispatches on `getRenderType()` but passes the real `Block` to the handler, so every rack shares one id and one handler and selects geometry through `WineRackBlock#geometry()`. |
@@ -464,28 +466,44 @@ happens:
 - The 1.21 JSONs stay in the repo as reference but are excluded from the released jar (~2.5 MB)
   via `jar { exclude }` in `build.gradle.kts`.
 
-### 5.4a Cut-out textures on cube blocks — an open decision
+### 5.4a Cut-out textures on cube blocks — **decided: alpha-test them**
 
-`tools/check-opaque.mjs` reports the current state: **56 of 144 block textures are still cut-out**.
-Most are harmless, because cut-outs are correct for cross/plant blocks and for fences:
+`tools/check-opaque.mjs` reports the current state: **86 of 152 block textures are cut-out**, and the
+figure matters — an earlier count of 56 was wrong because the tool only read 8-bit PNGs and silently
+skipped 47 **4-bit palette** textures, `acacia_cabinet_front` among them. The tool now reads every
+depth and reports unreadable files instead of skipping them.
 
-| Cut-out and fine | Cut-out on a cube block — needs a decision |
+Cut-outs are already correct for cross/plant blocks and for fences, because 1.7.10 draws those with
+blending and they read fine. The question was only what to do on a **cube**:
+
+| Option | Verdict |
 |---|---|
-| grape bushes, grapevine, grass bushes (`BlockBush`, alpha-tested cross sprites) | `*_cabinet_front` (all 10 woods) |
-| `dark_cherry_fence` (vanilla fences are alpha-tested too) | `dark_cherry_table`, `dark_cherry_chair_base`, `dark_cherry_chair_top` |
-| item textures (`*_grapejuice`), `air` | `fermentation_barrel_*`, `wine_box`, `apple_press_bracket`, `dark_cherry_wine_rack_front`, `window_*` |
+| Generate `_opaque` siblings (as the leaves do) | Rejected for cubes. Flattening a chair removes its silhouette, and it means inventing art for ~40 textures — which is how the leaves went wrong. |
+| Alpha-test the cube | **Chosen.** Keeps the art exactly as drawn, and the slats stay slats. |
+| Accept 1.7.10's opaque look | Rejected; it is the thing being improved on. |
 
-None of these are registered yet, so nothing ships broken today. When they are ported there are
-three options, and this is worth deciding once rather than per block:
+**How it works.** `BoxRenderer.renderWorld` takes an `alphaTest` flag and, when set, wraps its box
+loop in `GL_ALPHA_TEST`, restoring both the enabled state and the comparison function in a
+`finally` — alongside the existing `renderAllFaces` save, since another mod may have set its own.
 
-1. **Flatten**, as the leaves now are — cheapest, portable, but loses the cut-out look that makes
-   furniture read as furniture.
-2. **Alpha-tested custom renderer** — keeps the art, but reintroduces the hand-issued-quad path
-   that §5.3 documents as failing silently in four ways (alpha test state, blend state, Tessellator
-   batch, atlas bind). It is a single well-tested helper now that the pattern is understood.
-3. **Keep 1.7.10 fidelity** — treat them as opaque like vanilla cabinets, and accept the change.
+**It is off by default.** A block whose textures are fully opaque draws identically either way, and
+keeping the default off means an alpha-tested path cannot regress the blocks already verified in game.
+`WineRackBlock#usesAlphaTest()` is the hook; only `BigBottleStorageBlock` overrides it to true,
+because its `cabinet_front` door is the cut-out one — nine of the ten woods ship it with 36–95 fully
+transparent pixels out of 256.
 
-Option 1 is the default; 2 is right for chairs and tables, where the silhouette is the point.
+Three LWJGL 2 details, all of which are easy to get wrong:
+
+- `GL11` is `org.lwjgl.opengl.GL11`, not `net.minecraft.client.renderer.GL11`.
+- **There is no `GL_FALSLF` in LWJGL 2.** Vanilla 1.8 writes
+  `glAlphaFunc(ref, GL_FALSLF, 0.1F)`, but that spelling is LWJGL 3. `GL_GEQUAL` with the same
+  reference is the same test. Writing the 1.8 line verbatim does not compile, and picking
+  `GL_LESS` would *invert* it — discarding solid pixels and keeping the holes.
+- The cutoff is 0.1, the value vanilla 1.8 uses for its own cut-out blocks.
+
+**Known limitation, unobserved so far:** the 1.7.10 atlas is mipmapped, and alpha-tested thin geometry
+erodes with distance, so slats may drift toward solid far away. If that shows up the fix is min-filter
+tuning on the atlas, not the threshold.
 
 ### 5.5 Revised effort
 
@@ -542,7 +560,7 @@ Option 1 is the default; 2 is right for chairs and tables, where the silhouette 
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------|
 | **0. Repo hygiene** | Package/import migration, real `mcmod.info`, `pack_format: 1`, mixin wiring | ✅ done |
 | **1. Skeleton compiles** | `@Mod` class, registry shim, first content slice, lang conversion — **verified booting on a dedicated server** | ✅ done (4/204 blocks) |
-| **2. Core content** (in progress: 56/204 blocks, 7 items; all three wine rack shapes in all 10 woods; leaves fixed) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
+| **2. Core content** (in progress: 56/204 blocks, 7 items; all three wine rack shapes in all 10 woods; leaves + cut-out doors fixed) | 37 block classes + 15 item classes + effects → `Potion`, tile entities, NBT components, no rendering (debug models)                                                    | 1.5–2 weeks                  |
 | **3. Containers & GUI**  | 5 `IGuiHandler`s, 2 `GuiScreen`s, slot classes                                                                                                                         | 3–5 days                     |
 | **4. Entities**          | mule, winemaker, chair, boat                                                                                                                                           | 3–5 days                     |
 | **5. Worldgen**          | grape/tree generators, structures (if kept)                                                                                                                            | 2–4 days                     |

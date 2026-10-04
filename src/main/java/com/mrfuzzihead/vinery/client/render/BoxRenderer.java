@@ -5,6 +5,8 @@ import net.minecraft.client.renderer.RenderBlocks;
 import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
+import org.lwjgl.opengl.GL11;
+
 /**
  * Draws axis-aligned boxes for Vinery's decorative blocks (wine racks, lattices, furniture).
  *
@@ -93,9 +95,32 @@ public final class BoxRenderer {
         };
     }
 
-    /** Draws a block's boxes in the world. */
+    /**
+     * Alpha cutoff used when {@code alphaTest} is on.
+     *
+     * <p>
+     * 0.1 is the value vanilla 1.8 uses for its own cut-out blocks, so the threshold is one
+     * Minecraft shipped rather than one tuned here.
+     *
+     * <p>
+     * The comparison is {@code GL_GEQUAL}, not {@code GL_FALSLF}. 1.8 is on LWJGL 3, where
+     * {@code glAlphaFunc(ref, GL_FALSLF, r)} is the spelling; 1.7.10 is on LWJGL 2, which has no
+     * {@code GL_FALSLF} at all. {@code GL_GEQUAL} with the same reference is the same test --
+     * "keep the fragment when alpha >= 0.1".
+     */
+    private static final float ALPHA_CUTOFF = 0.1F;
+
+    /**
+     * Draws a block's boxes in the world.
+     *
+     * @param alphaTest discard fully transparent texels instead of blending them through. 1.7.10 has
+     *                  no alpha testing anywhere -- searching every patched Minecraft class for
+     *                  {@code alphaFunc} or {@code AlphaTest} returns nothing -- so a cut-out texture on a cube is
+     *                  drawn with GL blending and its transparent pixels let the world through. Blocks whose
+     *                  textures are fully opaque draw identically either way.
+     */
     public static void renderWorld(IBlockAccess world, int x, int y, int z, Block block, int metadata, Box[] boxes,
-        IIcon[] textures, RenderBlocks renderer) {
+        IIcon[] textures, boolean alphaTest, RenderBlocks renderer) {
         // Icon order here is up, down, north, south, west, east. Boxes index it by face constant.
         //
         // renderStandardBlock only draws axis-aligned boxes from the render bounds, so facing is
@@ -112,7 +137,12 @@ public final class BoxRenderer {
         //
         // RenderBlocks is shared with vanilla's own renderers, so the previous value is restored.
         boolean previousRenderAllFaces = renderer.renderAllFaces;
+        boolean previousAlphaTest = GL11.glIsEnabled(GL11.GL_ALPHA_TEST);
         renderer.renderAllFaces = true;
+        if (alphaTest) {
+            GL11.glEnable(GL11.GL_ALPHA_TEST);
+            GL11.glAlphaFunc(GL11.GL_GEQUAL, ALPHA_CUTOFF);
+        }
         try {
             for (Box box : boxes) {
                 renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture
@@ -134,6 +164,11 @@ public final class BoxRenderer {
                 renderer.renderStandardBlock(block, x, y, z);
             }
         } finally {
+            // Restored rather than merely disabled, because another mod may have set its own func.
+            if (!previousAlphaTest) {
+                GL11.glDisable(GL11.GL_ALPHA_TEST);
+                GL11.glAlphaFunc(GL11.GL_GREATER, ALPHA_CUTOFF);
+            }
             renderer.renderAllFaces = previousRenderAllFaces;
             renderer.clearOverrideBlockTexture();
         }
