@@ -39,28 +39,112 @@ public final class BoxRenderer {
     /** An axis-aligned box in 0-1 block space, plus the texture to draw it with. */
     public static final class Box {
 
-        final double minX;
-        final double minY;
-        final double minZ;
-        final double maxX;
-        final double maxY;
-        final double maxZ;
+        public final double minX;
+        public final double minY;
+        public final double minZ;
+        public final double maxX;
+        public final double maxY;
+        public final double maxZ;
 
         /** Texture index into the owner's icon array, or -1 to use the block's own icon. */
-        final int texture;
+        public final int texture;
 
         public Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ) {
             this(minX, minY, minZ, maxX, maxY, maxZ, -1);
         }
 
         public Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture) {
+            this(minX, minY, minZ, maxX, maxY, maxZ, texture, null, null);
+        }
+
+        /**
+         * @param faceUvs      per-face UV rectangles in 0-1 of the icon, indexed down, up, north, south,
+         *                     west, east; or null when every face maps the whole icon
+         * @param faceTextures per-face texture indices, or null when every face uses {@code texture}
+         */
+        public Box(double minX, double minY, double minZ, double maxX, double maxY, double maxZ, int texture,
+            double[][] faceUvs, int[] faceTextures) {
             this.minX = Math.min(minX, maxX);
             this.minY = Math.min(minY, maxY);
             this.minZ = Math.min(minZ, maxZ);
             this.maxX = Math.max(minX, maxX);
-            this.maxY = Math.max(minY, maxY);
+            this.maxY = Math.max(maxY, maxY);
             this.maxZ = Math.max(minZ, maxZ);
             this.texture = texture;
+            this.faceUvs = faceUvs;
+            this.faceTextures = faceTextures;
+        }
+
+        /**
+         * Per-face UV rectangles in 0-1 of the icon, or null when every face maps the whole icon.
+         *
+         * <p>
+         * 1.21 models address <em>sub-rectangles</em> of a texture: the chair samples
+         * {@code [3,3,13,13]} for the seat and {@code [0,8,2,16]} for a leg, out of 16x16 sheets that
+         * pack several parts with transparent padding around them.
+         * {@code RenderBlocks#renderStandardBlock} can only map an entire icon onto a face, so a box
+         * with sub-rect UVs is drawn by the quad path instead, which honours them.
+         */
+        public final double[][] faceUvs;
+
+        /** Per-face texture indices, or null when every face uses {@link #texture}. */
+        public final int[] faceTextures;
+
+        private static double rotX(double x, double z, int facing) {
+            return switch (facing & 3) {
+                case 1 -> 1.0D - z;
+                case 2 -> 1.0D - x;
+                case 3 -> z;
+                default -> x;
+            };
+        }
+
+        private static double rotZ(double x, double z, int facing) {
+            return switch (facing & 3) {
+                case 1 -> x;
+                case 2 -> 1.0D - z;
+                case 3 -> 1.0D - x;
+                default -> z;
+            };
+        }
+
+        /**
+         * This box's extents after the facing rotation — the same clockwise quarter-turn the cube
+         * renderer applies, and the same one the quad path applies per vertex.
+         *
+         * <p>
+         * Rendering, collision and picking all call this. They used to carry their own copies of the
+         * rotation, and when collision was derived from `geometry()` it quietly used the
+         * <em>unrotated</em> boxes: the chair turned to face the player while its hitbox stayed
+         * pointing the same way, so the backrest was always south.
+         *
+         * <p>
+         * Only the extents are rotated. Per-face UVs are not meaningful once a box has been turned —
+         * the quad path needs the unrotated box and rotates each vertex instead — so this is for
+         * callers that use the AABB alone.
+         */
+        public Box rotatedExtents(int facing) {
+            int f = facing & 3;
+            if (f == 0) {
+                return this;
+            }
+            double rx0 = rotX(minX, minZ, f);
+            double rx1 = rotX(maxX, maxZ, f);
+            double rz0 = rotZ(minX, minZ, f);
+            double rz1 = rotZ(maxX, maxZ, f);
+            return new Box(
+                Math.min(rx0, rx1),
+                minY,
+                Math.min(rz0, rz1),
+                Math.max(rx0, rx1),
+                maxY,
+                Math.max(rz0, rz1),
+                texture);
+        }
+
+        /** Whether any face needs the quad path, i.e. a sub-rect UV or its own texture. */
+        public boolean needsQuadPath() {
+            return faceUvs != null || faceTextures != null;
         }
 
         /** Constructor taking 0-16 model coordinates, as used by the block model JSONs. */
@@ -119,6 +203,8 @@ public final class BoxRenderer {
      *                  drawn with GL blending and its transparent pixels let the world through. Blocks whose
      *                  textures are fully opaque draw identically either way.
      */
+    private static final java.util.Set<String> LOGGED_QUAD_PATH = new java.util.HashSet<>();
+
     public static void renderWorld(IBlockAccess world, int x, int y, int z, Block block, int metadata, Box[] boxes,
         IIcon[] textures, boolean alphaTest, RenderBlocks renderer) {
         // Icon order here is up, down, north, south, west, east. Boxes index it by face constant.
@@ -143,27 +229,37 @@ public final class BoxRenderer {
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glAlphaFunc(GL11.GL_GEQUAL, ALPHA_CUTOFF);
         }
+        int quadFaces = 0;
+        int quadBoxes = 0;
         try {
             for (Box box : boxes) {
+                // A box with per-face UV rects or per-face textures cannot go through
+                // renderStandardBlock, which maps a whole icon onto every face. Those go to the quad
+                // path instead, so a block may mix both freely — the racks are all cube-path boxes.
+                if (box.needsQuadPath()) {
+                    quadBoxes++;
+                    quadFaces += QuadRenderer.renderBox(world, x, y, z, block, metadata, box, textures);
+                    continue;
+                }
                 renderer.overrideBlockTexture = box.texture >= 0 && textures.length > box.texture
                     ? textures[box.texture]
                     : null;
 
-                double minX = rotateX(box.minX, box.minZ, facing);
-                double maxX = rotateX(box.maxX, box.maxZ, facing);
-                double minZ = rotateZ(box.minX, box.minZ, facing);
-                double maxZ = rotateZ(box.maxX, box.maxZ, facing);
-
-                renderer.setRenderBounds(
-                    Math.min(minX, maxX),
-                    box.minY,
-                    Math.min(minZ, maxZ),
-                    Math.max(minX, maxX),
-                    box.maxY,
-                    Math.max(minZ, maxZ));
+                Box r = box.rotatedExtents(facing);
+                renderer.setRenderBounds(r.minX, r.minY, r.minZ, r.maxX, r.maxY, r.maxZ);
                 renderer.renderStandardBlock(block, x, y, z);
             }
         } finally {
+            if (quadBoxes > 0 && LOGGED_QUAD_PATH.add(
+                block.getClass()
+                    .getSimpleName())) {
+                com.mrfuzzihead.vinery.Vinery.LOG.warn(
+                    "[Vinery] quad path for {}: {} box(es) supplied, {} face(s) emitted",
+                    block.getClass()
+                        .getSimpleName(),
+                    quadBoxes,
+                    quadFaces);
+            }
             // Restored rather than merely disabled, because another mod may have set its own func.
             if (!previousAlphaTest) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);

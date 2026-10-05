@@ -6,6 +6,7 @@ import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 
 import com.mrfuzzihead.vinery.core.block.BigBottleStorageBlock;
+import com.mrfuzzihead.vinery.core.block.ChairBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryButtonBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryDoorBlock;
 import com.mrfuzzihead.vinery.core.block.DarkCherryFenceGateBlock;
@@ -103,6 +104,7 @@ public final class VineryBlocks {
     public static Block BAMBOO_WINE_RACK_MID;
     public static Block CHERRY_WINE_RACK_MID;
     public static Block MANGROVE_WINE_RACK_MID;
+    public static Block DARK_CHERRY_CHAIR;
 
     private static FoliageBlock darkCherryLeaves() {
         return new FoliageBlock(
@@ -271,6 +273,12 @@ public final class VineryBlocks {
                 "vinery:mangrove_cabinet_top",
                 "vinery:mangrove_cabinet_front"),
             "mangrove_wine_rack_mid");
+
+        // The chair is a two-part block: bit 2 of its metadata is the backrest half, placed above
+        // the seat by onBlockPlacedBy and removed with it by breakBlock.
+        DARK_CHERRY_CHAIR = VineryRegistry.block(
+            new ChairBlock("vinery:dark_cherry_chair_top", "vinery:dark_cherry_chair_base"),
+            "dark_cherry_chair");
 
         STRIPPED_DARK_CHERRY_LOG = VineryRegistry.block(
             new WoodLogBlock("vinery:stripped_dark_cherry_log_side", "vinery:stripped_dark_cherry_log_top"),

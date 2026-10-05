@@ -37,7 +37,7 @@ public class BigBottleStorageBlock extends WineRackBlock {
     }
 
     @Override
-    public Box[] geometry() {
+    public Box[] geometry(int metadata) {
         return WineRackGeometry.CABINET;
     }
 

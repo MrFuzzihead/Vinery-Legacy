@@ -12,10 +12,13 @@ import net.minecraft.command.WrongUsageException;
 import net.minecraft.item.Item;
 import net.minecraft.util.ChatComponentText;
 import net.minecraft.util.EnumChatFormatting;
+import net.minecraft.util.MovingObjectPosition;
 import net.minecraft.util.StatCollector;
+import net.minecraft.util.Vec3;
 import net.minecraft.world.World;
 
 import com.mrfuzzihead.vinery.Vinery;
+import com.mrfuzzihead.vinery.core.block.BoxRenderedBlock;
 import com.mrfuzzihead.vinery.core.block.VineryCheckableBlock;
 import com.mrfuzzihead.vinery.core.registry.VineryRegistry;
 
@@ -116,6 +119,26 @@ public class SelfTestCommand extends CommandBase {
                     continue;
                 }
 
+                if (block instanceof BoxRenderedBlock boxy) {
+                    // Temporary diagnostic: geometry length per half, and whether a ray fired
+                    // straight through the block centre registers a hit.
+                    int lowerBoxes = boxy.geometry(0).length;
+                    int upperBoxes = boxy.geometry(4).length;
+                    MovingObjectPosition hit = boxy.collisionRayTrace(
+                        world,
+                        x,
+                        y,
+                        TEST_Z,
+                        Vec3.createVectorHelper(x - 4.0D, y + 0.5D, TEST_Z + 0.5D),
+                        Vec3.createVectorHelper(x + 4.0D, y + 0.5D, TEST_Z + 0.5D));
+                    Vinery.LOG.info(
+                        "[selftest-geo] {} lower={} upper={} rayHit={} aabb={}",
+                        describe(block),
+                        lowerBoxes,
+                        upperBoxes,
+                        hit != null,
+                        boxy.getCollisionBoundingBoxFromPool(world, x, y, TEST_Z));
+                }
                 int meta = world.getBlockMetadata(x, y, TEST_Z);
                 if (meta != 0) {
                     failures.add(describe(block) + ": metadata 0 round-tripped as " + meta);

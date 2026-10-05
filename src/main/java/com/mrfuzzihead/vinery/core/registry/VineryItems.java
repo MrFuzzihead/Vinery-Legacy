@@ -68,6 +68,7 @@ public final class VineryItems {
     public static Item BAMBOO_WINE_RACK_MID_ITEM;
     public static Item CHERRY_WINE_RACK_MID_ITEM;
     public static Item MANGROVE_WINE_RACK_MID_ITEM;
+    public static Item DARK_CHERRY_CHAIR_ITEM;
 
     public static Item GRASS_SLAB;
     public static Item DIRT_SLAB;
@@ -127,6 +128,7 @@ public final class VineryItems {
         BAMBOO_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.BAMBOO_WINE_RACK_MID);
         CHERRY_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.CHERRY_WINE_RACK_MID);
         MANGROVE_WINE_RACK_MID_ITEM = Item.getItemFromBlock(VineryBlocks.MANGROVE_WINE_RACK_MID);
+        DARK_CHERRY_CHAIR_ITEM = Item.getItemFromBlock(VineryBlocks.DARK_CHERRY_CHAIR);
         GRASS_SLAB = VineryRegistry.item(
             new ItemSlab(
                 VineryBlocks.GRASS_SLAB,

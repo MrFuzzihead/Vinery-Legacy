@@ -28,7 +28,7 @@ public class NineBottleStorageBlock extends WineRackBlock {
     }
 
     @Override
-    public Box[] geometry() {
+    public Box[] geometry(int metadata) {
         return WineRackGeometry.BIG;
     }
 }

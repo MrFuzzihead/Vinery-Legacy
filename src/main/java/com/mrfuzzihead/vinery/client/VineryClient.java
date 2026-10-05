@@ -6,7 +6,7 @@ import net.minecraft.util.IIcon;
 import net.minecraft.world.IBlockAccess;
 
 import com.mrfuzzihead.vinery.client.render.BoxRenderer;
-import com.mrfuzzihead.vinery.core.block.WineRackBlock;
+import com.mrfuzzihead.vinery.core.block.BoxRenderedBlock;
 import com.mrfuzzihead.vinery.core.registry.VineryRegistry;
 
 import cpw.mods.fml.client.registry.ISimpleBlockRenderingHandler;
@@ -29,7 +29,7 @@ public final class VineryClient {
      * avoids drawing nothing at all if that ever fails.
      */
     private static IIcon[] iconsFor(Block block, int metadata) {
-        if (block instanceof WineRackBlock rack) {
+        if (block instanceof BoxRenderedBlock rack) {
             IIcon[] faceIcons = rack.faceIcons();
             if (faceIcons != null) {
                 return faceIcons;
@@ -48,7 +48,7 @@ public final class VineryClient {
         // it ever consults the handler map, which renders the block as nothing at all.
         int renderId = RenderingRegistry.getNextAvailableRenderId();
         for (Block block : VineryRegistry.blocks()) {
-            if (block instanceof WineRackBlock rack) {
+            if (block instanceof BoxRenderedBlock rack) {
                 rack.setRenderId(renderId);
             }
         }
@@ -57,16 +57,17 @@ public final class VineryClient {
 
             @Override
             public void renderInventoryBlock(Block block, int metadata, int renderPass, RenderBlocks renderer) {
-                if (!(block instanceof WineRackBlock rack)) {
+                if (!(block instanceof BoxRenderedBlock rack)) {
                     return;
                 }
-                BoxRenderer.renderInventory(block, metadata, rack.geometry(), iconsFor(block, metadata), renderer);
+                BoxRenderer
+                    .renderInventory(block, metadata, rack.geometry(metadata), iconsFor(block, metadata), renderer);
             }
 
             @Override
             public boolean renderWorldBlock(IBlockAccess world, int x, int y, int z, Block block, int renderId,
                 RenderBlocks renderer) {
-                if (!(block instanceof WineRackBlock rack)) {
+                if (!(block instanceof BoxRenderedBlock rack)) {
                     return false;
                 }
 
@@ -83,7 +84,7 @@ public final class VineryClient {
                     z,
                     block,
                     metadata,
-                    rack.geometry(),
+                    rack.geometry(metadata),
                     iconsFor(block, metadata),
                     rack.usesAlphaTest(),
                     renderer);
