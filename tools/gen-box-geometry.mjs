@@ -92,8 +92,8 @@ elements.forEach((el, i) => {
     used.add(tex);
     if (!(tex in indices)) { console.error(`texture ${tex} has no index; pass ${tex}=<n>`); process.exit(1); }
     const [u1, v1, u2, v2] = f.uv;
-    const a = (u1 / 16).toFixed(4), b = (v1 / 16).toFixed(4);
-    const c = (u2 / 16).toFixed(4), d = (v2 / 16).toFixed(4);
+    const a = (u1 / 16).toFixed(4), b = (1 - v2 / 16).toFixed(4);
+    const c = (u2 / 16).toFixed(4), d = (1 - v1 / 16).toFixed(4);
     return `new double[] { ${a}, ${b}, ${c}, ${d} }`;
   });
   const texIdx = FACES.map(face => {

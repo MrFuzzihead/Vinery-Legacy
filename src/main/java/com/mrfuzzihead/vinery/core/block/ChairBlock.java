@@ -50,7 +50,7 @@ public class ChairBlock extends BoxRenderedBlock {
     /** Both chair textures are cut out, so this is the first block that needs alpha testing. */
     @Override
     public boolean usesAlphaTest() {
-        return false; // TEMPORARY: alpha test off, to see whether it is discarding faces
+        return false;
     }
 
     /** Needs the block above to be free, so a chair cannot be placed jammed under a ceiling. */

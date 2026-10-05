@@ -228,7 +228,24 @@ public final class BoxRenderer {
         if (alphaTest) {
             GL11.glEnable(GL11.GL_ALPHA_TEST);
             GL11.glAlphaFunc(GL11.GL_GEQUAL, ALPHA_CUTOFF);
+        } else {
+            // Explicitly OFF rather than left alone: a block that does not want alpha testing
+            // must not inherit whatever alpha test the rest of the chunk batch happened to leave
+            // enabled. Only setting the state you want is how that went wrong here.
+            GL11.glDisable(GL11.GL_ALPHA_TEST);
         }
+        // Opaque rendering for this block. With blending on, a texel whose alpha is 0 draws as
+        // nothing, and this block textures have large transparent regions in the middle of pieces the
+        // 1.21 model treats as solid frame, so the chair renders as a see-through skeleton. Turning
+        // blending off for the draw makes those texels render opaque instead, which is what 1.21
+        // shows.
+        //
+        // This masks a texture mismatch rather than fixing it: the chair consequently draws those
+        // regions as flat dark colour instead of 1.21 grain. The proper fix is _opaque companion
+        // textures, as the leaves already have -- see tools/make-leaf-texture-pairs.mjs.
+        boolean previousBlend = GL11.glIsEnabled(GL11.GL_BLEND);
+        GL11.glDisable(GL11.GL_BLEND);
+
         int quadFaces = 0;
         int quadBoxes = 0;
         try {
@@ -261,6 +278,9 @@ public final class BoxRenderer {
                     quadFaces);
             }
             // Restored rather than merely disabled, because another mod may have set its own func.
+            if (previousBlend) {
+                GL11.glEnable(GL11.GL_BLEND);
+            }
             if (!previousAlphaTest) {
                 GL11.glDisable(GL11.GL_ALPHA_TEST);
                 GL11.glAlphaFunc(GL11.GL_GREATER, ALPHA_CUTOFF);
