@@ -44,7 +44,7 @@ final class QuadRenderer {
      * Settles winding questions in a single run: if a block appears with this on and vanishes
      * with it off, its winding is wrong, and the per-face corner order is where to fix it.
      */
-    static final boolean NO_CULL_DIAGNOSTIC = true; // TEMPORARY: hardcoded for diagnosis
+    static final boolean NO_CULL_DIAGNOSTIC = false; // TEMP: culling confirmed NOT the cause
 
     /** Logs the first vertex emitted for a given block position, once per position. */
     static final boolean VERTEX_DIAGNOSTIC = Boolean.getBoolean("vinery.vertexDiag");
@@ -76,7 +76,7 @@ final class QuadRenderer {
      * cost several rounds; a face that should be present and is not will simply be absent, with
      * grass showing through where it was.
      */
-    private static final boolean DEBUG_FACE_COLOUR = true; // TEMPORARY: hardcoded on for diagnosis
+    private static final boolean DEBUG_FACE_COLOUR = false; // TEMP: inconclusive, GL_MODULATE crushes it
 
     private static final float[][] DEBUG_FACE_RGB = { { 1.0F, 0.0F, 0.0F }, // down red
         { 0.0F, 1.0F, 0.0F }, // up green
